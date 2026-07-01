@@ -17,10 +17,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-client = anthropic.Anthropic(api_key="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")
-
-SYSTEM_PROMPT = """Tu es Leila, l'assistante virtuelle chaleureuse et experte de Miss Chawarma,
+client = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+SYSTEM_PROMPT = """Tu es LaMiss, l'assistante virtuelle chaleureuse et experte de Miss Chawarma,
 un restaurant libanais authentique situé au 128 Rue Oberkampf, Paris 11e.
 Tu parles comme un excellent serveur libanais : accueillant, gourmand, enthousiaste,
 et tu donnes envie de commander.
@@ -188,34 +186,34 @@ class ChatRequest(BaseModel):
 IMAGE_MAP = {
     # ── Hommous avec chawarma EN PREMIER (mots clés plus longs) ──
 "https://i.ibb.co/yFvSjLBq/Chat-GPT-Image-Jun-11-2026-04-18-29-PM.png": ["avec chawarma", "hommous chawarma", "houmous chawarma"],
-"http://192.168.1.29:8080/src/assets/images/hoummous.jpeg": ["hoummous seul", "hummus", "houmous classique"],
-    "http://192.168.1.29:8080/src/assets/images/halloume.jpeg": ["halloumi", "hallou"],
-    "http://192.168.1.29:8080/src/assets/images/batatahara.jpeg": ["batata harra", "batata"],
-    "http://192.168.1.29:8080/src/assets/images/makanek.jpeg": ["makanek"],
-    "http://192.168.1.29:8080/src/assets/images/sawda.jpeg": ["sawda"],
-    "http://192.168.1.29:8080/src/assets/images/mttabel.jpeg": ["moutabal", "baba ghanouj", "mouttabbal"],
-    "http://192.168.1.29:8080/src/assets/images/labnealalibanaise.jpeg": ["labné", "labne"],
-    "http://192.168.1.29:8080/src/assets/images/moussaka.jpeg": ["moussaka"],
-    "http://192.168.1.29:8080/src/assets/images/mojadara.jpeg": ["mojadara"],
-    "http://192.168.1.29:8080/src/assets/images/loubye.jpeg": ["loubia"],
-    "http://192.168.1.29:8080/src/assets/images/fattosh.jpeg": ["fattoush"],
-    "http://192.168.1.29:8080/src/assets/images/tabboule.jpeg": ["tabboulé", "tabboule"],
-    "http://192.168.1.29:8080/src/assets/images/kafta1.jpeg": ["falafel"],
-    "http://192.168.1.29:8080/src/assets/images/samboussek.jpeg": ["sambousek"],
-    "http://192.168.1.29:8080/src/assets/images/rikakat.jpeg": ["rikakat"],
-    "http://192.168.1.29:8080/src/assets/images/sfihaObergine.jpeg": ["sfiha aubergine"],
-    "http://192.168.1.29:8080/src/assets/images/fatayer.jpeg": ["fatayer"],
-    "http://192.168.1.29:8080/src/assets/images/kebbe.jpeg": ["kebbé", "kebbe"],
-    "http://192.168.1.29:8080/src/assets/images/sandpoulet.jpeg": ["chawarma poulet", "sandwich poulet"],
-    "http://192.168.1.29:8080/src/assets/images/chBoeuf.jpeg": ["chawarma boeuf", "chawarma bœuf"],
-    "http://192.168.1.29:8080/src/assets/images/pouletplat1.jpeg": ["poulet plat", "plat poulet"],
-    "http://192.168.1.29:8080/src/assets/images/misschawarma.jpeg": ["miss chawarma plat"],
-    "http://192.168.1.29:8080/src/assets/images/mix_viande_poulet.jpeg": ["mix'ta grill", "mix ta grill"],
-    "http://192.168.1.29:8080/src/assets/images/Mrs falafel.jpeg": ["mrs falafel"],
-    "http://192.168.1.29:8080/src/assets/images/baklawa.jpeg": ["baklawa pistache"],
-    "http://192.168.1.29:8080/src/assets/images/mouhalabeya.jpeg": ["mouhalabiyé", "mouhalabiye"],
-    "http://192.168.1.29:8080/src/assets/images/namoura.jpeg": ["namoura"],
-    "http://192.168.1.29:8080/src/assets/images/citronade.jpeg": ["citronnade"],
+"http://localhost:8080/src/assets/images/hoummous.jpeg": ["hoummous seul", "hummus", "houmous classique"],
+    "http://localhost:8080/src/assets/images/halloume.jpeg": ["halloumi", "hallou"],
+    "http://localhost:8080/src/assets/images/batatahara.jpeg": ["batata harra", "batata"],
+    "http://localhost:8080/src/assets/images/makanek.jpeg": ["makanek"],
+    "http://localhost:8080/src/assets/images/sawda.jpeg": ["sawda"],
+    "http://localhost:8080/src/assets/images/mttabel.jpeg": ["moutabal", "baba ghanouj", "mouttabbal"],
+    "http://localhost:8080/src/assets/images/labnealalibanaise.jpeg": ["labné", "labne"],
+    "http://localhost:8080/src/assets/images/moussaka.jpeg": ["moussaka"],
+    "http://localhost:8080/src/assets/images/mojadara.jpeg": ["mojadara"],
+    "http://localhost:8080/src/assets/images/loubye.jpeg": ["loubia"],
+    "http://localhost:8080/src/assets/images/fattosh.jpeg": ["fattoush"],
+    "http://localhost:8080/src/assets/images/tabboule.jpeg": ["tabboulé", "tabboule"],
+    "http://localhost:8080/src/assets/images/kafta1.jpeg": ["falafel"],
+    "http://localhost:8080/src/assets/images/samboussek.jpeg": ["sambousek"],
+    "http://localhost:8080/src/assets/images/rikakat.jpeg": ["rikakat"],
+    "http://localhost:8080/src/assets/images/sfihaObergine.jpeg": ["sfiha aubergine"],
+    "http://localhost:8080/src/assets/images/fatayer.jpeg": ["fatayer"],
+    "http://localhost:8080/src/assets/images/kebbe.jpeg": ["kebbé", "kebbe"],
+    "http://localhost:8080/src/assets/images/sandpoulet.jpeg": ["chawarma poulet", "sandwich poulet"],
+    "http://localhost:8080/src/assets/images/chBoeuf.jpeg": ["chawarma boeuf", "chawarma bœuf"],
+    "http://localhost:8080/src/assets/images/pouletplat1.jpeg": ["poulet plat", "plat poulet"],
+    "http://localhost:8080/src/assets/images/misschawarma.jpeg": ["miss chawarma plat"],
+    "http://localhost:8080/src/assets/images/mix_viande_poulet.jpeg": ["mix'ta grill", "mix ta grill"],
+    "http://localhost:8080/src/assets/images/Mrs falafel.jpeg": ["mrs falafel"],
+    "http://localhost:8080/src/assets/images/baklawa.jpeg": ["baklawa pistache"],
+    "http://localhost:8080/src/assets/images/mouhalabeya.jpeg": ["mouhalabiyé", "mouhalabiye"],
+    "http://localhost:8080/src/assets/images/namoura.jpeg": ["namoura"],
+    "http://localhost:8080/src/assets/images/citronade.jpeg": ["citronnade"],
     "https://i.ibb.co/jPGwZmgf/Chat-GPT-Image-Jun-4-2026-05-30-56-PM.png": ["kafta"],
     "https://i.ibb.co/B5rD1Vrv/Chat-GPT-Image-Jun-4-2026-05-25-42-PM.png": ["chichtaouk"],
     "https://i.ibb.co/x8tHwJPs/Chat-GPT-Image-Jun-8-2026-09-31-10-AM.png": ["mix grill"],
@@ -234,17 +232,45 @@ IMAGE_MAP = {
     "https://i.ibb.co/Z1NYBfjG/Chat-GPT-Image-Jun-11-2026-12-13-48-AM.png": ["jus fruits rouges", "jus rouge"],
 }
 
+from difflib import SequenceMatcher
+
+def similar(a, b):
+    return SequenceMatcher(None, a, b).ratio()
+
+def fuzzy_contains(text: str, keyword: str, threshold: float = 0.75) -> bool:
+    """Vérifie si keyword apparaît dans text, même avec des fautes de frappe."""
+    if keyword in text:
+        return True
+    words = text.split()
+    kw_words = keyword.split()
+    # Match mot par mot avec tolérance aux fautes
+    if len(kw_words) == 1:
+        return any(similar(w, keyword) > threshold for w in words)
+    else:
+        # Pour les expressions multi-mots, vérifie une fenêtre glissante
+        n = len(kw_words)
+        for i in range(len(words) - n + 1):
+            window = " ".join(words[i:i+n])
+            if similar(window, keyword) > threshold:
+                return True
+        return False
+
 def detect_image(text: str):
     text_lower = text.lower()
-    image_keywords = ["image", "photo", "voir", "montre", "affiche", "montrer", "pic"]
-    if not any(kw in text_lower for kw in image_keywords):
+    image_keywords = ["image", "photo", "voir", "montre", "affiche", "montrer", "pic", "photos"]
+    
+    has_image_intent = any(
+        any(similar(w, kw) > 0.7 for w in text_lower.split())
+        for kw in image_keywords
+    )
+    if not has_image_intent:
         return None
-    # Cherche le match le plus long d'abord
+
     best_match = None
     best_length = 0
     for url, keywords in IMAGE_MAP.items():
         for kw in keywords:
-            if kw in text_lower and len(kw) > best_length:
+            if fuzzy_contains(text_lower, kw) and len(kw) > best_length:
                 best_match = url
                 best_length = len(kw)
     return best_match
