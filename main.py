@@ -5,11 +5,12 @@ from typing import List
 import anthropic
 import os
 from dotenv import load_dotenv
+from fastapi.staticfiles import StaticFiles
 
 load_dotenv()
 
 app = FastAPI()
-
+app.mount("/images", StaticFiles(directory="images"), name="images")
 app.add_middleware(
     CORSMiddleware,
   allow_origins=[
@@ -43,7 +44,7 @@ Ouvert 7j/7
 
 == RÉSERVATIONS ==
 - Réserver une table : via le site section "Réserver une table" ou +33 1 42 52 60 48
-- Événement privé (max 42 personnes) : via le site section "Organiser un événement" ou +33 7 82 73 77 77
+- Événement privé (max 42 personnes) : via le site section "réserver" ou +33 7 82 73 77 77
 
 == MENU COMPLET ==
 
@@ -139,7 +140,7 @@ Mrs.bowl : 11,90€ — riz libanais ou batata harra + chawarma/taouk/falafel + 
 --- DESSERTS ---
 Baklawa Cajou : 2€
 Baklawa pistache : 2,50€
-Mouhalabiyé : 3,90€ — flan libanais, fleur d'oranger, pistaches
+Mouhalabiyé : 4,90€ — flan libanais, fleur d'oranger, pistaches
 Maacarons libanais : 3,90€
 Namoura : 3,90€ — gâteau semoule libanais
 Knefeh : 7,90€ — cheveux d'ange, fromage, pistaches, sirop
@@ -178,7 +179,7 @@ Café by Nespresso : 2,50€
 - Ne réponds qu'aux questions liées à Miss Chawarma
 - Garde tes réponses concises, max 3-4 phrases sauf si on demande plus de détails
 - Tu peux utiliser quelques emojis 🌿🍋
-- Ne mentionne JAMAIS que tu ne peux pas afficher d'images
+- Quand quelqu'un demande une photo/image d'un plat, tu réponds normalement et l'image s'affichera automatiquement
 """
 
 class Message(BaseModel):
@@ -190,51 +191,59 @@ class ChatRequest(BaseModel):
 
 IMAGE_MAP = {
     # ── Hommous avec chawarma EN PREMIER (mots clés plus longs) ──
-"https://i.ibb.co/yFvSjLBq/Chat-GPT-Image-Jun-11-2026-04-18-29-PM.png": ["avec chawarma", "hommous chawarma", "houmous chawarma"],
-"http://localhost:8080/src/assets/images/hoummous.jpeg": ["hoummous seul", "hummus", "houmous classique"],
-    "http://localhost:8080/src/assets/images/halloume.jpeg": ["halloumi", "hallou"],
-    "http://localhost:8080/src/assets/images/batatahara.jpeg": ["batata harra", "batata"],
-    "http://localhost:8080/src/assets/images/makanek.jpeg": ["makanek"],
-    "http://localhost:8080/src/assets/images/sawda.jpeg": ["sawda"],
-    "http://localhost:8080/src/assets/images/mttabel.jpeg": ["moutabal", "baba ghanouj", "mouttabbal"],
-    "http://localhost:8080/src/assets/images/labnealalibanaise.jpeg": ["labné", "labne"],
-    "http://localhost:8080/src/assets/images/moussaka.jpeg": ["moussaka"],
-    "http://localhost:8080/src/assets/images/mojadara.jpeg": ["mojadara"],
-    "http://localhost:8080/src/assets/images/loubye.jpeg": ["loubia"],
-    "http://localhost:8080/src/assets/images/fattosh.jpeg": ["fattoush"],
-    "http://localhost:8080/src/assets/images/tabboule.jpeg": ["tabboulé", "tabboule"],
-    "http://localhost:8080/src/assets/images/kafta1.jpeg": ["falafel"],
-    "http://localhost:8080/src/assets/images/samboussek.jpeg": ["sambousek"],
-    "http://localhost:8080/src/assets/images/rikakat.jpeg": ["rikakat"],
-    "http://localhost:8080/src/assets/images/sfihaObergine.jpeg": ["sfiha aubergine"],
-    "http://localhost:8080/src/assets/images/fatayer.jpeg": ["fatayer"],
-    "http://localhost:8080/src/assets/images/kebbe.jpeg": ["kebbé", "kebbe"],
-    "http://localhost:8080/src/assets/images/sandpoulet.jpeg": ["chawarma poulet", "sandwich poulet"],
-    "http://localhost:8080/src/assets/images/chBoeuf.jpeg": ["chawarma boeuf", "chawarma bœuf"],
-    "http://localhost:8080/src/assets/images/pouletplat1.jpeg": ["poulet plat", "plat poulet"],
-    "http://localhost:8080/src/assets/images/misschawarma.jpeg": ["miss chawarma plat"],
-    "http://localhost:8080/src/assets/images/mix_viande_poulet.jpeg": ["mix'ta grill", "mix ta grill"],
-    "http://localhost:8080/src/assets/images/Mrs falafel.jpeg": ["mrs falafel"],
-    "http://localhost:8080/src/assets/images/baklawa.jpeg": ["baklawa pistache"],
-    "http://localhost:8080/src/assets/images/mouhalabeya.jpeg": ["mouhalabiyé", "mouhalabiye"],
-    "http://localhost:8080/src/assets/images/namoura.jpeg": ["namoura"],
-    "http://localhost:8080/src/assets/images/citronade.jpeg": ["citronnade"],
-    "https://i.ibb.co/jPGwZmgf/Chat-GPT-Image-Jun-4-2026-05-30-56-PM.png": ["kafta"],
-    "https://i.ibb.co/B5rD1Vrv/Chat-GPT-Image-Jun-4-2026-05-25-42-PM.png": ["chichtaouk"],
+"https://ton-app.onrender.com/images/houmous chawarma.jpeg": ["avec chawarma", "hommous chawarma", "houmous chawarma"],
+"https://ton-app.onrender.com/images/hoummous.jpeg": ["hoummous seul", "hummus", "houmous classique"],
+    "https://ton-app.onrender.com/images/halloume.jpeg": ["halloumi", "hallou"],
+    "https://ton-app.onrender.com/images/batatahara.jpeg": ["batata harra", "batata"],
+    "https://ton-app.onrender.com/images/makanek (2).jpeg": ["makanek"],
+    "https://ton-app.onrender.com/images/mttabel.jpeg": ["moutabal", "baba ghanouj", "mouttabbal"],
+    "https://ton-app.onrender.com/images/labnealalibanaise.jpeg": ["labné", "labne"],
+    "https://ton-app.onrender.com/images/moussaka.jpeg": ["moussaka"],
+    "https://ton-app.onrender.com/images/Moujadara.jpeg": ["mojadara", "moujadara", "mjadara"],
+    "https://ton-app.onrender.com/images/loubye.jpeg": ["loubia","loubiya","haricots verts","haricots","loubia b zeyt", "loubia b zayt"],
+    "https://ton-app.onrender.com/images/fattosh.jpeg": ["fattoush", "fattouch", "fattoush salade", "fattouch salade"],
+    "https://ton-app.onrender.com/images/tabboule.jpeg": ["tabboulé", "tabboule", "tabbouleh", "tabbouleh salade", "tabboule salade"],
+    "https://ton-app.onrender.com/images/kafta1.jpeg": ["kafta"],
+    "https://ton-app.onrender.com/images/sambousik fromage.jpg": ["sambousek fromage", "sambousek fromage", "sambousek au fromage", "sambousek feta", "sambousek au feta"],
+        "https://ton-app.onrender.com/images/samboussekViande.jpeg": ["sambousek viande", "sambousek viande", "sambousek à la viande", "sambousek au boeuf", "sambousek bœuf"],
+    "https://ton-app.onrender.com/images/rikakat.jpeg": ["rikakat", "rikakat fromage", "rikakat au fromage", "rikakat feta", "rikakat au feta"],
+    "https://ton-app.onrender.com/images/sfihaObergine.jpeg": ["sfiha aubergine", "sfiha aubergine", "sfiha aux aubergines", "sfiha aux aubergines"],
+        "https://ton-app.onrender.com/images/sfihaLahme.jpeg": ["sfiha lahme", "sfiha viande", "sfiha bœuf", "sfiha boeuf", "sfiha à la viande"],
+    "https://ton-app.onrender.com/images/fatayer.jpeg": ["fatayer", "fatayer épinards", "fatayer aux épinards", "fatayer aux épinards citronnés"],
+    "https://ton-app.onrender.com/images/kebbe.jpeg": ["kebbé", "kebbe", "kebbé viande", "kebbé bœuf", "kebbé boeuf", "kebbé aux noix", "kebbé noix"],
+    "https://ton-app.onrender.com/images/sandpoulet.jpg": ["chawarma poulet", "sandwich poulet", "sandwich chawarma poulet", "chawarma poulet sandwich"],
+    "https://ton-app.onrender.com/images/chBoeuf.jpeg": ["chawarma boeuf", "chawarma bœuf", "sandwich boeuf", "sandwich chawarma boeuf", "chawarma boeuf sandwich"],
+    "https://ton-app.onrender.com/images/pouletplat.jpeg": ["poulet plat", "plat poulet", "plat chawarma poulet", "chawarma poulet plat"],
+    "https://ton-app.onrender.com/images/misschawarma.jpeg": ["miss chawarma plat", "plat miss chawarma", "miss chawarma"],
+    "https://ton-app.onrender.com/images/mix_viande_poulet.jpeg": ["mix'ta grill", "mix ta grill", "mix grill", "mix grillades", "mix grillades au feu de bois"],
+    "https://ton-app.onrender.com/images/Mrs falafel.jpeg": ["mrs falafel", "mrs. falafel", "mrs falafel plat", "plat mrs falafel"],
+    "https://ton-app.onrender.com/images/baklawa.jpg": ["baklawa pistache","baklawa", "baklawa aux pistaches"],
+        "https://i.ibb.co/4ZQSfrY4/Chat-GPT-Image-Jun-11-2026-12-53-57-AM.png": ["baklawa cajou","baklawa", "baklawa aux cajous"],
+    "https://ton-app.onrender.com/images/Namoura (2).jpeg": ["namoura", "namoura gâteau", "namoura gâteau semoule", "namoura gâteau libanais"],
+    "https://ton-app.onrender.com/images/citronade.jpeg": ["citronnade", "citronnade maison", "citronnade maison miss chawarma"],
+    "https://ton-app.onrender.com/images/chichtaouk plat.jpeg": ["chichtaouk", "chichtaouk plat", "plat chichtaouk", "chichtaouk brochettes", "brochettes chichtaouk"],
     "https://i.ibb.co/x8tHwJPs/Chat-GPT-Image-Jun-8-2026-09-31-10-AM.png": ["mix grill"],
     "https://i.ibb.co/1fKj0j59/Chat-GPT-Image-Jun-8-2026-09-27-24-AM.png": ["lahmé", "lahme"],
-    "https://i.ibb.co/yBQThLrV/Chat-GPT-Image-Jun-11-2026-12-59-41-AM.png": ["knefeh"],
-    "https://i.ibb.co/4ZQSfrY4/Chat-GPT-Image-Jun-11-2026-12-53-57-AM.png": ["baklawa cajou"],
+"https://ton-app.onrender.com/images/mouhalabeya.jpeg": [ "mouhalabiyé", "mouhalabiye", "dessert", "dessert préféré", "flan libanais"], 
+ "https://i.ibb.co/yBQThLrV/Chat-GPT-Image-Jun-11-2026-12-59-41-AM.png": ["knefeh"],
     "https://i.ibb.co/FqHHB6mb/Chat-GPT-Image-Jun-11-2026-01-01-00-AM.png": ["sfouf"],
     "https://i.ibb.co/gZ2N3rFG/Chat-GPT-Image-Jun-11-2026-11-15-37-AM.png": ["mezze royal"],
     "https://i.ibb.co/nNgZNQDk/Chat-GPT-Image-Jun-8-2026-09-50-49-AM.png": ["hamburger"],
-    "https://i.ibb.co/cXJ0w76F/Chat-GPT-Image-Jun-11-2026-01-15-46-PM.png": ["fahita"],
+    "https://ton-app.onrender.com/images/sandfalafel.jpg": ["fahita", "sandwich fahita", "fahita sandwich"],
     "https://i.ibb.co/WWjf69gL/Chat-GPT-Image-Jun-11-2026-01-29-00-PM.png": ["poulet crispy", "crispy"],
-    "https://i.ibb.co/yFMKCGLb/Chat-GPT-Image-Jun-11-2026-11-03-28-AM.png": ["vege dream", "vegetarienne"],
-    "https://i.ibb.co/xq69ZDD7/Chat-GPT-Image-Jun-8-2026-09-38-57-AM.png": ["foie volaille"],
+    "https://ton-app.onrender.com/images/Mrs Vegedream.jpeg": ["vege dream", "vegetarienne", "mrs vege dream", "mrs végétarienne", "mrs végétarien"],
+    "https://ton-app.onrender.com/images/sawda.jpg": ["sawda","foie volaille", "foie de volaille", "foie de volaille sauté", "foie de volaille sauté à l'ail", "foie de volaille sauté à l'ail et coriandre", "foie de volaille sauté à l'ail et coriandre et mélasse de grenade"],
     "https://i.ibb.co/Lz8bPZKR/Chat-GPT-Image-Jun-11-2026-12-29-14-AM.png": ["sodas", "coca"],
     "https://i.ibb.co/j9LPwQsC/Chat-GPT-Image-Jun-11-2026-12-47-28-AM.png": ["miss tea"],
     "https://i.ibb.co/Z1NYBfjG/Chat-GPT-Image-Jun-11-2026-12-13-48-AM.png": ["jus fruits rouges", "jus rouge"],
+    "https://ton-app.onrender.com/images/mr. tarbouch.jpeg": ["mr tarbouch", "mr. tarbouch", "tarbouch", "formule tarbouch"],
+    "https://ton-app.onrender.com/images/Arnabit.jpeg": ["arnabit", "makali", "chou-fleur grillé", "chou fleur"],
+    "https://ton-app.onrender.com/images/plat chawarma viande.png": ["plat chawarma boeuf", "chawarma boeuf plat", "plat chawarma viande", "chawarma viande plat"],
+    "https://ton-app.onrender.com/images/plat kafta.jpeg": ["plat kafta", "kafta plat", "brochette kafta", "brochettes kafta"],
+    "https://ton-app.onrender.com/images/sandkebbe.jpg": ["sandwich kebbé", "sandwich kebbe", "kebbé sandwich", "kebbe sandwich"],
+    "https://ton-app.onrender.com/images/warak enab.jpeg": ["warak enab", "feuilles de vigne", "feuille de vigne farcie"],
+    "https://ton-app.onrender.com/images/Sandwich Chich taouk.jpg": ["sandwich chich taouk", "sandwich chichtaouk", "chich taouk sandwich"],
+    "https://ton-app.onrender.com/images/6 mezzes beignets Ali.jpeg": ["mezzés assortis", "assortiment mezzés", "6 mezzés", "plateau mezzés","mezzés à partager", "mezzés à partager", "mezzés pour 2 personnes", "mezzés pour 3 personnes", "mezzés pour 4 personnes", "mezzés pour 5 personnes", "mezzés pour 6 personnes"],
 }
 
 from difflib import SequenceMatcher
