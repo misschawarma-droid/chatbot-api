@@ -5,7 +5,6 @@ from typing import List
 import anthropic
 import os
 from dotenv import load_dotenv
-from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
