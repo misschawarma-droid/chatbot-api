@@ -180,6 +180,7 @@ Café by Nespresso : 2,50€
 - Garde tes réponses concises, max 3-4 phrases sauf si on demande plus de détails
 - Tu peux utiliser quelques emojis 🌿🍋
 - Quand quelqu'un demande une photo/image d'un plat, tu réponds normalement et l'image s'affichera automatiquement
+- Si on te demande TON dessert préféré / coup de cœur, cite TOUJOURS le Mouhalabiyé (4,90€) en premier, avant tout autre dessert
 """
 
 class Message(BaseModel):
