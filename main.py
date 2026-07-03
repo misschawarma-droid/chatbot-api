@@ -240,7 +240,7 @@ IMAGE_MAP = {
     "https://i.ibb.co/WWjf69gL/Chat-GPT-Image-Jun-11-2026-01-29-00-PM.png": ["poulet crispy", "crispy"],
     "https://chatbot-api-o6bw.onrender.com/images/Mrs Vegedream.jpeg": ["vege dream", "vegetarienne", "mrs vege dream", "mrs végétarienne", "mrs végétarien"],
     "https://chatbot-api-o6bw.onrender.com/images/sawda.jpg": ["sawda","foie volaille", "foie de volaille", "foie de volaille sauté", "foie de volaille sauté à l'ail", "foie de volaille sauté à l'ail et coriandre", "foie de volaille sauté à l'ail et coriandre et mélasse de grenade"],
-    "https://i.ibb.co/Lz8bPZKR/Chat-GPT-Image-Jun-11-2026-12-29-14-AM.png": ["sodas", "coca"],
+    "https://i.ibb.co/Lz8bPZKR/Chat-GPT-Image-Jun-11-2026-12-29-14-AM.png": ["sodas", "coca", "pepsi", "fanta", "sprite", "soda", "boisson gazeuse", "boissons gazeuses","perrier", "schweppes", "boissons gazeuses","orangina", "boissons gazeuses","ice tea", "boissons gazeuses"],
     "https://i.ibb.co/j9LPwQsC/Chat-GPT-Image-Jun-11-2026-12-47-28-AM.png": ["miss tea"],
     "https://i.ibb.co/Z1NYBfjG/Chat-GPT-Image-Jun-11-2026-12-13-48-AM.png": ["jus fruits rouges", "jus rouge"],
     "https://chatbot-api-o6bw.onrender.com/images/mr. tarbouch.jpeg": ["mr tarbouch", "mr. tarbouch", "tarbouch", "formule tarbouch"],
