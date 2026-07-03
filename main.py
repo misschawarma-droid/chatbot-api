@@ -10,7 +10,10 @@ from fastapi.staticfiles import StaticFiles
 load_dotenv()
 
 app = FastAPI()
+import os
+os.makedirs("images", exist_ok=True)
 app.mount("/images", StaticFiles(directory="images"), name="images")
+
 app.add_middleware(
     CORSMiddleware,
   allow_origins=[
