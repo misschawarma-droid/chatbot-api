@@ -6,7 +6,10 @@ import anthropic
 import os
 from dotenv import load_dotenv
 from fastapi.staticfiles import StaticFiles
+import re
 
+def strip_image_tags(text: str) -> str:
+    return re.sub(r'\[IMAGE:[^\]]+\]\n?', '', text)
 load_dotenv()
 
 app = FastAPI()
@@ -305,11 +308,14 @@ def chat(request: ChatRequest):
     print(f"IMAGE DETECTEE: {image_url}")
 
     response = client.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1000,
-        system=SYSTEM_PROMPT,
-        messages=[{"role": m.role, "content": m.content} for m in request.messages],
-    )
+    model="claude-sonnet-4-6",
+    max_tokens=1000,
+    system=SYSTEM_PROMPT,
+    messages=[
+        {"role": m.role, "content": strip_image_tags(m.content)}
+        for m in request.messages
+    ],
+)
     reply = response.content[0].text
 
     if image_url:
