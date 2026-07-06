@@ -195,6 +195,7 @@ class Message(BaseModel):
 
 class ChatRequest(BaseModel):
     messages: List[Message]
+    lang: str = "fr"
 
 IMAGE_MAP = {
     # ── Hommous avec chawarma EN PREMIER (mots clés plus longs) ──
@@ -303,19 +304,25 @@ def root():
 @app.post("/chat")
 def chat(request: ChatRequest):
     last_message = request.messages[-1].content if request.messages else ""
-    print(f"MESSAGE RECU: {last_message}")
+    print(f"MESSAGE RECU: {last_message} | LANG: {request.lang}")
     image_url = detect_image(last_message)
     print(f"IMAGE DETECTEE: {image_url}")
 
+    language_instruction = (
+        "\n\nIMPORTANT : Réponds TOUJOURS en français, quelle que soit la langue du message reçu."
+        if request.lang != "en"
+        else "\n\nIMPORTANT: ALWAYS reply in English, regardless of the language of the incoming message. Keep Lebanese dish names as-is (e.g. Falafel, Chawarma, Kafta), but explain descriptions and prices in English."
+    )
+
     response = client.messages.create(
-    model="claude-sonnet-4-6",
-    max_tokens=1000,
-    system=SYSTEM_PROMPT,
-    messages=[
-        {"role": m.role, "content": strip_image_tags(m.content)}
-        for m in request.messages
-    ],
-)
+        model="claude-sonnet-4-6",
+        max_tokens=1000,
+        system=SYSTEM_PROMPT + language_instruction,
+        messages=[
+            {"role": m.role, "content": strip_image_tags(m.content)}
+            for m in request.messages
+        ],
+    )
     reply = response.content[0].text
 
     if image_url:
