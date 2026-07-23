@@ -1,0 +1,67 @@
+# ÉTAPES D'INSTALLATION — Backend Miss Chawarma
+# ================================================
+
+## 1. Nouveaux fichiers à placer dans chatbot-api/
+
+chatbot-api/
+├── main.py              ← REMPLACE ton main.py (garde une copie de l'ancien !)
+├── database.py          ← nouveau
+├── models.py            ← nouveau
+├── schemas.py           ← nouveau
+├── admin.py             ← nouveau
+├── seed_menu.py         ← nouveau
+└── routers/
+    ├── __init__.py      ← crée un fichier VIDE avec ce nom (obligatoire)
+    ├── chatbot.py       ← TON code chatbot actuel (voir étape 3)
+    ├── menu.py          ← nouveau
+    ├── orders.py        ← nouveau
+    ├── reservations.py  ← nouveau
+    └── contact.py       ← nouveau
+
+## 2. requirements.txt — ajoute ces lignes à ton fichier existant :
+
+sqlalchemy
+sqladmin
+itsdangerous
+psycopg2-binary
+pydantic[email]
+
+(garde : fastapi, uvicorn, anthropic, python-dotenv)
+
+Puis : pip install -r requirements.txt
+
+## 3. Migration de ton chatbot (10 min)
+
+a. RENOMME ton ancien main.py en routers/chatbot.py
+b. Dans routers/chatbot.py :
+   - supprime : app = FastAPI(), le CORS, app.mount(StaticFiles), uvicorn.run
+   - ajoute en haut :   from fastapi import APIRouter
+                        router = APIRouter(tags=["chatbot"])
+   - remplace chaque @app.post / @app.get par @router.post / @router.get
+c. Dans le nouveau main.py, décommente les 2 lignes chatbot
+
+## 4. .env — ajoute :
+
+DATABASE_URL=          ← vide pour l'instant = SQLite local (parfait pour tester)
+ADMIN_USERNAME=ali
+ADMIN_PASSWORD=un-mot-de-passe-solide
+SECRET_KEY=une-longue-chaine-aleatoire
+
+## 5. Test local
+
+python seed_menu.py          → insère le menu
+uvicorn main:app --reload    → lance le serveur
+
+Vérifie :
+- http://localhost:8000/            → {"status": "ok"}
+- http://localhost:8000/api/menu    → le menu en JSON
+- http://localhost:8000/admin       → login admin, gestion des plats
+- http://localhost:8000/docs        → toutes les routes (teste POST /api/contact ici)
+- ton chatbot                       → vérifie qu'il répond toujours
+
+## 6. Plus tard (production)
+
+- Crée la base sur neon.tech → mets l'URL dans DATABASE_URL
+- Relance seed_menu.py (une fois, vers Neon)
+- Déploie sur Render avec les variables d'environnement
+  (ANTHROPIC_API_KEY, DATABASE_URL, ADMIN_USERNAME, ADMIN_PASSWORD, SECRET_KEY)
