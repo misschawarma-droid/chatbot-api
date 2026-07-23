@@ -1,0 +1,7 @@
+
+git add main.py
+git commit -m "message"
+git push
+
+
+deploy sur git du back chatbot
