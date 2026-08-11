@@ -1,19 +1,13 @@
 # models.py — Modèles de la base de données Miss Chawarma
 # v2 : Dish enrichi (price_label, composition, allergènes bilingues)
 
-from datetime import datetime
 from sqlalchemy import (
-    Column,
-    Integer,
-    String,
-    Float,
-    Boolean,
-    Text,
-    DateTime,
-    ForeignKey,
+    Column, Integer, String, Float, Boolean, Text,
+    DateTime, ForeignKey, UniqueConstraint,
 )
 from sqlalchemy.orm import relationship
 from database import Base
+from datetime import datetime
 
 
 # ─────────────── MENU ───────────────
@@ -118,7 +112,7 @@ class OrderItem(Base):
 
 class TableReservation(Base):
     __tablename__ = "table_reservations"
-
+ 
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String(100), nullable=False)
     last_name = Column(String(100), nullable=False)
@@ -129,12 +123,32 @@ class TableReservation(Base):
     guests = Column(Integer, nullable=False)
     note = Column(Text, default="")
     status = Column(String(30), default="nouvelle")
-    language = Column(String(2), default="fr")  # "fr" ou "en" — langue du site au moment de la réservation
+    language = Column(String(2), default="fr")
+    table_ids = Column(Text, default="[]")  # ⟵ AJOUT — JSON, ex: '["18","19"]'
     created_at = Column(DateTime, default=datetime.utcnow)
-
+ 
+    slots = relationship("TableSlot", back_populates="reservation", cascade="all, delete")  # ⟵ AJOUT
+ 
     def __str__(self):
         return f"Table — {self.first_name} {self.last_name} — {self.date} {self.time} ({self.guests} pers.)"
-
+ 
+ 
+class TableSlot(Base):  # ⟵ NOUVELLE TABLE — le verrou anti-double-réservation
+    """Une ligne = une table occupée sur un créneau de 30 min pour une
+    réservation donnée. La contrainte UNIQUE empêche deux réservations
+    de se disputer la même table au même moment, atomiquement."""
+    __tablename__ = "table_slots"
+    __table_args__ = (
+        UniqueConstraint("date", "minute", "table_id", name="uniq_table_creneau"),
+    )
+ 
+    id = Column(Integer, primary_key=True)
+    reservation_id = Column(Integer, ForeignKey("table_reservations.id"), nullable=False)
+    date = Column(String(20), nullable=False, index=True)   # même format que TableReservation.date
+    minute = Column(Integer, nullable=False, index=True)    # minutes depuis minuit, jour de service
+    table_id = Column(String(8), nullable=False)
+ 
+    reservation = relationship("TableReservation", back_populates="slots")
 
 class EventReservation(Base):
     __tablename__ = "event_reservations"

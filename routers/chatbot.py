@@ -1,6 +1,9 @@
 # routers/chatbot.py — Chatbot LaMiss (code migré depuis l'ancien main.py)
 # CHANGEMENTS : app FastAPI / CORS / StaticFiles supprimés (gérés dans main.py),
 # @app.post → @router.post. Tout le reste est identique.
+# NOUVEAU : détection d'intention de redirection (réserver/menu/commander),
+# ajoutée au même endroit que la détection d'image, avec le même mécanisme
+# de tag [LINK:...] que [IMAGE:...] — le front sait déjà parser ce format.
 
 from fastapi import APIRouter
 from pydantic import BaseModel
@@ -15,6 +18,10 @@ router = APIRouter(tags=["chatbot"])
 
 def strip_image_tags(text: str) -> str:
     return re.sub(r'\[IMAGE:[^\]]+\]\n?', '', text)
+
+
+def strip_link_tags(text: str) -> str:
+    return re.sub(r'\[LINK:[^:]+:[^\]]+\]\n?', '', text)
 
 
 load_dotenv()
@@ -177,6 +184,7 @@ Café by Nespresso : 2,50€
 - Tu peux utiliser quelques emojis 🌿🍋
 - Quand quelqu'un demande une photo/image d'un plat, tu réponds normalement et l'image s'affichera automatiquement
 - Si on te demande TON dessert préféré / coup de cœur, cite TOUJOURS le Mouhalabiyé (4,90€) en premier, avant tout autre dessert
+- Quand tu recommandes de réserver une table, d'organiser un événement, de voir le menu ou de commander en ligne, le bouton correspondant s'affichera automatiquement sous ta réponse — ne donne donc pas d'URL toi-même, contente-toi de le mentionner naturellement dans la conversation
 """
 
 
@@ -294,12 +302,75 @@ def detect_image(text: str):
     return best_match
 
 
+# ────────────────────────────────────────────────────────────────────────
+# NOUVEAU : détection d'intention de redirection vers une page du site.
+# Même principe que detect_image ci-dessus, mais pour repérer quand le
+# client veut réserver une table, organiser un événement, voir le menu ou
+# commander en ligne — et lui donner un vrai bouton cliquable plutôt qu'une
+# adresse à recopier.
+# ────────────────────────────────────────────────────────────────────────
+LINK_MAP = [
+    {
+        "path": "/book-a-table",
+        "label_fr": "Réserver une table",
+        "label_en": "Book a table",
+        "keywords": [
+            "réserver une table", "réserver table", "reservation table",
+            "book a table", "réserver", "avoir une table", "prendre une table",
+            "réservation", "table pour ce soir", "table pour demain",
+        ],
+    },
+    {
+        "path": "/book-event",
+        "label_fr": "Organiser un événement",
+        "label_en": "Plan an event",
+        "keywords": [
+            "événement", "anniversaire", "séminaire", "baby shower",
+            "soirée privée", "team building", "privatiser", "plan an event",
+            "private event", "repas d'affaires", "organiser un événement",
+        ],
+    },
+    {
+        "path": "/menu",
+        "label_fr": "Voir le menu",
+        "label_en": "View the menu",
+        "keywords": [
+            "voir le menu", "voir la carte", "menu complet", "qu'est-ce que vous avez",
+            "qu'est ce que vous avez", "view menu", "see the menu", "what's on the menu",
+            "carte complète",
+        ],
+    },
+    {
+        "path": "/menu",
+        "label_fr": "Commander en ligne",
+        "label_en": "Order online",
+        "keywords": [
+            "commander", "commande en ligne", "livraison", "à emporter",
+            "order online", "order food", "passer commande", "click and collect",
+        ],
+    },
+]
+
+
+def detect_link(text: str):
+    text_lower = text.lower()
+    best_entry = None
+    best_length = 0
+    for entry in LINK_MAP:
+        for kw in entry["keywords"]:
+            if fuzzy_contains(text_lower, kw) and len(kw) > best_length:
+                best_entry = entry
+                best_length = len(kw)
+    return best_entry
+
+
 @router.post("/chat")
 def chat(request: ChatRequest):
     last_message = request.messages[-1].content if request.messages else ""
     print(f"MESSAGE RECU: {last_message} | LANG: {request.lang}")
     image_url = detect_image(last_message)
-    print(f"IMAGE DETECTEE: {image_url}")
+    link_entry = detect_link(last_message)
+    print(f"IMAGE DETECTEE: {image_url} | LIEN DETECTE: {link_entry}")
 
     language_instruction = (
         "\n\nIMPORTANT : Réponds TOUJOURS en français, quelle que soit la langue du message reçu."
@@ -312,7 +383,7 @@ def chat(request: ChatRequest):
         max_tokens=1000,
         system=SYSTEM_PROMPT + language_instruction,
         messages=[
-            {"role": m.role, "content": strip_image_tags(m.content)}
+            {"role": m.role, "content": strip_link_tags(strip_image_tags(m.content))}
             for m in request.messages
         ],
     )
@@ -320,5 +391,9 @@ def chat(request: ChatRequest):
 
     if image_url:
         reply = f"[IMAGE:{image_url}]\n{reply}"
+
+    if link_entry:
+        label = link_entry["label_en"] if request.lang == "en" else link_entry["label_fr"]
+        reply = f"{reply}\n[LINK:{link_entry['path']}:{label}]"
 
     return {"reply": reply}

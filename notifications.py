@@ -56,7 +56,23 @@ def send_email(to_email: str, subject: str, body: str) -> bool:
     except Exception:
         logger.exception("Échec de l'envoi d'email à %s", to_email)
         return False
+    
+def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
+    """Convertit un numéro français local (07...) en format E.164 (+337...)
+    requis par Twilio. Si le numéro est déjà au format international
+    (commence par +), il est laissé tel quel."""
+    cleaned = "".join(ch for ch in phone.strip() if ch.isdigit() or ch == "+")
 
+    if cleaned.startswith("+"):
+        return cleaned
+
+    if cleaned.startswith("0") and len(cleaned) == 10:
+        return f"+{default_country_code}{cleaned[1:]}"
+
+    if len(cleaned) == 9:
+        return f"+{default_country_code}{cleaned}"
+
+    return cleaned
 
 def send_sms(to_phone: str, body: str) -> bool:
     """Envoie un SMS via Twilio. Retourne True si envoyé, False sinon (jamais d'exception)."""
@@ -67,7 +83,9 @@ def send_sms(to_phone: str, body: str) -> bool:
         from twilio.rest import Client  # import local : optionnel si le SMS n'est pas utilisé
 
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
-        client.messages.create(to=to_phone, from_=TWILIO_FROM_NUMBER, body=body)
+        normalized_phone = _normalize_phone_e164(to_phone)
+        client.messages.create(to=normalized_phone, from_=TWILIO_FROM_NUMBER, body=body)
+
         return True
     except Exception:
         logger.exception("Échec de l'envoi de SMS à %s", to_phone)

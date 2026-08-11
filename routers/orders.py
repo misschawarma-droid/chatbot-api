@@ -69,6 +69,11 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
                 status_code=400, detail="Adresse incomplète pour une livraison"
             )
         zone = calculate_delivery(payload.postal_code, payload.city or "", subtotal)
+        if zone["call_required"]:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Cette adresse est hors de notre zone de livraison automatique. Merci d'appeler le {zone['call_phone']} pour passer votre commande.",
+            )
         if not zone["meets_minimum"]:
             raise HTTPException(
                 status_code=400,

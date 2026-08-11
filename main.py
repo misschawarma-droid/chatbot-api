@@ -1,16 +1,14 @@
 # main.py — Backend Miss Chawarma
 # Chatbot (existant) + Menu + Commandes + Réservations + Contact + Admin
 
-
 import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
-
 from database import Base, engine
 from admin import setup_admin
-from routers import menu, orders, reservations, contact
+from routers import menu, orders, table_reservations, contact
 from routers import chatbot  # ← décommente après avoir créé routers/chatbot.py
 from routers import stripe_webhook 
 load_dotenv()
@@ -44,7 +42,7 @@ app.mount("/images", StaticFiles(directory="images"), name="images")
 # ─────────────── Routers ───────────────
 app.include_router(menu.router)
 app.include_router(orders.router)
-app.include_router(reservations.router)
+app.include_router(table_reservations.router)
 app.include_router(contact.router)
 app.include_router(chatbot.router)  # ← décommente après migration
 app.include_router(stripe_webhook.router)

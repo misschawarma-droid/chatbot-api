@@ -1,7 +1,7 @@
 # schemas.py — Schémas Pydantic (validation des requêtes/réponses)
 
 from typing import List, Optional
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 
 
 # ─────────────── MENU ───────────────
@@ -81,6 +81,8 @@ class DeliveryCheckOut(BaseModel):
     fee: float
     meets_minimum: bool
     free_delivery_threshold: float
+    call_required: bool = False
+    call_phone: Optional[str] = None
 
 
 class PaymentIntentOut(BaseModel):
@@ -100,7 +102,21 @@ class TableReservationIn(BaseModel):
     guests: int
     note: Optional[str] = ""
     language: Optional[str] = "fr"
-
+    table_ids: List[str] = Field(min_length=1, max_length=6)  # ⟵ AJOUT
+ 
+ 
+class TableReservationOut(BaseModel):  # ⟵ AJOUT — réponse après création
+    id: int
+    table_ids: List[str]
+    status: str
+ 
+    class Config:
+        from_attributes = True
+ 
+ 
+class TableAvailabilityOut(BaseModel):  # ⟵ AJOUT — réponse de /availability
+    occupied_table_ids: List[str]
+ 
 
 class EventReservationIn(BaseModel):
     event_type: str
