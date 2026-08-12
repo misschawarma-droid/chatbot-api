@@ -1140,6 +1140,8 @@ border-radius:16px;color:var(--mc-dark)!important;background:white;font-size:13p
 
   function createTopbar(){
     if(document.querySelector('.mc-topbar'))return;
+    var path = location.pathname.replace(/\/+$/,'');
+    if (path === '/admin/login') return; 
     var oldLogout=document.querySelector('.navbar-vertical a[href*="logout"]');
     var logoutHref=oldLogout?oldLogout.getAttribute('href'):'/admin/logout';
     var bar=document.createElement('header');bar.className='mc-topbar';
