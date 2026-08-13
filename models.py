@@ -47,7 +47,7 @@ class Dish(Base):
     image_url = Column(String(300), default="")
     is_available = Column(Boolean, default=True)
     position = Column(Integer, default=0)
-
+    customization_rules = Column(Text, default="null")  # JSON ou null si pas de personnalisation
     category = relationship("Category", back_populates="dishes")
 
     def __str__(self):
@@ -101,8 +101,10 @@ class OrderItem(Base):
     dish_name = Column(String(150), nullable=False)
     unit_price = Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False, default=1)
-
+    removed_ingredients = Column(Text, default="[]")  # ⟵ AJOUT — JSON, ex: '["Cornichons","Oignons"]'
+    customization_rules = Column(Text, default="null")  # ⟵ AJOUT — JSON des règles de personnalisation
     order = relationship("Order", back_populates="items")
+
 
     def __str__(self):
         return f"{self.quantity}× {self.dish_name}"

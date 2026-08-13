@@ -15,6 +15,7 @@ class DishOut(BaseModel):
     price: float
     image_url: str
     is_available: bool
+    customization_rules: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -37,7 +38,7 @@ class CategoryOut(BaseModel):
 class OrderItemIn(BaseModel):
     dish_id: int
     quantity: int
-
+    removed_ingredients: Optional[List[str]] = []
 
 class OrderIn(BaseModel):
     order_type: str  # "emporter" ou "livraison"

@@ -1,5 +1,6 @@
 # routers/orders.py — Commandes (click & collect + livraison), avec paiement Stripe optionnel.
 
+import json
 import os
 import logging
 
@@ -53,13 +54,14 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
         qty = max(1, min(item.quantity, 50))  # bornes de sécurité
         subtotal += dish.price * qty
         order_items.append(
-            OrderItem(
-                dish_id=dish.id,
-                dish_name=dish.name_fr,
-                unit_price=dish.price,
-                quantity=qty,
-            )
+        OrderItem(
+            dish_id=dish.id,
+            dish_name=dish.name_fr,
+            unit_price=dish.price,
+            quantity=qty,
+            removed_ingredients=json.dumps(item.removed_ingredients or []),
         )
+       )
     subtotal = round(subtotal, 2)
 
     delivery_fee = 0.0

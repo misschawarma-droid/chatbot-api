@@ -1,6 +1,7 @@
 # admin.py — Interface d'administration SQLAdmin (/admin)
 # Login/mot de passe définis dans .env : ADMIN_USERNAME, ADMIN_PASSWORD, SECRET_KEY
 
+import json
 import os
 from sqladmin import Admin, ModelView, action
 from sqladmin.authentication import AuthenticationBackend
@@ -441,6 +442,7 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.dish_name,
         OrderItem.quantity,
         OrderItem.unit_price,
+        OrderItem.removed_ingredients,  # ⟵ AJOUT
     ]
 
     column_labels = {
@@ -448,6 +450,7 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.dish_name: "Plat",
         OrderItem.quantity: "Quantité",
         OrderItem.unit_price: "Prix unitaire",
+        OrderItem.removed_ingredients: "Sans",
     }
 
     column_formatters = {
@@ -460,6 +463,9 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.unit_price: lambda model, attr: (
             f"{getattr(model, attr):.2f} €".replace(".", ",")
         ),
+            OrderItem.removed_ingredients: lambda model, attr: (
+        ", ".join(json.loads(getattr(model, attr) or "[]")) or "—"
+    ),
     }
 
     column_searchable_list = [
