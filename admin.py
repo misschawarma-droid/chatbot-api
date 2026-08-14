@@ -443,6 +443,7 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.quantity,
         OrderItem.unit_price,
         OrderItem.removed_ingredients,  # ⟵ AJOUT
+        OrderItem.selected_choices,
     ]
 
     column_labels = {
@@ -451,8 +452,58 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.quantity: "Quantité",
         OrderItem.unit_price: "Prix unitaire",
         OrderItem.removed_ingredients: "Sans",
+        OrderItem.selected_choices: "Personnalisation",
     }
+    @staticmethod
+    def _selected_choices_formatter(model, attribute, request):
+        raw = getattr(model, attribute)
+        if not raw:
+            return Markup('<span style="color:#9aa0aa">—</span>')
+        try:
+            data = json.loads(raw)
+        except (TypeError, ValueError):
+            return Markup('<span style="color:#9aa0aa">—</span>')
+        if not data:
+            return Markup('<span style="color:#9aa0aa">—</span>')
 
+        all_ids = set()
+        for sel in data.values():
+            all_ids.update(sel.get("dish_ids") or [])
+
+        db = SessionLocal()
+        try:
+            names = {}
+            if all_ids:
+                rows = db.query(Dish.id, Dish.name_fr).filter(Dish.id.in_(all_ids)).all()
+                names = {row[0]: row[1] for row in rows}
+        finally:
+            db.close()
+
+        lines = []
+        for label, sel in data.items():
+            dish_ids = sel.get("dish_ids") or []
+            options = sel.get("options") or []
+            if dish_ids:
+                counts = {}
+                for did in dish_ids:
+                    counts[did] = counts.get(did, 0) + 1
+                parts = []
+                for did, count in counts.items():
+                    dish_name = names.get(did, f"#{did}")
+                    parts.append(f"{dish_name} ×{count}" if count > 1 else dish_name)
+                value = ", ".join(parts)
+            elif options:
+                value = ", ".join(options)
+            else:
+                value = "—"
+            lines.append(f'<strong style="color:#163f21">{escape(label)}</strong>: {escape(value)}')
+
+        return Markup(
+            '<div style="font-size:12px;line-height:1.6;max-width:260px">'
+            + "<br>".join(lines)
+            + "</div>"
+        )
+               
     column_formatters = {
         OrderItem.order_id: lambda model, attr: (
             f"Commande #{getattr(model, attr)}"
@@ -466,6 +517,7 @@ class OrderItemAdmin(ModelView, model=OrderItem):
             OrderItem.removed_ingredients: lambda model, attr: (
         ", ".join(json.loads(getattr(model, attr) or "[]")) or "—"
     ),
+    OrderItem.selected_choices: _selected_choices_formatter, 
     }
 
     column_searchable_list = [
