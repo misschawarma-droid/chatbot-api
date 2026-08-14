@@ -37,7 +37,8 @@ class CategoryOut(BaseModel):
 class ChoiceSelection(BaseModel):
     dish_ids: List[int]
     alternative: Optional[str] = None
-    
+    options: Optional[List[str]] = None
+
 class OrderItemIn(BaseModel):
     dish_id: int
     quantity: int

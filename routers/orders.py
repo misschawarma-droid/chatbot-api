@@ -150,6 +150,14 @@ def validate_choice_groups(dish: Dish, selected_choices: Optional[Dict], db: Ses
                 raise HTTPException(400, f"« {selection.alternative} » nécessite {alt['count']} sélection(s)")
             if not _validate_alternative_option(alt, selection.dish_ids, db):
                 raise HTTPException(400, f"Choix invalide pour « {label} »")
+        elif "options" in group:
+                    max_count = group.get("max", 1)
+                    min_count = group.get("min", max_count)
+                    chosen = selection.options if selection and selection.options else []
+                    if not (min_count <= len(chosen) <= max_count):
+                        raise HTTPException(400, f"Sélection invalide pour « {label} »")
+                    if not set(chosen).issubset(set(group["options"])):
+                        raise HTTPException(400, f"Choix invalide pour « {label} »")
         else:
             max_count = group.get("max", 1)
             min_count = group.get("min", max_count)
