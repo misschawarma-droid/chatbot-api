@@ -4,9 +4,10 @@ import json
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from database import get_db
-from models import Category
+from models import Category, Dish
 
 router = APIRouter(prefix="/api/menu", tags=["menu"])
+
 
 
 @router.get("")
@@ -46,3 +47,13 @@ def get_menu(db: Session = Depends(get_db)):
             ],
         })
     return result
+@router.get("/api/menu/category/{category_name}")
+def get_dishes_by_category(category_name: str, db: Session = Depends(get_db)):
+    dishes = db.query(Dish).filter(
+        Dish.category == category_name,
+        Dish.available == True
+    ).all()
+    return [
+        {"id": d.id, "name": d.name, "price": d.price, "image": d.image_url}
+        for d in dishes
+    ]

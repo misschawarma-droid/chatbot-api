@@ -1,6 +1,6 @@
 # schemas.py — Schémas Pydantic (validation des requêtes/réponses)
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
 
@@ -34,11 +34,16 @@ class CategoryOut(BaseModel):
 
 
 # ─────────────── COMMANDES ───────────────
-
+class ChoiceSelection(BaseModel):
+    dish_ids: List[int]
+    alternative: Optional[str] = None
+    
 class OrderItemIn(BaseModel):
     dish_id: int
     quantity: int
     removed_ingredients: Optional[List[str]] = []
+    selected_choices: Optional[Dict[str, ChoiceSelection]] = None
+    note: Optional[str] = None
 
 class OrderIn(BaseModel):
     order_type: str  # "emporter" ou "livraison"

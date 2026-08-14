@@ -102,7 +102,7 @@ class OrderItem(Base):
     unit_price = Column(Float, nullable=False)
     quantity = Column(Integer, nullable=False, default=1)
     removed_ingredients = Column(Text, default="[]")  # ⟵ AJOUT — JSON, ex: '["Cornichons","Oignons"]'
-    customization_rules = Column(Text, default="null")  # ⟵ AJOUT — JSON des règles de personnalisation
+    selected_choices = Column(Text, nullable=True)
     order = relationship("Order", back_populates="items")
 
 

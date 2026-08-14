@@ -3,12 +3,10 @@
 import json
 import os
 import logging
-
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from database import get_db
-from models import Dish, Order, OrderItem
 from schemas import (
     OrderIn,
     OrderOut,
@@ -16,8 +14,9 @@ from schemas import (
     DeliveryCheckOut,
     PaymentIntentOut,
 )
+from models import Dish, Order, OrderItem, Category
 from delivery import calculate_delivery
-
+from typing import Optional, Dict, List
 router = APIRouter(prefix="/api/orders", tags=["orders"])
 logger = logging.getLogger("orders")
 
@@ -46,22 +45,28 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
     subtotal = 0.0
     order_items = []
     for item in payload.items:
-        dish = db.query(Dish).filter(Dish.id == item.dish_id, Dish.is_available).first()
-        if not dish:
-            raise HTTPException(
-                status_code=400, detail=f"Plat indisponible (id={item.dish_id})"
+            dish = db.query(Dish).filter(Dish.id == item.dish_id, Dish.is_available).first()
+            if not dish:
+                raise HTTPException(
+                    status_code=400, detail=f"Plat indisponible (id={item.dish_id})"
+                )
+
+            validate_choice_groups(dish, item.selected_choices, db)  # NOUVEAU
+
+            qty = max(1, min(item.quantity, 50))  # bornes de sécurité
+            subtotal += dish.price * qty
+            order_items.append(
+                OrderItem(
+                    dish_id=dish.id,
+                    dish_name=dish.name_fr,
+                    unit_price=dish.price,
+                    quantity=qty,
+                    removed_ingredients=json.dumps(item.removed_ingredients or []),
+                    selected_choices=json.dumps(
+                        {k: v.dict() for k, v in item.selected_choices.items()}
+                    ) if item.selected_choices else None,  # NOUVEAU
+                )
             )
-        qty = max(1, min(item.quantity, 50))  # bornes de sécurité
-        subtotal += dish.price * qty
-        order_items.append(
-        OrderItem(
-            dish_id=dish.id,
-            dish_name=dish.name_fr,
-            unit_price=dish.price,
-            quantity=qty,
-            removed_ingredients=json.dumps(item.removed_ingredients or []),
-        )
-       )
     subtotal = round(subtotal, 2)
 
     delivery_fee = 0.0
@@ -111,6 +116,52 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
     db.refresh(order)
     return order
 
+def _validate_alternative_option(alt: dict, dish_ids: list[int], db: Session) -> bool:
+    """Vérifie que dish_ids ⊆ ensemble éligible pour cette option d'alternative."""
+    if "dish_ids" in alt:
+        return set(dish_ids).issubset(set(alt["dish_ids"]))
+    elif "source_category" in alt:
+        eligible = db.query(Dish.id).join(Category, Dish.category_id == Category.id).filter(
+            Category.name_fr == alt["source_category"]
+        ).all()
+        eligible_ids = {row[0] for row in eligible}
+        return set(dish_ids).issubset(eligible_ids)
+    return False
+def validate_choice_groups(dish: Dish, selected_choices: Optional[Dict], db: Session):
+    rules = json.loads(dish.customization_rules) if dish.customization_rules else {}
+    choice_groups = rules.get("choice_groups")
+    if not choice_groups:
+        return
+
+    if not selected_choices:
+        raise HTTPException(400, f"Sélection requise pour {dish.name_fr}")
+
+    for group in choice_groups:
+        label = group["label"]
+        selection = selected_choices.get(label)
+
+        if group.get("type") == "alternative":
+            if not selection or not selection.alternative:
+                raise HTTPException(400, f"Choix requis pour « {label} »")
+            alt = next((a for a in group["alternatives"] if a["name"] == selection.alternative), None)
+            if not alt:
+                raise HTTPException(400, f"Alternative inconnue pour « {label} »")
+            if len(selection.dish_ids) != alt["count"]:
+                raise HTTPException(400, f"« {selection.alternative} » nécessite {alt['count']} sélection(s)")
+            if not _validate_alternative_option(alt, selection.dish_ids, db):
+                raise HTTPException(400, f"Choix invalide pour « {label} »")
+        else:
+            max_count = group.get("max", 1)
+            min_count = group.get("min", max_count)
+            chosen_ids = selection.dish_ids if selection else []
+            if not (min_count <= len(chosen_ids) <= max_count):
+                raise HTTPException(400, f"Sélection invalide pour « {label} »")
+            eligible = db.query(Dish.id).join(Category, Dish.category_id == Category.id).filter(
+                Category.name_fr == group["source_category"]
+            ).all()
+            eligible_ids = {row[0] for row in eligible}
+            if not set(chosen_ids).issubset(eligible_ids):
+                raise HTTPException(400, f"Un choix pour « {label} » n'appartient pas à {group['source_category']}")
 
 @router.post("/{order_id}/create-payment-intent", response_model=PaymentIntentOut)
 def create_payment_intent(order_id: int, db: Session = Depends(get_db)):
