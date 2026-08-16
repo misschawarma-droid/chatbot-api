@@ -13,10 +13,15 @@ from schemas import (
     DeliveryCheckIn,
     DeliveryCheckOut,
     PaymentIntentOut,
+    CouponCheckIn,
+    CouponCheckOut,
 )
-from models import Dish, Order, OrderItem, Category
+from models import Dish, Order, OrderItem, Category, Coupon, EmailVerification
+from coupons import generate_coupon_code
+from notifications import send_email
 from delivery import calculate_delivery
 from typing import Optional, Dict, List
+
 router = APIRouter(prefix="/api/orders", tags=["orders"])
 logger = logging.getLogger("orders")
 
@@ -45,28 +50,28 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
     subtotal = 0.0
     order_items = []
     for item in payload.items:
-            dish = db.query(Dish).filter(Dish.id == item.dish_id, Dish.is_available).first()
-            if not dish:
-                raise HTTPException(
-                    status_code=400, detail=f"Plat indisponible (id={item.dish_id})"
-                )
-
-            validate_choice_groups(dish, item.selected_choices, db)  # NOUVEAU
-
-            qty = max(1, min(item.quantity, 50))  # bornes de sécurité
-            subtotal += dish.price * qty
-            order_items.append(
-                OrderItem(
-                    dish_id=dish.id,
-                    dish_name=dish.name_fr,
-                    unit_price=dish.price,
-                    quantity=qty,
-                    removed_ingredients=json.dumps(item.removed_ingredients or []),
-                    selected_choices=json.dumps(
-                        {k: v.dict() for k, v in item.selected_choices.items()}
-                    ) if item.selected_choices else None,  # NOUVEAU
-                )
+        dish = db.query(Dish).filter(Dish.id == item.dish_id, Dish.is_available).first()
+        if not dish:
+            raise HTTPException(
+                status_code=400, detail=f"Plat indisponible (id={item.dish_id})"
             )
+
+        validate_choice_groups(dish, item.selected_choices, db)
+
+        qty = max(1, min(item.quantity, 50))  # bornes de sécurité
+        subtotal += dish.price * qty
+        order_items.append(
+            OrderItem(
+                dish_id=dish.id,
+                dish_name=dish.name_fr,
+                unit_price=dish.price,
+                quantity=qty,
+                removed_ingredients=json.dumps(item.removed_ingredients or []),
+                selected_choices=json.dumps(
+                    {k: v.dict() for k, v in item.selected_choices.items()}
+                ) if item.selected_choices else None,
+            )
+        )
     subtotal = round(subtotal, 2)
 
     delivery_fee = 0.0
@@ -88,7 +93,35 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
             )
         delivery_fee = zone["fee"]
 
-    total = round(subtotal + delivery_fee, 2)
+    TALINTS_EMAIL_DOMAIN = "talints.fr"
+    email_lower = payload.email.strip().lower()
+    is_talints_employee = email_lower.endswith(f"@{TALINTS_EMAIL_DOMAIN}") and (
+        db.query(EmailVerification)
+        .filter(EmailVerification.email == email_lower, EmailVerification.is_verified == True)
+        .first()
+        is not None
+    )
+
+    discount_percent = 0
+    applied_coupon = None
+    if is_talints_employee:
+        discount_percent = 60
+    elif payload.coupon_code:
+        applied_coupon = db.query(Coupon).filter(
+            Coupon.code == payload.coupon_code.strip().upper()
+        ).first()
+        if (
+            applied_coupon
+            and not applied_coupon.is_used
+            and applied_coupon.owner_email.lower() == payload.email.strip().lower()
+            and applied_coupon.owner_phone == payload.phone.strip()
+        ):
+            discount_percent = applied_coupon.discount_percent
+        else:
+            raise HTTPException(status_code=400, detail="Code promo invalide ou déjà utilisé")
+
+    discount_amount = round(subtotal * discount_percent / 100, 2)
+    total = round(subtotal + delivery_fee - discount_amount, 2)
 
     order = Order(
         customer_name=f"{payload.first_name.strip()} {payload.last_name.strip()}".strip(),
@@ -114,7 +147,52 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
     db.add(order)
     db.commit()
     db.refresh(order)
+
+    if applied_coupon:
+        applied_coupon.is_used = True
+        applied_coupon.used_order_id = order.id
+        db.commit()
+
+    is_first_order = not db.query(Order).filter(
+        Order.id != order.id,
+        (Order.customer_email == order.customer_email) | (Order.customer_phone == order.customer_phone),
+    ).first()
+
+    new_coupon_code = None
+    if is_first_order and order.customer_email:
+        new_coupon = Coupon(
+            code=generate_coupon_code(),
+            owner_email=order.customer_email,
+            owner_phone=order.customer_phone,
+            granted_order_id=order.id,
+        )
+        db.add(new_coupon)
+        db.commit()
+        new_coupon_code = new_coupon.code
+
+        send_email(
+            order.customer_email,
+            "Votre code de -10% pour votre prochaine commande !",
+            f"Merci pour votre première commande chez Miss Chawarma !\n\nVoici votre code promo : {new_coupon_code}\n-10% sur votre prochaine commande en ligne.",
+        )
+
+    order.new_coupon_code = new_coupon_code
     return order
+
+
+@router.post("/check-coupon", response_model=CouponCheckOut)
+def check_coupon(payload: CouponCheckIn, db: Session = Depends(get_db)):
+    coupon = db.query(Coupon).filter(Coupon.code == payload.code.strip().upper()).first()
+
+    if not coupon:
+        return {"valid": False, "message": "Code invalide"}
+    if coupon.is_used:
+        return {"valid": False, "message": "Ce code a déjà été utilisé"}
+    if coupon.owner_email.lower() != payload.email.strip().lower() or coupon.owner_phone != payload.phone.strip():
+        return {"valid": False, "message": "Ce code n'est pas associé à ces coordonnées"}
+
+    return {"valid": True, "discount_percent": coupon.discount_percent}
+
 
 def _validate_alternative_option(alt: dict, dish_ids: list[int], db: Session) -> bool:
     """Vérifie que dish_ids ⊆ ensemble éligible pour cette option d'alternative."""
@@ -127,6 +205,8 @@ def _validate_alternative_option(alt: dict, dish_ids: list[int], db: Session) ->
         eligible_ids = {row[0] for row in eligible}
         return set(dish_ids).issubset(eligible_ids)
     return False
+
+
 def validate_choice_groups(dish: Dish, selected_choices: Optional[Dict], db: Session):
     rules = json.loads(dish.customization_rules) if dish.customization_rules else {}
     choice_groups = rules.get("choice_groups")
@@ -151,13 +231,13 @@ def validate_choice_groups(dish: Dish, selected_choices: Optional[Dict], db: Ses
             if not _validate_alternative_option(alt, selection.dish_ids, db):
                 raise HTTPException(400, f"Choix invalide pour « {label} »")
         elif "options" in group:
-                    max_count = group.get("max", 1)
-                    min_count = group.get("min", max_count)
-                    chosen = selection.options if selection and selection.options else []
-                    if not (min_count <= len(chosen) <= max_count):
-                        raise HTTPException(400, f"Sélection invalide pour « {label} »")
-                    if not set(chosen).issubset(set(group["options"])):
-                        raise HTTPException(400, f"Choix invalide pour « {label} »")
+            max_count = group.get("max", 1)
+            min_count = group.get("min", max_count)
+            chosen = selection.options if selection and selection.options else []
+            if not (min_count <= len(chosen) <= max_count):
+                raise HTTPException(400, f"Sélection invalide pour « {label} »")
+            if not set(chosen).issubset(set(group["options"])):
+                raise HTTPException(400, f"Choix invalide pour « {label} »")
         else:
             max_count = group.get("max", 1)
             min_count = group.get("min", max_count)
@@ -170,6 +250,7 @@ def validate_choice_groups(dish: Dish, selected_choices: Optional[Dict], db: Ses
             eligible_ids = {row[0] for row in eligible}
             if not set(chosen_ids).issubset(eligible_ids):
                 raise HTTPException(400, f"Un choix pour « {label} » n'appartient pas à {group['source_category']}")
+
 
 @router.post("/{order_id}/create-payment-intent", response_model=PaymentIntentOut)
 def create_payment_intent(order_id: int, db: Session = Depends(get_db)):

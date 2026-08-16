@@ -49,12 +49,24 @@ class Dish(Base):
     position = Column(Integer, default=0)
     customization_rules = Column(Text, default="null")  # JSON ou null si pas de personnalisation
     category = relationship("Category", back_populates="dishes")
-
+    hidden = Column(Boolean, default=False)
     def __str__(self):
         return f"{self.name_fr} ({self.price}€)"
 
 
 # ─────────────── COMMANDES (panier / click & collect) ───────────────
+class Coupon(Base):
+    __tablename__ = "coupons"
+
+    id = Column(Integer, primary_key=True, index=True)
+    code = Column(String, unique=True, index=True, nullable=False)
+    owner_email = Column(String, nullable=False)
+    owner_phone = Column(String, nullable=False)
+    discount_percent = Column(Integer, default=10)
+    is_used = Column(Boolean, default=False)
+    granted_order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)
+    used_order_id = Column(Integer, ForeignKey("orders.id"), nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 class Order(Base):
     __tablename__ = "orders"
@@ -224,3 +236,12 @@ class Review(Base):
 
     def __str__(self):
         return f"{self.author_name} — {self.rating}★"
+class EmailVerification(Base):
+    __tablename__ = "email_verifications"
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, nullable=False, index=True)
+    code = Column(String, nullable=False)
+    is_verified = Column(Boolean, default=False)
+    expires_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)

@@ -41,6 +41,7 @@ def get_menu(db: Session = Depends(get_db)):
                     "allergens_fr": json.loads(d.allergens_fr or "[]"),
                     "allergens_en": json.loads(d.allergens_en or "[]"),
                     "image_url": d.image_url,
+                    "hidden": d.hidden,
                     "customization_rules": json.loads(d.customization_rules) if d.customization_rules and d.customization_rules != "null" else None,  # ⟵ AJOUT
                 }
                 for d in dishes

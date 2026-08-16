@@ -35,9 +35,13 @@ class CategoryOut(BaseModel):
 
 # ─────────────── COMMANDES ───────────────
 class ChoiceSelection(BaseModel):
-    dish_ids: List[int]
+    dish_ids: List[int] = []
     alternative: Optional[str] = None
     options: Optional[List[str]] = None
+    sub_removed: Optional[List[str]] = None
+    sub_choices: Optional[Dict[str, List[str]]] = None
+    sub_removed_by_unit: Optional[List[List[str]]] = None       # NOUVEAU
+    sub_choices_by_unit: Optional[List[Dict[str, List[str]]]] = None  # NOUVEAU
 
 class OrderItemIn(BaseModel):
     dish_id: int
@@ -62,6 +66,7 @@ class OrderIn(BaseModel):
     payment_method: str  # "carte" ou "sur_place"
     language: Optional[str] = "fr"
     items: List[OrderItemIn]
+    coupon_code: Optional[str] = None
 
 
 class OrderOut(BaseModel):
@@ -72,6 +77,7 @@ class OrderOut(BaseModel):
     status: str
     payment_method: str
     payment_status: str
+    new_coupon_code: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -148,3 +154,28 @@ class ContactIn(BaseModel):
     subject: Optional[str] = ""
     message: str
     language: Optional[str] = "fr"
+
+class CouponCheckIn(BaseModel):
+    code: str
+    email: str
+    phone: str
+
+class CouponCheckOut(BaseModel):
+    valid: bool
+    discount_percent: Optional[int] = None
+    message: Optional[str] = None
+
+class SendVerificationCodeIn(BaseModel):
+    email: str
+
+class SendVerificationCodeOut(BaseModel):
+    sent: bool
+    message: Optional[str] = None
+
+class VerifyCodeIn(BaseModel):
+    email: str
+    code: str
+
+class VerifyCodeOut(BaseModel):
+    verified: bool
+    message: Optional[str] = None

@@ -483,6 +483,8 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         for label, sel in data.items():
             dish_ids = sel.get("dish_ids") or []
             options = sel.get("options") or []
+            sub_removed = sel.get("sub_removed") or []
+            sub_choices = sel.get("sub_choices") or {}
             if dish_ids:
                 counts = {}
                 for did in dish_ids:
@@ -496,7 +498,17 @@ class OrderItemAdmin(ModelView, model=OrderItem):
                 value = ", ".join(options)
             else:
                 value = "—"
-            lines.append(f'<strong style="color:#163f21">{escape(label)}</strong>: {escape(value)}')
+            line = f'<strong style="color:#163f21">{escape(label)}</strong>: {escape(value)}'
+            if sub_removed or sub_choices:
+                extras = []
+                if sub_removed:
+                    extras.append(f"sans {', '.join(sub_removed)}")
+                for sub_label, sub_vals in sub_choices.items():
+                    if sub_vals:
+                        extras.append(f"{sub_label}: {', '.join(sub_vals)}")
+                if extras:
+                    line += f'<br><span style="color:#7a8190;font-size:11px;margin-left:8px">↳ {escape(" · ".join(extras))}</span>'
+            lines.append(line)
 
         return Markup(
             '<div style="font-size:12px;line-height:1.6;max-width:260px">'

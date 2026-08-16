@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from database import Base, engine
 from admin import setup_admin
-from routers import menu, orders, table_reservations, contact
+from routers import menu, orders, table_reservations, contact, verification
 from routers import chatbot  # ← décommente après avoir créé routers/chatbot.py
 from routers import stripe_webhook 
 load_dotenv()
@@ -25,7 +25,8 @@ ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://localhost:5173",
   #  "http://192.168.0.12:8080",  # ton IP locale de dev 
-    "http://192.168.1.29:8080"
+    "http://192.168.1.29:8080",
+    "http://172.20.10.2:8080"
 ]
 
 app.add_middleware(
@@ -46,6 +47,7 @@ app.include_router(table_reservations.router)
 app.include_router(contact.router)
 app.include_router(chatbot.router)  # ← décommente après migration
 app.include_router(stripe_webhook.router)
+app.include_router(verification.router)
 # ─────────────── Admin (/admin) ───────────────
 setup_admin(app)
 
