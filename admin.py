@@ -419,10 +419,11 @@ class OrderAdmin(ModelView, model=Order):
     def _id_ticket_formatter(model, attribute, request):
         return Markup(
             f'<a href="/order-ticket/{model.id}" target="_blank" '
-            f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;'
-            f'border-radius:999px;background:#1f6b2d;color:white;font-weight:700;'
-            f'font-size:12px;text-decoration:none;white-space:nowrap">'
-            f'🎫 #{model.id}</a>'
+            f'style="display:inline-flex;align-items:center;justify-content:center;'
+            f'min-width:60px;padding:6px 12px;border-radius:999px;background:#1f6b2d;'
+            f'color:#ffffff !important;font-weight:700;font-size:13px;'
+            f'text-decoration:none;white-space:nowrap">'
+            f'Ticket #{model.id}</a>'
         )
 
     column_formatters = {
