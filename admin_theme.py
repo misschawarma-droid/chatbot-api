@@ -102,6 +102,8 @@ border-radius:16px;color:var(--mc-dark)!important;background:white;font-size:13p
 .form-control:focus,.form-select:focus,.ts-control.focus{border-color:var(--mc-green)!important;box-shadow:0 0 0 4px rgba(31,107,45,.10)!important}
 .table-responsive{background:var(--mc-paper)!important}.table{--tblr-table-border-color:rgba(31,107,45,.10)!important;color:var(--mc-text)!important}.table thead th{padding-top:17px!important;padding-bottom:17px!important;background:#f2eee4!important;color:var(--mc-dark)!important;font-size:11px!important;font-weight:850!important;letter-spacing:.075em!important;text-transform:uppercase!important}.table tbody td{padding-top:16px!important;padding-bottom:16px!important;vertical-align:middle!important}.table tbody tr:nth-child(even){background:rgba(247,240,228,.52)!important}.table tbody tr:hover{background:rgba(234,242,232,.92)!important;box-shadow:inset 4px 0 0 var(--mc-gold)!important}.table a{color:var(--mc-green)!important}.table td a[data-bs-target*="delete"],.table td a[href*="/delete"]{color:#c33d36!important}
 .pagination .page-item.active .page-link{border-color:var(--mc-green)!important;color:white!important;background:var(--mc-green)!important}
+</style>
+'''
 
 ORDER_TICKET_MODAL_HTML = """
 <style>
@@ -181,6 +183,9 @@ ORDER_TICKET_MODAL_HTML = """
   });
 </script>
 """
+
+MISS_CHAWARMA_ADMIN_SCRIPT = r'''
+<style>
 /* =========================================================
    CALENDRIER DES RÉSERVATIONS
 ========================================================= */
@@ -1840,6 +1845,7 @@ class AdminBrandMiddleware:
                   b"</head>",
                   MISS_CHAWARMA_ADMIN_CSS.encode("utf-8")
                   + ORDER_TICKET_MODAL_HTML.encode("utf-8")
+                  + MISS_CHAWARMA_ADMIN_SCRIPT.encode("utf-8")
                   + b"</head>",
                   1,
                )
