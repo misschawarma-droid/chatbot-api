@@ -419,6 +419,7 @@ class OrderAdmin(ModelView, model=Order):
     def _id_ticket_formatter(model, attribute, request):
         return Markup(
             f'<a href="/order-ticket/{model.id}" target="_blank" '
+            f'class="ticket-trigger" data-order-id="{model.id}" '
             f'style="display:inline-flex;align-items:center;justify-content:center;'
             f'min-width:60px;padding:6px 12px;border-radius:999px;background:#1f6b2d;'
             f'color:#ffffff !important;font-weight:700;font-size:13px;'
