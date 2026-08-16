@@ -124,7 +124,7 @@ class AdminAuth(AuthenticationBackend):
         if (
             username == os.getenv("ADMIN_USERNAME", "admin")
             and password == os.getenv("ADMIN_PASSWORD", "")
-            and os.getenv("ADMIN_PASSWORD")  # refuse si pas de mot de passe défini
+            and os.getenv("ADMIN_PASSWORD")
         ):
             request.session.update({"authenticated": True})
             return True
@@ -243,8 +243,6 @@ class OrderAdmin(ModelView, model=Order):
     name_plural = "Commandes"
     icon = "fa-solid fa-basket-shopping"
 
-    # Vue liste compacte : toutes les informations détaillées restent accessibles
-    # via l'icône « œil », sans imposer un défilement horizontal.
     column_list = [
         Order.id,
         Order.customer_name,
@@ -267,7 +265,6 @@ class OrderAdmin(ModelView, model=Order):
         Order.requested_date: "Créneau",
     }
 
-    # La recherche fonctionne sur les informations réellement utiles au personnel.
     column_searchable_list = [
         Order.customer_name,
         Order.customer_phone,
@@ -287,7 +284,6 @@ class OrderAdmin(ModelView, model=Order):
     page_size = 20
     page_size_options = [10, 20, 50, 100]
 
-    # La fiche détail conserve toutes les informations de la commande.
     column_details_list = [
         Order.id,
         Order.customer_name,
@@ -419,7 +415,18 @@ class OrderAdmin(ModelView, model=Order):
             f'📅 {date}{time_html}</span>'
         )
 
+    @staticmethod
+    def _id_ticket_formatter(model, attribute, request):
+        return Markup(
+            f'<a href="/order-ticket/{model.id}" target="_blank" '
+            f'style="display:inline-flex;align-items:center;gap:6px;padding:6px 10px;'
+            f'border-radius:999px;background:#1f6b2d;color:white;font-weight:700;'
+            f'font-size:12px;text-decoration:none;white-space:nowrap">'
+            f'🎫 #{model.id}</a>'
+        )
+
     column_formatters = {
+        Order.id: _id_ticket_formatter,
         Order.customer_name: _customer_formatter,
         Order.order_type: _order_type_formatter,
         Order.address_street: _address_formatter,
@@ -429,7 +436,7 @@ class OrderAdmin(ModelView, model=Order):
         Order.requested_date: _slot_formatter,
     }
 
-    can_create = False  # les commandes viennent du site
+    can_create = False
 
 
 class OrderItemAdmin(ModelView, model=OrderItem):
@@ -442,7 +449,7 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.dish_name,
         OrderItem.quantity,
         OrderItem.unit_price,
-        OrderItem.removed_ingredients,  # ⟵ AJOUT
+        OrderItem.removed_ingredients,
         OrderItem.selected_choices,
     ]
 
@@ -454,6 +461,7 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.removed_ingredients: "Sans",
         OrderItem.selected_choices: "Personnalisation",
     }
+
     @staticmethod
     def _selected_choices_formatter(model, attribute, request):
         raw = getattr(model, attribute)
@@ -515,7 +523,7 @@ class OrderItemAdmin(ModelView, model=OrderItem):
             + "<br>".join(lines)
             + "</div>"
         )
-               
+
     column_formatters = {
         OrderItem.order_id: lambda model, attr: (
             f"Commande #{getattr(model, attr)}"
@@ -526,10 +534,10 @@ class OrderItemAdmin(ModelView, model=OrderItem):
         OrderItem.unit_price: lambda model, attr: (
             f"{getattr(model, attr):.2f} €".replace(".", ",")
         ),
-            OrderItem.removed_ingredients: lambda model, attr: (
-        ", ".join(json.loads(getattr(model, attr) or "[]")) or "—"
-    ),
-    OrderItem.selected_choices: _selected_choices_formatter, 
+        OrderItem.removed_ingredients: lambda model, attr: (
+            ", ".join(json.loads(getattr(model, attr) or "[]")) or "—"
+        ),
+        OrderItem.selected_choices: _selected_choices_formatter,
     }
 
     column_searchable_list = [
@@ -547,6 +555,8 @@ class OrderItemAdmin(ModelView, model=OrderItem):
 
     can_create = False
     can_edit = False
+
+
 class TableReservationAdmin(ModelView, model=TableReservation):
     name = "Réservation table"
     name_plural = "Réservations tables"
@@ -637,52 +647,28 @@ class TableReservationAdmin(ModelView, model=TableReservation):
             "et envoyer un email + SMS de confirmation ?"
         ),
     )
-    async def confirm_reservation(
-        self,
-        request: Request,
-    ) -> RedirectResponse:
+    async def confirm_reservation(self, request: Request) -> RedirectResponse:
         pks = request.query_params.get("pks", "")
         db = SessionLocal()
-
         try:
             for pk in pks.split(","):
                 if not pk:
                     continue
-
-                reservation = db.get(
-                    TableReservation,
-                    int(pk),
-                )
-
+                reservation = db.get(TableReservation, int(pk))
                 if not reservation:
                     continue
-
                 reservation.status = "confirmée"
                 db.commit()
                 db.refresh(reservation)
 
-                subject, body, sms_text = (
-                    table_reservation_confirmed(reservation)
-                )
-
-                send_email(
-                    reservation.email,
-                    subject,
-                    body,
-                )
-
-                send_sms(
-                    reservation.phone,
-                    sms_text,
-                )
+                subject, body, sms_text = table_reservation_confirmed(reservation)
+                send_email(reservation.email, subject, body)
+                send_sms(reservation.phone, sms_text)
         finally:
             db.close()
 
         return RedirectResponse(
-            request.url_for(
-                "admin:list",
-                identity=self.identity,
-            ),
+            request.url_for("admin:list", identity=self.identity),
             status_code=302,
         )
 
@@ -693,43 +679,25 @@ class TableReservationAdmin(ModelView, model=TableReservation):
         add_in_list=True,
     )
     async def report_issue(self, request: Request):
-        pks = [
-            pk
-            for pk in request.query_params
-            .get("pks", "")
-            .split(",")
-            if pk
-        ]
+        pks = [pk for pk in request.query_params.get("pks", "").split(",") if pk]
 
         if len(pks) != 1:
             return RedirectResponse(
-                request.url_for(
-                    "admin:list",
-                    identity=self.identity,
-                ),
+                request.url_for("admin:list", identity=self.identity),
                 status_code=302,
             )
 
         db = SessionLocal()
-
         try:
-            reservation = db.get(
-                TableReservation,
-                int(pks[0]),
-            )
+            reservation = db.get(TableReservation, int(pks[0]))
 
             if not reservation:
                 return RedirectResponse(
-                    request.url_for(
-                        "admin:list",
-                        identity=self.identity,
-                    ),
+                    request.url_for("admin:list", identity=self.identity),
                     status_code=302,
                 )
 
-            default_message = table_issue_message(
-                reservation,
-            )
+            default_message = table_issue_message(reservation)
 
             title = (
                 f"{reservation.first_name} "
@@ -743,99 +711,16 @@ class TableReservationAdmin(ModelView, model=TableReservation):
 
         return HTMLResponse(
             _issue_form_html(
-                action_path=(
-                    f"/reservation-issue/table/"
-                    f"{pks[0]}/send"
-                ),
-                cancel_url=(
-                    "/admin/table-reservation/list"
-                ),
+                action_path=f"/reservation-issue/table/{pks[0]}/send",
+                cancel_url="/admin/table-reservation/list",
                 heading="🚨 Signaler un problème",
                 subtitle=title,
                 default_message=default_message,
                 show_sms=True,
             )
         )
-    name = "Réservation table"
-    name_plural = "Réservations tables"
-    icon = "fa-solid fa-chair"
 
-    column_list = [
-        TableReservation.last_name,
-        TableReservation.date,
-        TableReservation.time,
-        TableReservation.guests,
-        TableReservation.status,
-    ]
 
-    column_labels = {
-        TableReservation.last_name: "Client",
-        TableReservation.date: "Date",
-        TableReservation.time: "Heure",
-        TableReservation.guests: "Convives",
-        TableReservation.status: "Statut",
-    }
-
-    column_formatters = {
-        TableReservation.last_name: lambda model, attr: (
-            f"👤 {getattr(model, attr).title()}"
-        ),
-        TableReservation.date: lambda model, attr: (
-            getattr(model, attr).strftime("%d/%m/%Y")
-            if hasattr(getattr(model, attr), "strftime")
-            else str(getattr(model, attr))
-        ),
-        TableReservation.time: lambda model, attr: (
-            f"🕒 {getattr(model, attr)}"
-        ),
-        TableReservation.guests: lambda model, attr: (
-            f"👥 {getattr(model, attr)} personne"
-            if getattr(model, attr) == 1
-            else f"👥 {getattr(model, attr)} personnes"
-        ),
-        TableReservation.status: lambda model, attr: {
-            "nouvelle": "🟡 Nouvelle",
-            "confirmée": "🟢 Confirmée",
-            "problème signalé": "🔴 Problème signalé",
-            "annulée": "⚫ Annulée",
-        }.get(
-            str(getattr(model, attr)).lower(),
-            str(getattr(model, attr)).capitalize(),
-        ),
-    }
-
-    column_searchable_list = [
-        TableReservation.last_name,
-        TableReservation.phone,
-        TableReservation.email,
-    ]
-
-    column_sortable_list = [
-        TableReservation.date,
-        TableReservation.time,
-        TableReservation.guests,
-        TableReservation.status,
-        TableReservation.created_at,
-    ]
-
-    column_default_sort = ("created_at", True)
-
-    column_details_list = [
-        TableReservation.id,
-        TableReservation.first_name,
-        TableReservation.last_name,
-        TableReservation.phone,
-        TableReservation.email,
-        TableReservation.date,
-        TableReservation.time,
-        TableReservation.guests,
-        TableReservation.status,
-        TableReservation.table_ids,
-        TableReservation.note,
-        TableReservation.created_at,
-    ]
-
-    can_create = False
 class EventReservationAdmin(ModelView, model=EventReservation):
     name = "Réservation événement"
     name_plural = "Réservations événements"
@@ -941,6 +826,7 @@ class EventReservationAdmin(ModelView, model=EventReservation):
     ]
 
     can_create = False
+
     @action(
         name="confirm",
         label="✅ Confirmer (email + SMS)",
@@ -1076,19 +962,14 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
     @staticmethod
     def _subject_formatter(model, attribute, request):
         subject = escape(model.subject or "Sans objet")
-
-        return Markup(
-            f'<strong style="color:#2d3748">{subject}</strong>'
-        )
+        return Markup(f'<strong style="color:#2d3748">{subject}</strong>')
 
     @staticmethod
     def _message_formatter(model, attribute, request):
         message = str(model.message or "").strip()
 
         if not message:
-            return Markup(
-                '<span style="color:#9aa0aa">Aucun message</span>'
-            )
+            return Markup('<span style="color:#9aa0aa">Aucun message</span>')
 
         preview = message[:90]
         if len(message) > 90:
@@ -1116,11 +997,7 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
 
         label, background, color = styles.get(
             status,
-            (
-                status.replace("_", " ").title(),
-                "#eef1f5",
-                "#566070",
-            ),
+            (status.replace("_", " ").title(), "#eef1f5", "#566070"),
         )
 
         return Markup(
@@ -1133,17 +1010,9 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
     @staticmethod
     def _read_formatter(model, attribute, request):
         if model.is_read:
-            return Markup(
-                '<span style="color:#1f6b2d;font-weight:700">'
-                '✓ Lu'
-                '</span>'
-            )
+            return Markup('<span style="color:#1f6b2d;font-weight:700">✓ Lu</span>')
 
-        return Markup(
-            '<span style="color:#c47d0e;font-weight:700">'
-            '● Non lu'
-            '</span>'
-        )
+        return Markup('<span style="color:#c47d0e;font-weight:700">● Non lu</span>')
 
     @staticmethod
     def _date_formatter(model, attribute, request):
@@ -1234,31 +1103,6 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
         )
 
 
-# class ReviewAdmin(ModelView, model=Review):
-#     name = "Avis"
-#     name_plural = "Avis (site)"
-#     icon = "fa-solid fa-star"
-#     column_list = [
-#         Review.id,
-#         Review.author_name,
-#         Review.rating,
-#         Review.relative_time,
-#         Review.is_visible,
-#         Review.position,
-#     ]
-#     column_default_sort = ("position", False)
-#     form_columns = [
-#         Review.author_name,
-#         Review.rating,
-#         Review.text,
-#         Review.relative_time,
-#         Review.is_visible,
-#         Review.position,
-#     ]
-
-
-# 
-
 def setup_admin(app):
     authentication_backend = AdminAuth(secret_key=os.getenv("SECRET_KEY", "change-me"))
     admin = Admin(
@@ -1275,12 +1119,7 @@ def setup_admin(app):
     admin.add_view(EventReservationAdmin)
     admin.add_view(ContactMessageAdmin)
     register_admin_dashboard_routes(app)
-  #  admin.add_view(ReviewAdmin)
-  #  admin.add_view(ReviewsSummaryAdmin)
 
-    # SQLAdmin monte son propre sous-programme sur /admin (qui intercepte tout ce préfixe) :
-    # notre route personnalisée doit donc vivre EN DEHORS de /admin. On lui donne sa propre
-    # SessionMiddleware (même SECRET_KEY) pour pouvoir lire la session de connexion admin.
     from starlette.middleware.sessions import SessionMiddleware
 
     app.add_middleware(SessionMiddleware, secret_key=os.getenv("SECRET_KEY", "change-me"))
@@ -1341,5 +1180,152 @@ def setup_admin(app):
             db.close()
 
         return RedirectResponse("/admin/contact-message/list", status_code=302)
+
+    @app.get("/order-ticket/{order_id}")
+    async def order_ticket(order_id: int, request: Request):
+        if not request.session.get("authenticated"):
+            return RedirectResponse("/admin/login", status_code=302)
+
+        db = SessionLocal()
+        try:
+            order = db.get(Order, order_id)
+            if not order:
+                return HTMLResponse("<h1>Commande introuvable</h1>", status_code=404)
+
+            items = db.query(OrderItem).filter(OrderItem.order_id == order_id).all()
+
+            all_dish_ids = set()
+            for item in items:
+                if item.selected_choices:
+                    try:
+                        data = json.loads(item.selected_choices)
+                        for sel in data.values():
+                            all_dish_ids.update(sel.get("dish_ids") or [])
+                    except (TypeError, ValueError):
+                        pass
+
+            dish_names = {}
+            if all_dish_ids:
+                rows = db.query(Dish.id, Dish.name_fr).filter(Dish.id.in_(all_dish_ids)).all()
+                dish_names = {row[0]: row[1] for row in rows}
+
+            def format_choices(raw):
+                if not raw:
+                    return ""
+                try:
+                    data = json.loads(raw)
+                except (TypeError, ValueError):
+                    return ""
+                lines = []
+                for label, sel in data.items():
+                    dish_ids = sel.get("dish_ids") or []
+                    options = sel.get("options") or []
+                    if dish_ids:
+                        counts = {}
+                        for did in dish_ids:
+                            counts[did] = counts.get(did, 0) + 1
+                        parts = []
+                        for did, count in counts.items():
+                            name = dish_names.get(did, f"#{did}")
+                            parts.append(f"{name} x{count}" if count > 1 else name)
+                        value = ", ".join(parts)
+                    elif options:
+                        value = ", ".join(options)
+                    else:
+                        value = ""
+                    if value:
+                        lines.append(f"<strong>{escape(label)}:</strong> {escape(value)}")
+                    sub_removed = sel.get("sub_removed") or []
+                    sub_choices = sel.get("sub_choices") or {}
+                    extras = []
+                    if sub_removed:
+                        extras.append(f"sans {', '.join(sub_removed)}")
+                    for sub_label, sub_vals in sub_choices.items():
+                        if sub_vals:
+                            extras.append(f"{sub_label}: {', '.join(sub_vals)}")
+                    if extras:
+                        lines.append(f'<span class="sub">↳ {escape(" · ".join(extras))}</span>')
+                return "<br>".join(lines)
+
+            items_html = ""
+            for item in items:
+                removed = ", ".join(json.loads(item.removed_ingredients or "[]"))
+                choices_html = format_choices(item.selected_choices)
+                items_html += f"""
+                <div class="item">
+                  <div class="item-head">
+                    <span class="qty">×{item.quantity}</span>
+                    <span class="name">{escape(item.dish_name)}</span>
+                    <span class="price">{item.unit_price:.2f} €</span>
+                  </div>
+                  {f'<div class="removed">Sans : {escape(removed)}</div>' if removed else ''}
+                  {f'<div class="choices">{choices_html}</div>' if choices_html else ''}
+                </div>"""
+
+            html = f"""
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Commande #{order.id}</title>
+<style>
+  body {{ font-family: -apple-system, Arial, sans-serif; background: #f7f0e4; margin: 0; padding: 24px; color: #222; }}
+  .ticket {{ max-width: 420px; margin: 0 auto; background: white; border-radius: 12px;
+             padding: 24px; box-shadow: 0 2px 14px rgba(0,0,0,0.10); }}
+  h1 {{ font-size: 20px; margin: 0 0 4px; color: #1f6b2d; }}
+  .meta {{ font-size: 13px; color: #666; margin-bottom: 16px; }}
+  .meta strong {{ color: #333; }}
+  .badge {{ display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px;
+            font-weight: 700; background: #fff5df; color: #9a6500; margin-bottom: 12px; }}
+  .item {{ padding: 12px 0; border-bottom: 1px dashed #ddd; }}
+  .item:last-child {{ border-bottom: none; }}
+  .item-head {{ display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-size: 15px; font-weight: 700; }}
+  .qty {{ color: #1f6b2d; }}
+  .name {{ flex: 1; }}
+  .price {{ color: #c47d0e; }}
+  .removed {{ font-size: 12px; color: #b42318; margin-top: 4px; }}
+  .choices {{ font-size: 12px; color: #444; margin-top: 4px; line-height: 1.5; }}
+  .choices .sub {{ color: #7a8190; margin-left: 8px; }}
+  .total-row {{ display: flex; justify-content: space-between; margin-top: 16px; padding-top: 12px;
+                border-top: 2px solid #1f6b2d; font-size: 18px; font-weight: 800; color: #1f6b2d; }}
+  .note {{ margin-top: 12px; padding: 10px; background: #fff5df; border-radius: 8px; font-size: 13px; }}
+  .print-btn {{ display: block; width: 100%; margin-top: 20px; padding: 12px; border: none;
+                border-radius: 8px; background: #1f6b2d; color: white; font-size: 14px;
+                font-weight: 700; cursor: pointer; }}
+  @media print {{
+    body {{ background: white; padding: 0; }}
+    .ticket {{ box-shadow: none; max-width: 100%; }}
+    .print-btn {{ display: none; }}
+  }}
+</style>
+</head>
+<body>
+  <div class="ticket">
+    <span class="badge">Commande #{order.id}</span>
+    <h1>{escape(order.customer_name)}</h1>
+    <div class="meta">
+      ☎ {escape(order.customer_phone)}<br>
+      <strong>{'Livraison' if order.order_type == 'livraison' else 'À emporter'}</strong>
+      {f' · {escape(order.address_street)}, {escape(order.city)}' if order.order_type == 'livraison' else ''}<br>
+      📅 {escape(order.requested_date or '')} {escape(order.requested_time or '')}
+    </div>
+
+    {items_html}
+
+    <div class="total-row">
+      <span>Total</span>
+      <span>{order.total:.2f} €</span>
+    </div>
+
+    {f'<div class="note">📝 {escape(order.note)}</div>' if order.note else ''}
+
+    <button class="print-btn" onclick="window.print()">🖨️ Imprimer le ticket</button>
+  </div>
+</body>
+</html>
+"""
+            return HTMLResponse(html)
+        finally:
+            db.close()
 
     return admin
