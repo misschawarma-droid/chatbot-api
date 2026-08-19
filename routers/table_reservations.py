@@ -20,6 +20,7 @@ from sqlalchemy.orm import Session
 from database import get_db          # ⟵ à adapter si le nom diffère
 from models import TableReservation, TableSlot
 from schemas import TableReservationIn, TableReservationOut, TableAvailabilityOut
+from notifications import send_sms, send_email, ALI_PHONE, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 
 router = APIRouter(prefix="/table-reservations", tags=["table-reservations"])
 
@@ -124,6 +125,20 @@ def creer_reservation(d: TableReservationIn, db: Session = Depends(get_db)):
             ).distinct()
         ).scalars().all()
         raise HTTPException(status_code=409, detail={"table_ids": prises})
+    sms_ali = (
+        f"🔔 Nouvelle réservation table : {d.first_name} {d.last_name} le {d.date} "
+        f"à {d.time} pour {d.guests} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
+    )
+    if ALI_PHONE:
+        send_sms(ALI_PHONE, sms_ali)
 
+    email_body = (
+        f"<p>Nouvelle réservation reçue :</p>"
+        f"<p>👤 {d.first_name} {d.last_name}<br>"
+        f"📞 {d.phone}<br>📧 {d.email}<br>"
+        f"📅 {d.date} à {d.time}<br>👥 {d.guests} personne(s)</p>"
+        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
+    )
+    send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table : Miss Chawarma", email_body, html=True)
     db.refresh(reservation)
     return {"id": reservation.id, "table_ids": d.table_ids, "status": reservation.status}

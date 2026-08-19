@@ -33,17 +33,19 @@ SMTP_APP_PASSWORD = os.getenv("SMTP_APP_PASSWORD")
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER")
+ALI_PHONE = os.getenv("ALI_PHONE_NUMBER")  # numéro d'Ali, format E.164 recommandé (+33...)
+ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://chatbot-api-o6bw.onrender.com/admin/")
 
 
 # ─────────────── Envoi bas niveau ───────────────
 
-def send_email(to_email: str, subject: str, body: str) -> bool:
+def send_email(to_email: str, subject: str, body: str, html: bool = False) -> bool:
     """Envoie un email via Gmail SMTP. Retourne True si envoyé, False sinon (jamais d'exception)."""
     if not SMTP_EMAIL or not SMTP_APP_PASSWORD:
         logger.warning("SMTP_EMAIL / SMTP_APP_PASSWORD manquant(s) — email non envoyé à %s", to_email)
         return False
     try:
-        msg = MIMEText(body, "plain", "utf-8")
+        msg = MIMEText(body, "html" if html else "plain", "utf-8")
         msg["Subject"] = subject
         msg["From"] = SMTP_EMAIL
         msg["To"] = to_email
@@ -56,7 +58,6 @@ def send_email(to_email: str, subject: str, body: str) -> bool:
     except Exception:
         logger.exception("Échec de l'envoi d'email à %s", to_email)
         return False
-    
 def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
     """Convertit un numéro français local (07...) en format E.164 (+337...)
     requis par Twilio. Si le numéro est déjà au format international
@@ -163,48 +164,52 @@ def contact_reply_default_message(message) -> str:
 
 def contact_reply_subject(language: str | None) -> str:
     return (
-        "Reply to your message — Miss Chawarma"
+        "Reply to your message : Miss Chawarma"
         if _lang(language) == "en"
-        else "Réponse à votre message — Miss Chawarma"
+        else "Réponse à votre message : Miss Chawarma"
     )
 
 
+MAPS_URL = "https://www.google.com/maps/place/Miss+Chawarma/@48.8662047,2.3775387,17z"
+
 def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
-    """Retourne (sujet_email, corps_email, texte_sms) pour une réservation de table confirmée."""
+    """Retourne (sujet_email, corps_email_html, texte_sms) pour une réservation de table confirmée."""
     lang = _lang(reservation.language)
     if lang == "en":
         subject = "Your reservation at Miss Chawarma is confirmed ✅"
         body = (
-            f"Hello {reservation.first_name},\n\n"
-            f"Great news — your reservation is confirmed!\n\n"
-            f"📅 Date: {reservation.date}\n"
-            f"🕐 Time: {reservation.time}\n"
-            f"👥 Guests: {reservation.guests}\n\n"
-            f"We can't wait to welcome you at 128 Rue Oberkampf, Paris 11e.\n\n"
-            f"See you soon,\nThe Miss Chawarma team"
+            f"<p>Hello {reservation.first_name},</p>"
+            f"<p>Great news : your reservation is confirmed!</p>"
+            f"<p>📅 Date: {reservation.date}<br>"
+            f"🕐 Time: {reservation.time}<br>"
+            f"👥 Guests: {reservation.guests}</p>"
+            f"<p>We can't wait to welcome you at "
+            f"<a href=\"{MAPS_URL}\">Miss Chawarma</a>.</p>"
+            f"<p>See you soon,<br>The Miss Chawarma team</p>"
         )
         sms = (
-            f"Miss Chawarma: your reservation on {reservation.date} at {reservation.time} "
-            f"for {reservation.guests} guest(s) is confirmed ✅ See you soon!"
+            f"Miss Chawarma 🌿 Hi {reservation.first_name}! Your table on {reservation.date} "
+            f"at {reservation.time} for {reservation.guests} guest(s) is confirmed ✅ "
+            f"We're waiting for you: {MAPS_URL} See you soon!"
         )
     else:
         subject = "Votre réservation chez Miss Chawarma est confirmée ✅"
         body = (
-            f"Bonjour {reservation.first_name},\n\n"
-            f"Votre réservation est confirmée avec plaisir !\n\n"
-            f"📅 Date : {reservation.date}\n"
-            f"🕐 Heure : {reservation.time}\n"
-            f"👥 Nombre de personnes : {reservation.guests}\n\n"
-            f"Nous avons hâte de vous accueillir au 128 Rue Oberkampf, Paris 11e.\n\n"
-            f"À très bientôt,\nL'équipe Miss Chawarma"
+            f"<p>Bonjour {reservation.first_name},</p>"
+            f"<p>Votre réservation est confirmée avec plaisir !</p>"
+            f"<p>📅 Date : {reservation.date}<br>"
+            f"🕐 Heure : {reservation.time}<br>"
+            f"👥 Nombre de personnes : {reservation.guests}</p>"
+            f"<p>Nous avons hâte de vous accueillir à "
+            f"<a href=\"{MAPS_URL}\">Miss Chawarma</a>.</p>"
+            f"<p>À très bientôt,<br>L'équipe Miss Chawarma</p>"
         )
         sms = (
-            f"Miss Chawarma : votre réservation du {reservation.date} à {reservation.time} "
-            f"pour {reservation.guests} pers. est confirmée ✅ À bientôt !"
+            f"Miss Chawarma 🌿 Bonjour {reservation.first_name} ! Votre table du {reservation.date} "
+            f"à {reservation.time} pour {reservation.guests} pers. est confirmée ✅ "
+            f"On vous attend avec plaisir : {MAPS_URL} À très bientôt !"
         )
     return subject, body, sms
-
-
 def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
     """Retourne (sujet_email, corps_email, texte_sms) pour une réservation d'événement confirmée."""
     lang = _lang(reservation.language)
@@ -212,16 +217,17 @@ def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
         subject = f"Your event at Miss Chawarma is confirmed ✅"
         body = (
             f"Hello {reservation.first_name},\n\n"
-            f"Great news — your event \"{reservation.event_type}\" is confirmed!\n\n"
+            f"Great news : your event \"{reservation.event_type}\" is confirmed!\n\n"
             f"📅 Date: {reservation.date}\n"
             f"🕐 Time: {reservation.time}\n"
             f"👥 Guests: {reservation.guests}\n\n"
-            f"We can't wait to host you at 128 Rue Oberkampf, Paris 11e.\n\n"
+            f"We can't wait to host you at Miss Chawarma.\n\n"
             f"See you soon,\nThe Miss Chawarma team"
         )
         sms = (
-            f"Miss Chawarma: your event on {reservation.date} at {reservation.time} "
-            f"for {reservation.guests} guest(s) is confirmed ✅"
+            f"Miss Chawarma 🌿 Hi {reservation.first_name}! Your event on {reservation.date} "
+            f"at {reservation.time} for {reservation.guests} guest(s) is confirmed ✅ "
+            f"See you at Miss Chawarma!"
         )
     else:
         subject = "Votre événement chez Miss Chawarma est confirmé ✅"
@@ -231,21 +237,21 @@ def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
             f"📅 Date : {reservation.date}\n"
             f"🕐 Heure : {reservation.time}\n"
             f"👥 Nombre de personnes : {reservation.guests}\n\n"
-            f"Nous avons hâte de vous accueillir au 128 Rue Oberkampf, Paris 11e.\n\n"
+            f"Nous avons hâte de vous accueillir à Miss Chawarma.\n\n"
             f"À très bientôt,\nL'équipe Miss Chawarma"
         )
         sms = (
-            f"Miss Chawarma : votre événement du {reservation.date} à {reservation.time} "
-            f"pour {reservation.guests} pers. est confirmé ✅"
+            f"Miss Chawarma 🌿 Bonjour {reservation.first_name} ! Votre événement du {reservation.date} "
+            f"à {reservation.time} pour {reservation.guests} pers. est confirmé ✅ "
+            f"Rendez-vous à Miss Chawarma !"
         )
     return subject, body, sms
-
 
 def contact_acknowledgement(message) -> tuple[str, str]:
     """Retourne (sujet_email, corps_email) pour l'accusé de réception d'un message de contact."""
     lang = _lang(message.language)
     if lang == "en":
-        subject = "We've received your message — Miss Chawarma"
+        subject = "We've received your message : Miss Chawarma"
         body = (
             f"Hello {message.name},\n\n"
             f"Thank you for reaching out! We've received your message and we'll "
@@ -253,11 +259,78 @@ def contact_acknowledgement(message) -> tuple[str, str]:
             f"See you soon,\nThe Miss Chawarma team"
         )
     else:
-        subject = "Nous avons bien reçu votre message — Miss Chawarma"
+        subject = "Nous avons bien reçu votre message : Miss Chawarma"
         body = (
             f"Bonjour {message.name},\n\n"
             f"Merci de nous avoir contactés ! Nous avons bien reçu votre message "
             f"et nous vous répondrons très rapidement.\n\n"
             f"À très bientôt,\nL'équipe Miss Chawarma"
         )
+
+ 
+def notify_staff_new_table_reservation(reservation) -> None:
+    """Alerte Ali (SMS + email) dès qu'une nouvelle réservation de table arrive."""
+    sms = (
+        f"🔔 Nouvelle réservation table : {reservation.first_name} {reservation.last_name} "
+        f"le {reservation.date} à {reservation.time} pour {reservation.guests} pers. "
+        f"Vérifie le dashboard : {ADMIN_DASHBOARD_URL}"
+    )
+    if ALI_PHONE:
+        send_sms(ALI_PHONE, sms)
+
+    subject = "🔔 Nouvelle réservation de table — Miss Chawarma"
+    body = (
+        f"<p>Nouvelle réservation reçue :</p>"
+        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
+        f"📧 {reservation.email}<br>"
+        f"📞 {reservation.phone}<br>"
+        f"📅 {reservation.date} à {reservation.time}<br>"
+        f"👥 {reservation.guests} personne(s)</p>"
+        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
+    )
+    send_email(SMTP_EMAIL, subject, body, html=True)
+
+
+def notify_staff_new_event_reservation(reservation) -> None:
+    """Alerte Ali (SMS + email) dès qu'une nouvelle réservation d'événement arrive."""
+    sms = (
+        f"🔔 Nouvel événement : {reservation.first_name} {reservation.last_name} — "
+        f"\"{reservation.event_type}\" le {reservation.date} à {reservation.time} "
+        f"pour {reservation.guests} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
+    )
+    if ALI_PHONE:
+        send_sms(ALI_PHONE, sms)
+
+    subject = "🔔 Nouvelle demande d'événement — Miss Chawarma"
+    body = (
+        f"<p>Nouvelle demande d'événement reçue :</p>"
+        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
+        f"📧 {reservation.email}<br>"
+        f"📞 {reservation.phone}<br>"
+        f"🎉 {reservation.event_type}<br>"
+        f"📅 {reservation.date} à {reservation.time}<br>"
+        f"👥 {reservation.guests} personne(s)</p>"
+        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
+    )
+    send_email(SMTP_EMAIL, subject, body, html=True)
+
+
+def notify_staff_new_contact_message(message) -> None:
+    """Alerte Ali (SMS + email) dès qu'un nouveau message de contact arrive."""
+    sms = (
+        f"🔔 Nouveau message contact de {message.name}. "
+        f"Vérifie le dashboard : {ADMIN_DASHBOARD_URL}"
+    )
+    if ALI_PHONE:
+        send_sms(ALI_PHONE, sms)
+
+    subject = "🔔 Nouveau message contact — Miss Chawarma"
+    body = (
+        f"<p>Nouveau message reçu :</p>"
+        f"<p>👤 {message.name}<br>"
+        f"📧 {message.email}</p>"
+        f"<p>{message.message}</p>"
+        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
+    )
+    send_email(SMTP_EMAIL, subject, body, html=True)
     return subject, body

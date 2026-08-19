@@ -664,7 +664,7 @@ class TableReservationAdmin(ModelView, model=TableReservation):
                 db.refresh(reservation)
 
                 subject, body, sms_text = table_reservation_confirmed(reservation)
-                send_email(reservation.email, subject, body)
+                send_email(reservation.email, subject, body, html=True)
                 send_sms(reservation.phone, sms_text)
         finally:
             db.close()

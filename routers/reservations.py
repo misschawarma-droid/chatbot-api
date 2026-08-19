@@ -26,7 +26,7 @@ from sqlalchemy import (Column, Date as SADate, DateTime, Integer, String,
                         UniqueConstraint, create_engine, select, delete)
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-
+from notifications import send_sms, send_email, ALI_PHONE, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 # ---------------------------------------------------------------- horaires --
 OUVERTURE_MIN = 11 * 60 + 30           # 11h30
 FERMETURE_MIN = {                       # 0 = lundi … 6 = dimanche
@@ -209,8 +209,30 @@ def creer(d: DemandeReservation, db: Session = Depends(get_db)):
         ).scalars().all()
         raise HTTPException(status_code=409, detail={"tables": prises})
 
-    # TODO : e-mail de confirmation au client + notification au restaurant
+        # Notification interne à Ali : SMS + email
+    sms_ali = (
+        f"🔔 Nouvelle réservation table : {d.nom} le {d.date} à {d.creneau} "
+        f"pour {d.convives} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
+    )
+    if ALI_PHONE:
+        send_sms(ALI_PHONE, sms_ali)
+
+    email_body = (
+        f"<p>Nouvelle réservation reçue :</p>"
+        f"<p>👤 {d.nom}<br>"
+        f"📞 {d.tel}<br>"
+        f"📧 {d.email or '—'}<br>"
+        f"📅 {d.date} à {d.creneau}<br>"
+        f"👥 {d.convives} personne(s)<br>"
+        f"🪑 Table(s) : {', '.join(str(t) for t in d.tables)}<br>"
+        f"📝 {d.note or '—'}</p>"
+        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
+    )
+    send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table : Miss Chawarma", email_body, html=True)
+
+    # TODO : e-mail de confirmation au CLIENT (reste à faire séparément, avec table_reservation_confirmed)
     return {"reference": reference, "tables": d.tables, "creneau": d.creneau}
+
 
 
 @router.post("/hold", status_code=201)
