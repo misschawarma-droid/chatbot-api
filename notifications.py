@@ -21,6 +21,7 @@ from __future__ import annotations
 import os
 import logging
 import smtplib
+import socket
 from email.mime.text import MIMEText
 
 logger = logging.getLogger("notifications")
@@ -40,7 +41,6 @@ ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://chatbot-api-o6bw
 # ─────────────── Envoi bas niveau ───────────────
 
 def send_email(to_email: str, subject: str, body: str, html: bool = False) -> bool:
-    """Envoie un email via Gmail SMTP. Retourne True si envoyé, False sinon (jamais d'exception)."""
     if not SMTP_EMAIL or not SMTP_APP_PASSWORD:
         logger.warning("SMTP_EMAIL / SMTP_APP_PASSWORD manquant(s) — email non envoyé à %s", to_email)
         return False
@@ -50,14 +50,22 @@ def send_email(to_email: str, subject: str, body: str, html: bool = False) -> bo
         msg["From"] = SMTP_EMAIL
         msg["To"] = to_email
 
-        with smtplib.SMTP(SMTP_HOST, SMTP_PORT) as server:
+        # Forcer IPv4 : résout smtp.gmail.com en IPv4 uniquement, contourne
+        # le "Network is unreachable" causé par l'IPv6 non routé sur Render.
+        addr_info = socket.getaddrinfo(SMTP_HOST, SMTP_PORT, socket.AF_INET)
+        ipv4_host = addr_info[0][4][0]
+
+        with smtplib.SMTP(ipv4_host, SMTP_PORT) as server:
+            server.ehlo(SMTP_HOST)
             server.starttls()
+            server.ehlo(SMTP_HOST)
             server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
             server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
         return True
     except Exception:
         logger.exception("Échec de l'envoi d'email à %s", to_email)
         return False
+    
 def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
     """Convertit un numéro français local (07...) en format E.164 (+337...)
     requis par Twilio. Si le numéro est déjà au format international
