@@ -40,9 +40,9 @@ ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://misschawarma.fr/
 
 def send_email(to_email: str, subject: str, body: str, html: bool = False) -> bool:
     """Envoie un email via l'API HTTP Brevo. Retourne True si envoyé, False sinon
-    (jamais d'exception) — le SMTP classique (port 587) est bloqué par Render."""
+    (jamais d'exception) : le SMTP classique (port 587) est bloqué par Render."""
     if not BREVO_API_KEY or not SMTP_EMAIL:
-        logger.warning("BREVO_API_KEY / SMTP_EMAIL manquant(s) — email non envoyé à %s", to_email)
+        logger.warning("BREVO_API_KEY / SMTP_EMAIL manquant(s) : email non envoyé à %s", to_email)
         return False
     try:
         payload = {
@@ -65,12 +65,16 @@ def send_email(to_email: str, subject: str, body: str, html: bool = False) -> bo
             json=payload,
             timeout=10,
         )
-        response.raise_for_status()
+        if not response.ok:
+            logger.error(
+                "Brevo a refusé l'envoi (status %s) : %s",
+                response.status_code, response.text,
+            )
+            return False
         return True
     except Exception:
         logger.exception("Échec de l'envoi d'email à %s", to_email)
         return False
-
 
 def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
     """Convertit un numéro français local (07...) en format E.164 (+337...)
@@ -93,7 +97,7 @@ def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
 def send_sms(to_phone: str, body: str) -> bool:
     """Envoie un SMS via Twilio. Retourne True si envoyé, False sinon (jamais d'exception)."""
     if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_FROM_NUMBER:
-        logger.warning("Identifiants Twilio manquants — SMS non envoyé à %s", to_phone)
+        logger.warning("Identifiants Twilio manquants : SMS non envoyé à %s", to_phone)
         return False
     try:
         from twilio.rest import Client  # import local : optionnel si le SMS n'est pas utilisé
