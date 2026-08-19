@@ -2,15 +2,16 @@
 # accusé de réception contact), en français ou en anglais selon la langue du site
 # au moment de la soumission du formulaire.
 #
-# Email : Gmail SMTP (mot de passe d'application, PAS ton mot de passe Gmail normal)
-# SMS   : Twilio (compte d'essai gratuit)
+# Email : API HTTP Brevo (SMTP classique bloqué par Render sur les ports sortants)
+# SMS   : Twilio
 #
 # Variables d'environnement attendues dans .env :
-#   SMTP_EMAIL=misschawarma@gmail.com
-#   SMTP_APP_PASSWORD=xxxx xxxx xxxx xxxx        (16 caractères, généré sur myaccount.google.com)
+#   SMTP_EMAIL=misschawarma@gmail.com              (adresse expéditrice, vérifiée sur Brevo)
+#   BREVO_API_KEY=xkeysib-xxxxxxxxxxxxxxxxxxxxxxxx  (clé API générée dans Brevo -> SMTP et API)
 #   TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 #   TWILIO_AUTH_TOKEN=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-#   TWILIO_FROM_NUMBER=+1xxxxxxxxxx               (numéro fourni par Twilio)
+#   TWILIO_FROM_NUMBER=+33xxxxxxxxx                (numéro fourni par Twilio)
+#   ALI_PHONE_NUMBER=+33xxxxxxxxx                  (numéro d'Ali, notifications internes)
 #
 # Si une variable manque, la fonction correspondante ne plante pas : elle logue
 # un avertissement et ne fait rien. Le statut "confirmée" / "lu" est toujours
@@ -20,52 +21,57 @@ from __future__ import annotations
 
 import os
 import logging
-import smtplib
-import socket
-from email.mime.text import MIMEText
+import requests
 
 logger = logging.getLogger("notifications")
 
-SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
 SMTP_EMAIL = os.getenv("SMTP_EMAIL")
-SMTP_APP_PASSWORD = os.getenv("SMTP_APP_PASSWORD")
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER")
-ALI_PHONE = os.getenv("ALI_PHONE_NUMBER")  # numéro d'Ali, format E.164 recommandé (+33...)
-ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://chatbot-api-o6bw.onrender.com/admin/")
+
+ALI_PHONE = os.getenv("ALI_PHONE_NUMBER")
+ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://misschawarma.fr/admin")
 
 
 # ─────────────── Envoi bas niveau ───────────────
 
 def send_email(to_email: str, subject: str, body: str, html: bool = False) -> bool:
-    if not SMTP_EMAIL or not SMTP_APP_PASSWORD:
-        logger.warning("SMTP_EMAIL / SMTP_APP_PASSWORD manquant(s) — email non envoyé à %s", to_email)
+    """Envoie un email via l'API HTTP Brevo. Retourne True si envoyé, False sinon
+    (jamais d'exception) — le SMTP classique (port 587) est bloqué par Render."""
+    if not BREVO_API_KEY or not SMTP_EMAIL:
+        logger.warning("BREVO_API_KEY / SMTP_EMAIL manquant(s) — email non envoyé à %s", to_email)
         return False
     try:
-        msg = MIMEText(body, "html" if html else "plain", "utf-8")
-        msg["Subject"] = subject
-        msg["From"] = SMTP_EMAIL
-        msg["To"] = to_email
+        payload = {
+            "sender": {"email": SMTP_EMAIL, "name": "Miss Chawarma"},
+            "to": [{"email": to_email}],
+            "subject": subject,
+        }
+        if html:
+            payload["htmlContent"] = body
+        else:
+            payload["textContent"] = body
 
-        # Forcer IPv4 : résout smtp.gmail.com en IPv4 uniquement, contourne
-        # le "Network is unreachable" causé par l'IPv6 non routé sur Render.
-        addr_info = socket.getaddrinfo(SMTP_HOST, SMTP_PORT, socket.AF_INET)
-        ipv4_host = addr_info[0][4][0]
-
-        with smtplib.SMTP(ipv4_host, SMTP_PORT) as server:
-            server.ehlo(SMTP_HOST)
-            server.starttls()
-            server.ehlo(SMTP_HOST)
-            server.login(SMTP_EMAIL, SMTP_APP_PASSWORD)
-            server.sendmail(SMTP_EMAIL, [to_email], msg.as_string())
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            headers={
+                "api-key": BREVO_API_KEY,
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            json=payload,
+            timeout=10,
+        )
+        response.raise_for_status()
         return True
     except Exception:
         logger.exception("Échec de l'envoi d'email à %s", to_email)
         return False
-    
+
+
 def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
     """Convertit un numéro français local (07...) en format E.164 (+337...)
     requis par Twilio. Si le numéro est déjà au format international
@@ -82,6 +88,7 @@ def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
         return f"+{default_country_code}{cleaned}"
 
     return cleaned
+
 
 def send_sms(to_phone: str, body: str) -> bool:
     """Envoie un SMS via Twilio. Retourne True si envoyé, False sinon (jamais d'exception)."""
@@ -172,13 +179,14 @@ def contact_reply_default_message(message) -> str:
 
 def contact_reply_subject(language: str | None) -> str:
     return (
-        "Reply to your message : Miss Chawarma"
+        "Reply to your message — Miss Chawarma"
         if _lang(language) == "en"
-        else "Réponse à votre message : Miss Chawarma"
+        else "Réponse à votre message — Miss Chawarma"
     )
 
 
 MAPS_URL = "https://www.google.com/maps/place/Miss+Chawarma/@48.8662047,2.3775387,17z"
+
 
 def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
     """Retourne (sujet_email, corps_email_html, texte_sms) pour une réservation de table confirmée."""
@@ -187,7 +195,7 @@ def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
         subject = "Your reservation at Miss Chawarma is confirmed ✅"
         body = (
             f"<p>Hello {reservation.first_name},</p>"
-            f"<p>Great news : your reservation is confirmed!</p>"
+            f"<p>Great news — your reservation is confirmed!</p>"
             f"<p>📅 Date: {reservation.date}<br>"
             f"🕐 Time: {reservation.time}<br>"
             f"👥 Guests: {reservation.guests}</p>"
@@ -218,11 +226,13 @@ def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
             f"On vous attend avec plaisir : {MAPS_URL} À très bientôt !"
         )
     return subject, body, sms
+
+
 def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
     """Retourne (sujet_email, corps_email, texte_sms) pour une réservation d'événement confirmée."""
     lang = _lang(reservation.language)
     if lang == "en":
-        subject = f"Your event at Miss Chawarma is confirmed ✅"
+        subject = "Your event at Miss Chawarma is confirmed ✅"
         body = (
             f"Hello {reservation.first_name},\n\n"
             f"Great news : your event \"{reservation.event_type}\" is confirmed!\n\n"
@@ -255,6 +265,7 @@ def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
         )
     return subject, body, sms
 
+
 def contact_acknowledgement(message) -> tuple[str, str]:
     """Retourne (sujet_email, corps_email) pour l'accusé de réception d'un message de contact."""
     lang = _lang(message.language)
@@ -274,71 +285,4 @@ def contact_acknowledgement(message) -> tuple[str, str]:
             f"et nous vous répondrons très rapidement.\n\n"
             f"À très bientôt,\nL'équipe Miss Chawarma"
         )
-
- 
-def notify_staff_new_table_reservation(reservation) -> None:
-    """Alerte Ali (SMS + email) dès qu'une nouvelle réservation de table arrive."""
-    sms = (
-        f"🔔 Nouvelle réservation table : {reservation.first_name} {reservation.last_name} "
-        f"le {reservation.date} à {reservation.time} pour {reservation.guests} pers. "
-        f"Vérifie le dashboard : {ADMIN_DASHBOARD_URL}"
-    )
-    if ALI_PHONE:
-        send_sms(ALI_PHONE, sms)
-
-    subject = "🔔 Nouvelle réservation de table — Miss Chawarma"
-    body = (
-        f"<p>Nouvelle réservation reçue :</p>"
-        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
-        f"📧 {reservation.email}<br>"
-        f"📞 {reservation.phone}<br>"
-        f"📅 {reservation.date} à {reservation.time}<br>"
-        f"👥 {reservation.guests} personne(s)</p>"
-        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
-    )
-    send_email(SMTP_EMAIL, subject, body, html=True)
-
-
-def notify_staff_new_event_reservation(reservation) -> None:
-    """Alerte Ali (SMS + email) dès qu'une nouvelle réservation d'événement arrive."""
-    sms = (
-        f"🔔 Nouvel événement : {reservation.first_name} {reservation.last_name} — "
-        f"\"{reservation.event_type}\" le {reservation.date} à {reservation.time} "
-        f"pour {reservation.guests} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
-    )
-    if ALI_PHONE:
-        send_sms(ALI_PHONE, sms)
-
-    subject = "🔔 Nouvelle demande d'événement — Miss Chawarma"
-    body = (
-        f"<p>Nouvelle demande d'événement reçue :</p>"
-        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
-        f"📧 {reservation.email}<br>"
-        f"📞 {reservation.phone}<br>"
-        f"🎉 {reservation.event_type}<br>"
-        f"📅 {reservation.date} à {reservation.time}<br>"
-        f"👥 {reservation.guests} personne(s)</p>"
-        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
-    )
-    send_email(SMTP_EMAIL, subject, body, html=True)
-
-
-def notify_staff_new_contact_message(message) -> None:
-    """Alerte Ali (SMS + email) dès qu'un nouveau message de contact arrive."""
-    sms = (
-        f"🔔 Nouveau message contact de {message.name}. "
-        f"Vérifie le dashboard : {ADMIN_DASHBOARD_URL}"
-    )
-    if ALI_PHONE:
-        send_sms(ALI_PHONE, sms)
-
-    subject = "🔔 Nouveau message contact — Miss Chawarma"
-    body = (
-        f"<p>Nouveau message reçu :</p>"
-        f"<p>👤 {message.name}<br>"
-        f"📧 {message.email}</p>"
-        f"<p>{message.message}</p>"
-        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
-    )
-    send_email(SMTP_EMAIL, subject, body, html=True)
     return subject, body
