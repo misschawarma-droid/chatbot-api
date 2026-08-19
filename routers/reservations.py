@@ -221,7 +221,7 @@ def creer(d: DemandeReservation, db: Session = Depends(get_db)):
         f"<p>Nouvelle réservation reçue :</p>"
         f"<p>👤 {d.nom}<br>"
         f"📞 {d.tel}<br>"
-        f"📧 {d.email or '—'}<br>"
+        f"📧 {d.email or ':'}<br>"
         f"📅 {d.date} à {d.creneau}<br>"
         f"👥 {d.convives} personne(s)<br>"
         f"🪑 Table(s) : {', '.join(str(t) for t in d.tables)}<br>"

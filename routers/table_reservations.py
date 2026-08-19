@@ -114,7 +114,7 @@ def creer_reservation(
             f"📅 {d.date} à {d.time}<br>👥 {d.guests} personne(s)</p>"
             f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
         )
-        send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table — Miss Chawarma", email_body, html=True)
+        send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table : Miss Chawarma", email_body, html=True)
 
     background_tasks.add_task(_notify)
 

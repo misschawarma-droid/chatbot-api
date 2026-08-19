@@ -33,7 +33,7 @@ TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER")
 
 ALI_PHONE = os.getenv("ALI_PHONE_NUMBER")
-ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://misschawarma.fr/admin")
+ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://chatbot-api-o6bw.onrender.com/admin/")
 
 
 # ─────────────── Envoi bas niveau ───────────────
@@ -159,9 +159,9 @@ def event_issue_message(reservation) -> str:
 
 def issue_email_subject(language: str | None) -> str:
     return (
-        "About your reservation — Miss Chawarma"
+        "About your reservation : Miss Chawarma"
         if _lang(language) == "en"
-        else "Concernant votre réservation — Miss Chawarma"
+        else "Concernant votre réservation : Miss Chawarma"
     )
 
 
@@ -183,9 +183,9 @@ def contact_reply_default_message(message) -> str:
 
 def contact_reply_subject(language: str | None) -> str:
     return (
-        "Reply to your message — Miss Chawarma"
+        "Reply to your message : Miss Chawarma"
         if _lang(language) == "en"
-        else "Réponse à votre message — Miss Chawarma"
+        else "Réponse à votre message : Miss Chawarma"
     )
 
 
@@ -199,7 +199,7 @@ def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
         subject = "Your reservation at Miss Chawarma is confirmed ✅"
         body = (
             f"<p>Hello {reservation.first_name},</p>"
-            f"<p>Great news — your reservation is confirmed!</p>"
+            f"<p>Great news : your reservation is confirmed!</p>"
             f"<p>📅 Date: {reservation.date}<br>"
             f"🕐 Time: {reservation.time}<br>"
             f"👥 Guests: {reservation.guests}</p>"

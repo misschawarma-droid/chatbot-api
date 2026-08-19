@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api/reservations/event", tags=["event-reservations"]
 def _notify_staff(event_type, first_name, last_name, email, phone, date, time, guests, details, note):
     """Exécuté en arrière-plan, après que la réponse HTTP soit déjà partie."""
     sms_ali = (
-        f"🔔 Nouvel événement : {first_name} {last_name} — \"{event_type}\" "
+        f"🔔 Nouvel événement : {first_name} {last_name} : \"{event_type}\" "
         f"le {date} à {time} pour {guests} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
     )
     if ALI_PHONE:
@@ -33,11 +33,11 @@ def _notify_staff(event_type, first_name, last_name, email, phone, date, time, g
         f"📧 {email}<br>"
         f"📅 {date} à {time}<br>"
         f"👥 {guests} personne(s)<br>"
-        f"📝 {details or '—'}<br>"
-        f"💬 {note or '—'}</p>"
+        f"📝 {details or '-'}<br>"
+        f"💬 {note or '-'}</p>"
         f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
     )
-    send_email(SMTP_EMAIL, "🔔 Nouvelle demande d'événement — Miss Chawarma", email_body, html=True)
+    send_email(SMTP_EMAIL, "🔔 Nouvelle demande d'événement : Miss Chawarma", email_body, html=True)
 
 
 @router.post("", status_code=201)
