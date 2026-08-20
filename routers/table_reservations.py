@@ -223,13 +223,13 @@ def retrouver_reservation(d: TableReservationLookupIn, db: Session = Depends(get
         "id": reservation.id,
         "first_name": reservation.first_name,
         "last_name": reservation.last_name,
+        "phone": reservation.phone,   # ⟵ AJOUT
         "date": reservation.date,
         "time": reservation.time,
         "guests": reservation.guests,
         "table_ids": json.loads(reservation.table_ids or "[]"),
         "status": reservation.status,
     }
-
 
 @router.post("/modify", response_model=TableReservationOut)
 def modifier_reservation(
