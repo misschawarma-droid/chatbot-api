@@ -30,8 +30,8 @@ ALLOWED_ORIGINS = [
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
-    allow_credentials=True,
+    allow_origin_regex=r"http://(192\.168\.\d{1,3}\.\d{1,3}|10\.\d{1,3}\.\d{1,3}\.\d{1,3}|172\.(1[6-9]|2\d|3[0-1])\.\d{1,3}\.\d{1,3}):8080",
+    allow_origins=["https://misschawarma.fr"],  # ton domaine de prod, à ajuster
     allow_methods=["*"],
     allow_headers=["*"],
 )
