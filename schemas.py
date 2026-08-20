@@ -153,6 +153,7 @@ class TableReservationModifyIn(BaseModel):
     date: str
     time: str
     guests: int
+    table_ids: Optional[List[str]] = None 
 
 class TableReservationCancelIn(BaseModel):
     reference: int

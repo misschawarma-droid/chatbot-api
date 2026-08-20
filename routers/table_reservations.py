@@ -251,9 +251,6 @@ def modifier_reservation(
 
     fenetre = fenetre_occupee(d.date, minute)
 
-    # Libère les anciens créneaux de CETTE réservation avant de chercher une
-    # nouvelle table — sinon elle se bloquerait elle-même si la date/heure
-    # ne change pas.
     for slot in list(reservation.slots):
         db.delete(slot)
     db.flush()
@@ -265,13 +262,26 @@ def modifier_reservation(
         ).distinct()
     ).scalars().all())
 
-    nouvelles_tables = chercher_bloc(d.guests, occupees)
-    if nouvelles_tables is None:
-        db.rollback()
-        raise HTTPException(
-            status_code=409,
-            detail="Plus de table disponible pour ce créneau et ce nombre de convives.",
-        )
+    if d.table_ids:
+        # Le client a choisi ses tables sur le plan — on vérifie juste
+        # qu'elles sont bien libres et suffisantes pour le nouveau créneau.
+        if any(t in occupees for t in d.table_ids):
+            db.rollback()
+            raise HTTPException(status_code=409, detail="Une des tables choisies vient d'être prise.")
+        if places_unite(d.table_ids) < d.guests and set(d.table_ids) != {INSTA_A, INSTA_B}:
+            capacite = sum(TABLE_PLACES.get(t, PLACES_PAR_TABLE) for t in d.table_ids)
+            if capacite < d.guests:
+                db.rollback()
+                raise HTTPException(status_code=422, detail="Pas assez de places sur les tables choisies.")
+        nouvelles_tables = d.table_ids
+    else:
+        nouvelles_tables = chercher_bloc(d.guests, occupees)
+        if nouvelles_tables is None:
+            db.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail="Plus de table disponible pour ce créneau et ce nombre de convives.",
+            )
 
     for tid in nouvelles_tables:
         for m in fenetre:
@@ -281,7 +291,7 @@ def modifier_reservation(
     reservation.time = d.time
     reservation.guests = d.guests
     reservation.table_ids = json.dumps(nouvelles_tables)
-    reservation.status = "nouvelle"  # repasse en attente de reconfirmation
+    reservation.status = "nouvelle"
 
     try:
         db.commit()
@@ -303,13 +313,12 @@ def modifier_reservation(
             f"👥 {d.guests} personne(s)</p>"
             f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
         )
-        send_email(SMTP_EMAIL, "✏️ Réservation modifiée : Miss Chawarma", email_body, html=True)
+        send_email(SMTP_EMAIL, "✏️ Réservation modifiée — Miss Chawarma", email_body, html=True)
 
     background_tasks.add_task(_notify_modif)
 
     db.refresh(reservation)
     return {"id": reservation.id, "table_ids": nouvelles_tables, "status": reservation.status}
-
 
 @router.post("/cancel", response_model=TableReservationOut)
 def annuler_reservation(
