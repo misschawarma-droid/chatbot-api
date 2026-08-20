@@ -1,13 +1,10 @@
-# routers/table_reservations.py — NOUVEAU FICHIER à ajouter à ton projet.
+# routers/table_reservations.py — Réservations de table
 #
-# S'appuie sur tes vrais models.py / schemas.py (TableReservation, TableSlot,
-# TableReservationIn). Remplace l'ancien routeur s'il en existait un pour
-# les réservations de table — celui-ci fait tout : disponibilité + création
-# + vérification du chevauchement horaire.
-#
-# ⚠️ Vérifie le chemin d'import de `get_db` et `SessionLocal` : j'ai supposé
-# qu'ils viennent de `database.py`, comme `Base` dans models.py. Adapte si
-# ton projet les nomme autrement.
+# S'appuie sur models.py / schemas.py (TableReservation, TableSlot,
+# TableReservationIn). Fait tout : disponibilité + création + vérification
+# du chevauchement horaire. Les notifications à Ali (SMS + email) sont
+# envoyées en tâche de fond (BackgroundTasks) pour ne pas ralentir la
+# réponse au client.
 
 import json
 from datetime import datetime as DT, date as Date
@@ -17,7 +14,7 @@ from sqlalchemy import select, delete
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from database import get_db          # ⟵ à adapter si le nom diffère
+from database import get_db
 from models import TableReservation, TableSlot
 from schemas import TableReservationIn, TableReservationOut, TableAvailabilityOut
 from notifications import send_sms, send_email, ALI_PHONE, ADMIN_DASHBOARD_URL, SMTP_EMAIL
@@ -88,15 +85,46 @@ def disponibilites(date: str = Query(...), time: str = Query(...), db: Session =
 @router.post("", response_model=TableReservationOut, status_code=201)
 def creer_reservation(
     d: TableReservationIn,
-    background_tasks: BackgroundTasks,   # ⟵ AJOUT
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
 ):
-    ...
+    minute = minutes_depuis(d.time)
+    if not creneau_valide(d.date, minute):
+        raise HTTPException(status_code=422, detail="Créneau hors des horaires d'ouverture.")
+
+    fenetre = fenetre_occupee(d.date, minute)
+
+    # 1. la ligne principale de la réservation
+    reservation = TableReservation(
+        first_name=d.first_name, last_name=d.last_name,
+        email=d.email, phone=d.phone,
+        date=d.date, time=d.time, guests=d.guests,
+        note=d.note or "", language=d.language or "fr",
+        status="nouvelle",
+        table_ids=json.dumps(d.table_ids),
+    )
+    db.add(reservation)
+    db.flush()  # récupère reservation.id sans committer encore
+
+    # 2. les verrous, un par table et par créneau de 30 min occupé
+    for tid in d.table_ids:
+        for m in fenetre:
+            db.add(TableSlot(
+                reservation_id=reservation.id,
+                date=d.date, minute=m, table_id=str(tid),
+            ))
+
     try:
         db.commit()
     except IntegrityError:
         db.rollback()
-        prises = db.execute(...).scalars().all()
+        prises = db.execute(
+            select(TableSlot.table_id).where(
+                TableSlot.date == d.date,
+                TableSlot.minute.in_(fenetre),
+                TableSlot.table_id.in_([str(t) for t in d.table_ids]),
+            ).distinct()
+        ).scalars().all()
         raise HTTPException(status_code=409, detail={"table_ids": prises})
 
     def _notify():
@@ -114,7 +142,7 @@ def creer_reservation(
             f"📅 {d.date} à {d.time}<br>👥 {d.guests} personne(s)</p>"
             f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
         )
-        send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table : Miss Chawarma", email_body, html=True)
+        send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table — Miss Chawarma", email_body, html=True)
 
     background_tasks.add_task(_notify)
 
