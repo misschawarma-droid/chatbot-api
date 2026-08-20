@@ -129,7 +129,66 @@ class TableReservationOut(BaseModel):  # ⟵ AJOUT — réponse après création
  
 class TableAvailabilityOut(BaseModel):  # ⟵ AJOUT — réponse de /availability
     occupied_table_ids: List[str]
- 
+ # À ajouter dans schemas.py, juste après TableAvailabilityOut
+
+class TableReservationLookupIn(BaseModel):
+    reference: int
+    email: EmailStr
+
+class TableReservationLookupOut(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    date: str
+    time: str
+    guests: int
+    table_ids: List[str]
+    status: str
+    class Config:
+        from_attributes = True
+
+class TableReservationModifyIn(BaseModel):
+    reference: int
+    email: EmailStr
+    date: str
+    time: str
+    guests: int
+
+class TableReservationCancelIn(BaseModel):
+    reference: int
+    email: EmailStr
+
+class TableReservationLookupIn(BaseModel):
+    reference: int
+    email: EmailStr
+
+
+class TableReservationLookupOut(BaseModel):
+    id: int
+    first_name: str
+    last_name: str
+    date: str
+    time: str
+    guests: int
+    table_ids: List[str]
+    status: str
+
+    class Config:
+        from_attributes = True
+
+
+class TableReservationModifyIn(BaseModel):
+    reference: int
+    email: EmailStr
+    date: str
+    time: str
+    guests: int
+
+
+class TableReservationCancelIn(BaseModel):
+    reference: int
+    email: EmailStr
+
 
 class EventReservationIn(BaseModel):
     event_type: str
