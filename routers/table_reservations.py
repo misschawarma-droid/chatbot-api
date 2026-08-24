@@ -261,6 +261,12 @@ def modifier_reservation(
             TableSlot.minute.in_(fenetre),
         ).distinct()
     ).scalars().all())
+    if d.first_name:
+        reservation.first_name = d.first_name
+    if d.last_name:
+        reservation.last_name = d.last_name
+    if d.phone:
+        reservation.phone = d.phone
 
     if d.table_ids:
         # Le client a choisi ses tables sur le plan — on vérifie juste

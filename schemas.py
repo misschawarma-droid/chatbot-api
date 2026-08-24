@@ -156,6 +156,9 @@ class TableReservationModifyIn(BaseModel):
     time: str
     guests: int
     table_ids: Optional[List[str]] = None 
+    first_name: Optional[str] = None   # ⟵ AJOUT
+    last_name: Optional[str] = None    # ⟵ AJOUT
+    phone: Optional[str] = None        # ⟵ AJOUT
 
 class TableReservationCancelIn(BaseModel):
     reference: int
