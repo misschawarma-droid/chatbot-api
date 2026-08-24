@@ -192,7 +192,43 @@ class EventReservationIn(BaseModel):
     note: Optional[str] = ""
     language: Optional[str] = "fr"
 
+class EventReservationLookupIn(BaseModel):
+    reference: int
+    email: EmailStr
 
+class EventReservationLookupOut(BaseModel):
+    id: int
+    event_type: str
+    first_name: str
+    last_name: str
+    email: EmailStr
+    phone: str
+    date: str
+    time: str
+    guests: int
+    details: Optional[str] = ""
+    note: Optional[str] = ""
+    status: str
+
+    class Config:
+        from_attributes = True
+
+class EventReservationModifyIn(BaseModel):
+    reference: int
+    email: EmailStr
+    event_type: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    phone: Optional[str] = None
+    date: str
+    time: str
+    guests: int
+    details: Optional[str] = None
+    note: Optional[str] = None
+
+class EventReservationCancelIn(BaseModel):
+    reference: int
+    email: EmailStr
 # ─────────────── CONTACT ───────────────
 
 class ContactIn(BaseModel):

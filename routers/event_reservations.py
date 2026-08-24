@@ -5,12 +5,18 @@
 # (BackgroundTasks) : la réponse au client part immédiatement après
 # l'enregistrement en base, sans attendre que Twilio/Gmail répondent.
 
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks,HTTPException, Depends
 from sqlalchemy.orm import Session
 
 from database import get_db
 from models import EventReservation
-from schemas import EventReservationIn
+from schemas import (
+    EventReservationIn,
+    EventReservationLookupIn,
+    EventReservationLookupOut,
+    EventReservationModifyIn,
+    EventReservationCancelIn,
+)
 from notifications import send_sms, send_email, ALI_PHONE, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 
 router = APIRouter(prefix="/api/reservations/event", tags=["event-reservations"])
@@ -39,7 +45,62 @@ def _notify_staff(event_type, first_name, last_name, email, phone, date, time, g
     )
     send_email(SMTP_EMAIL, "🔔 Nouvelle demande d'événement : Miss Chawarma", email_body, html=True)
 
+@router.post("/lookup", response_model=EventReservationLookupOut)
+def retrouver_reservation_event(d: EventReservationLookupIn, db: Session = Depends(get_db)):
+    reservation = (
+        db.query(EventReservation)
+        .filter(EventReservation.id == d.reference, EventReservation.email == d.email)
+        .first()
+    )
+    if not reservation:
+        raise HTTPException(status_code=404, detail="event_not_found")
+    return reservation
 
+
+@router.post("/modify", response_model=EventReservationLookupOut)
+def modifier_reservation_event(d: EventReservationModifyIn, db: Session = Depends(get_db)):
+    reservation = (
+        db.query(EventReservation)
+        .filter(EventReservation.id == d.reference, EventReservation.email == d.email)
+        .first()
+    )
+    if not reservation:
+        raise HTTPException(status_code=404, detail="event_not_found")
+
+    if d.event_type:
+        reservation.event_type = d.event_type
+    if d.first_name:
+        reservation.first_name = d.first_name
+    if d.last_name:
+        reservation.last_name = d.last_name
+    if d.phone:
+        reservation.phone = d.phone
+    reservation.date = d.date
+    reservation.time = d.time
+    reservation.guests = d.guests
+    if d.details is not None:
+        reservation.details = d.details
+    if d.note is not None:
+        reservation.note = d.note
+
+    db.commit()
+    db.refresh(reservation)
+    return reservation
+
+
+@router.post("/cancel")
+def annuler_reservation_event(d: EventReservationCancelIn, db: Session = Depends(get_db)):
+    reservation = (
+        db.query(EventReservation)
+        .filter(EventReservation.id == d.reference, EventReservation.email == d.email)
+        .first()
+    )
+    if not reservation:
+        raise HTTPException(status_code=404, detail="event_not_found")
+
+    reservation.status = "annulee"
+    db.commit()
+    return {"status": "cancelled"}
 @router.post("", status_code=201)
 def creer_reservation_event(
     d: EventReservationIn,
