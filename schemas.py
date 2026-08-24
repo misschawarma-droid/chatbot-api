@@ -170,13 +170,6 @@ class TableReservationLookupIn(BaseModel):
         from_attributes = True
 
 
-class TableReservationModifyIn(BaseModel):
-    reference: int
-    email: EmailStr
-    date: str
-    time: str
-    guests: int
-
 
 class TableReservationCancelIn(BaseModel):
     reference: int
