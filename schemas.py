@@ -166,16 +166,6 @@ class TableReservationLookupIn(BaseModel):
     email: EmailStr
 
 
-class TableReservationLookupOut(BaseModel):
-    id: int
-    first_name: str
-    last_name: str
-    date: str
-    time: str
-    guests: int
-    table_ids: List[str]
-    status: str
-
     class Config:
         from_attributes = True
 
