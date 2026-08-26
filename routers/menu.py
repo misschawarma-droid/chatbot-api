@@ -48,7 +48,7 @@ def get_menu(db: Session = Depends(get_db)):
             ],
         })
     return result
-@router.get("/api/menu/category/{category_name}")
+@router.get("/category/{category_name}")
 def get_dishes_by_category(category_name: str, db: Session = Depends(get_db)):
     dishes = db.query(Dish).filter(
         Dish.category == category_name,
