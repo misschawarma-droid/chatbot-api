@@ -271,9 +271,11 @@ def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
             f"<p>See you soon,<br>The Miss Chawarma team</p>"
         )
         sms = (
-            f"Miss Chawarma 😊 Hi {reservation.first_name}! Your table on {reservation.date} "
-            f"at {reservation.time} for {reservation.guests} guest(s) is confirmed ✅ "
-            f"We're waiting for you: {MAPS_URL} See you soon!"
+            f"Miss Chawarma 😊\n\n"
+            f"Hi {reservation.first_name}! Your table on {reservation.date} at {reservation.time} "
+            f"for {reservation.guests} guest(s) is confirmed ✅\n\n"
+            f"📍 {MAPS_URL}\n\n"
+            f"Any issue? Call us: {CONTACT_PHONE}"
         )
     else:
         subject = "Votre réservation chez Miss Chawarma est confirmée ✅"
@@ -288,55 +290,17 @@ def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
             f"<p>À très bientôt,<br>L'équipe Miss Chawarma</p>"
         )
         sms = (
-            f"Miss Chawarma 😊 Bonjour {reservation.first_name} ! Votre table du {reservation.date} "
-            f"à {reservation.time} pour {reservation.guests} pers. est confirmée ✅ "
-            f"On vous attend avec plaisir : {MAPS_URL} À très bientôt !"
+            f"Miss Chawarma 😊\n\n"
+            f"Bonjour {reservation.first_name} ! Votre table du {reservation.date} "
+            f"à {reservation.time} pour {reservation.guests} pers. est confirmée ✅\n\n"
+            f"📍 {MAPS_URL}\n\n"
+            f"Un souci ? Appelez-nous : {CONTACT_PHONE}"
         )
     return subject, body, sms
 
 
 MAPS_URL = "https://maps.app.goo.gl/iAkJVWmcJqm615w87"
 CONTACT_PHONE = "+33 7 82 73 77 77"
-
-
-def table_reservation_confirmed(reservation) -> tuple[str, str, str]:
-    """Retourne (sujet_email, corps_email_html, texte_sms) pour une réservation de table confirmée."""
-    lang = _lang(reservation.language)
-    if lang == "en":
-        subject = "Your reservation at Miss Chawarma is confirmed ✅"
-        body = (
-            f"<p>Hello {reservation.first_name},</p>"
-            f"<p>Great news : your reservation is confirmed!</p>"
-            f"<p>📅 Date: {reservation.date}<br>"
-            f"🕐 Time: {reservation.time}<br>"
-            f"👥 Guests: {reservation.guests}</p>"
-            f"<p>We can't wait to welcome you at "
-            f"<a href=\"{MAPS_URL}\">Miss Chawarma</a>.</p>"
-            f"<p>See you soon,<br>The Miss Chawarma team</p>"
-        )
-        sms = (
-            f"Miss Chawarma 😊 Hi {reservation.first_name}! Your table on {reservation.date} "
-            f"at {reservation.time} for {reservation.guests} guest(s) is confirmed ✅ "
-            f"We're waiting for you: {MAPS_URL} Any issue? Call us: {CONTACT_PHONE}"
-        )
-    else:
-        subject = "Votre réservation chez Miss Chawarma est confirmée ✅"
-        body = (
-            f"<p>Bonjour {reservation.first_name},</p>"
-            f"<p>Votre réservation est confirmée avec plaisir !</p>"
-            f"<p>📅 Date : {reservation.date}<br>"
-            f"🕐 Heure : {reservation.time}<br>"
-            f"👥 Nombre de personnes : {reservation.guests}</p>"
-            f"<p>Nous avons hâte de vous accueillir à "
-            f"<a href=\"{MAPS_URL}\">Miss Chawarma</a>.</p>"
-            f"<p>À très bientôt,<br>L'équipe Miss Chawarma</p>"
-        )
-        sms = (
-            f"Miss Chawarma 😊 Bonjour {reservation.first_name} ! Votre table du {reservation.date} "
-            f"à {reservation.time} pour {reservation.guests} pers. est confirmée ✅ "
-            f"On vous attend : {MAPS_URL} Un souci ? Appelez-nous : {CONTACT_PHONE}"
-        )
-    return subject, body, sms
 
 
 def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
@@ -354,8 +318,9 @@ def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
             f"See you soon,\nThe Miss Chawarma team"
         )
         sms = (
-            f"Miss Chawarma 😊 Hi {reservation.first_name}! Your event on {reservation.date} "
-            f"at {reservation.time} for {reservation.guests} guest(s) is confirmed ✅ "
+            f"Miss Chawarma 😊\n\n"
+            f"Hi {reservation.first_name}! Your event on {reservation.date} at {reservation.time} "
+            f"for {reservation.guests} guest(s) is confirmed ✅\n\n"
             f"Any issue? Call us: {CONTACT_PHONE}"
         )
     else:
@@ -370,12 +335,12 @@ def event_reservation_confirmed(reservation) -> tuple[str, str, str]:
             f"À très bientôt,\nL'équipe Miss Chawarma"
         )
         sms = (
-            f"Miss Chawarma 😊 Bonjour {reservation.first_name} ! Votre événement du {reservation.date} "
-            f"à {reservation.time} pour {reservation.guests} pers. est confirmé ✅ "
+            f"Miss Chawarma 😊\n\n"
+            f"Bonjour {reservation.first_name} ! Votre événement du {reservation.date} "
+            f"à {reservation.time} pour {reservation.guests} pers. est confirmé ✅\n\n"
             f"Un souci ? Appelez-nous : {CONTACT_PHONE}"
         )
     return subject, body, sms
-
 def contact_acknowledgement(message) -> tuple[str, str]:
     """Retourne (sujet_email, corps_email) pour l'accusé de réception d'un message de contact."""
     lang = _lang(message.language)
