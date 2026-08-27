@@ -23,6 +23,10 @@ import os
 import logging
 import unicodedata
 import requests
+from dotenv import load_dotenv
+
+# Charge aussi .env quand ce module est importe avant main.py (utile en local).
+load_dotenv()
 
 logger = logging.getLogger("notifications")
 
@@ -32,6 +36,10 @@ BREVO_API_KEY = os.getenv("BREVO_API_KEY")
 TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_FROM_NUMBER = os.getenv("TWILIO_FROM_NUMBER")
+# Pour les SMS automatiques (A2P) vers la France, preferer un Sender ID alphanumerique.
+# France: Sender ID dynamique supporte, max 11 caracteres, compte Twilio payant.
+TWILIO_SENDER_ID = os.getenv("TWILIO_SENDER_ID", "MissChaw")
+TWILIO_MESSAGING_SERVICE_SID = os.getenv("TWILIO_MESSAGING_SERVICE_SID")
 
 ALI_PHONE = os.getenv("ALI_PHONE_NUMBER")
 ADMIN_DASHBOARD_URL = os.getenv("ADMIN_DASHBOARD_URL", "https://chatbot-api-o6bw.onrender.com/admin/")
@@ -96,30 +104,57 @@ def _normalize_phone_e164(phone: str, default_country_code: str = "33") -> str:
 
 
 def send_sms(to_phone: str, body: str) -> bool:
-    """Envoie un SMS via Twilio. Retourne True si envoyé, False sinon (jamais d'exception)."""
-    if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN or not TWILIO_FROM_NUMBER:
-        logger.warning("Identifiants Twilio manquants : SMS non envoyé à %s", to_phone)
+    """Envoie un SMS via Twilio. Retourne True si la requete Twilio est creee.
+
+    Ordre de preference du sender :
+    1) Messaging Service SID si configure ;
+    2) Sender ID alphanumerique (recommande pour A2P vers la France) ;
+    3) ancien numero TWILIO_FROM_NUMBER en dernier recours.
+    """
+    if not TWILIO_ACCOUNT_SID or not TWILIO_AUTH_TOKEN:
+        logger.warning("TWILIO_ACCOUNT_SID / TWILIO_AUTH_TOKEN manquant(s) : SMS non envoye")
         return False
+
     try:
-        from twilio.rest import Client  # import local : optionnel si le SMS n'est pas utilisé
+        from twilio.rest import Client
 
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         normalized_phone = _normalize_phone_e164(to_phone)
-        message = client.messages.create(
-            to=normalized_phone,
-            from_=TWILIO_FROM_NUMBER,
-            body=body,
-        )
+
+        kwargs = {
+            "to": normalized_phone,
+            "body": body,
+        }
+
+        if TWILIO_MESSAGING_SERVICE_SID:
+            kwargs["messaging_service_sid"] = TWILIO_MESSAGING_SERVICE_SID
+            sender_used = f"MessagingService:{TWILIO_MESSAGING_SERVICE_SID[:6]}..."
+        elif TWILIO_SENDER_ID:
+            kwargs["from_"] = TWILIO_SENDER_ID
+            sender_used = TWILIO_SENDER_ID
+        elif TWILIO_FROM_NUMBER:
+            kwargs["from_"] = TWILIO_FROM_NUMBER
+            sender_used = TWILIO_FROM_NUMBER
+            logger.warning(
+                "Aucun TWILIO_SENDER_ID/MESSAGING_SERVICE_SID : fallback vers %s. "
+                "Pour des SMS A2P vers la France, un Sender ID alphanumerique est recommande.",
+                TWILIO_FROM_NUMBER,
+            )
+        else:
+            logger.warning("Aucun sender Twilio configure : SMS non envoye")
+            return False
+
+        message = client.messages.create(**kwargs)
         logger.info(
-            "SMS Twilio cree : sid=%s status=%s to=%s",
+            "SMS Twilio cree : sid=%s status=%s to=%s sender=%s",
             getattr(message, "sid", "?"),
             getattr(message, "status", "?"),
             normalized_phone,
+            sender_used,
         )
-
         return True
     except Exception:
-        logger.exception("Échec de l'envoi de SMS à %s", to_phone)
+        logger.exception("Echec de l'envoi de SMS a %s", to_phone)
         return False
 
 
