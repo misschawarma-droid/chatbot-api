@@ -190,7 +190,7 @@ def creer_reservation(
         send_admin_sms(
         f"Miss Chawarma 😊\n\n"
         f"Nouvelle réservation de table - "
-        f"{d.first_name} {d.last_name} - {d.date} {d.time} - {d.guests} pers. "
+        f"de {d.first_name} {d.last_name}  à {d.date} {d.time} de {d.guests} pers. "
         f"Dashboard: {ADMIN_DASHBOARD_URL}"
        )
         email_body = (
@@ -308,8 +308,8 @@ def modifier_reservation(
 
     def _notify_modif():
         send_admin_sms(
-            f"Miss Chawarma: reservation modifiee - "
-            f"{reservation.first_name} {reservation.last_name} - {d.date} {d.time} - {d.guests} pers. "
+            f"Miss Chawarma: Réservation modifiée - "
+            f"de {reservation.first_name} {reservation.last_name} à {d.date} {d.time} de {d.guests} pers. "
             f"Dashboard: {ADMIN_DASHBOARD_URL}"
         )
         email_body = (
@@ -341,8 +341,8 @@ def annuler_reservation(
 
     def _notify_annulation():
         send_admin_sms(
-            f"Miss Chawarma: reservation annulee - "
-            f"{reservation.first_name} {reservation.last_name} - {reservation.date} {reservation.time} "
+            f"Miss Chawarma: Réservation annulée - "
+            f"de {reservation.first_name} {reservation.last_name} à {reservation.date} {reservation.time} "
             f"Dashboard: {ADMIN_DASHBOARD_URL}"
         )
         email_body = (
