@@ -198,7 +198,7 @@ def creer_reservation(
             f"📅 {d.date} à {d.time}<br>👥 {d.guests} personne(s)</p>"
             f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
         )
-        send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table — Miss Chawarma", email_body, html=True)
+        send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table : Miss Chawarma", email_body, html=True)
 
     background_tasks.add_task(_notify_new)
 
@@ -270,8 +270,6 @@ def modifier_reservation(
         reservation.phone = d.phone
 
     if d.table_ids:
-        # Le client a choisi ses tables sur le plan — on vérifie juste
-        # qu'elles sont bien libres et suffisantes pour le nouveau créneau.
         if any(t in occupees for t in d.table_ids):
             db.rollback()
             raise HTTPException(status_code=409, detail="Une des tables choisies vient d'être prise.")
@@ -306,19 +304,21 @@ def modifier_reservation(
         db.rollback()
         raise HTTPException(status_code=409, detail="Ce créneau vient d'être pris, réessayez.")
 
-def _notify_modif():
-    send_admin_sms(
-        f"Miss Chawarma: reservation modifiee - "
-        f"{reservation.first_name} {reservation.last_name} - {d.date} {d.time} - {d.guests} pers."
-    )
-    email_body = (
-        f"<p>Une réservation a été modifiée par le client :</p>"
-        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
-        f"📅 Nouveau créneau : {d.date} à {d.time}<br>"
-        f"👥 {d.guests} personne(s)</p>"
-        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
-    )
-    send_email(SMTP_EMAIL, "✏️ Réservation modifiée — Miss Chawarma", email_body, html=True)
+    def _notify_modif():
+        send_admin_sms(
+            f"Miss Chawarma: reservation modifiee - "
+            f"{reservation.first_name} {reservation.last_name} - {d.date} {d.time} - {d.guests} pers. "
+            f"Dashboard: {ADMIN_DASHBOARD_URL}"
+        )
+        email_body = (
+            f"<p>Une réservation a été modifiée par le client :</p>"
+            f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
+            f"📅 Nouveau créneau : {d.date} à {d.time}<br>"
+            f"👥 {d.guests} personne(s)</p>"
+            f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
+        )
+        send_email(SMTP_EMAIL, "✏️ Réservation modifiée — Miss Chawarma", email_body, html=True)
+
     background_tasks.add_task(_notify_modif)
 
     db.refresh(reservation)
@@ -336,19 +336,21 @@ def annuler_reservation(
         db.delete(slot)
     reservation.status = "annulée"
     db.commit()
-    
-def _notify_annulation():
-    send_admin_sms(
-        f"Miss Chawarma: reservation annulee - "
-        f"{reservation.first_name} {reservation.last_name} - {reservation.date} {reservation.time}"
-    )
-    email_body = (
-        f"<p>Une réservation a été annulée par le client :</p>"
-        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
-        f"📅 {reservation.date} à {reservation.time}<br>"
-        f"👥 {reservation.guests} personne(s)</p>"
-    )
-    send_email(SMTP_EMAIL, "❌ Réservation annulée : Miss Chawarma", email_body, html=True)
+
+    def _notify_annulation():
+        send_admin_sms(
+            f"Miss Chawarma: reservation annulee - "
+            f"{reservation.first_name} {reservation.last_name} - {reservation.date} {reservation.time} "
+            f"Dashboard: {ADMIN_DASHBOARD_URL}"
+        )
+        email_body = (
+            f"<p>Une réservation a été annulée par le client :</p>"
+            f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
+            f"📅 {reservation.date} à {reservation.time}<br>"
+            f"👥 {reservation.guests} personne(s)</p>"
+        )
+        send_email(SMTP_EMAIL, "❌ Réservation annulée : Miss Chawarma", email_body, html=True)
+
     background_tasks.add_task(_notify_annulation)
 
     db.refresh(reservation)
@@ -357,3 +359,5 @@ def _notify_annulation():
         "table_ids": json.loads(reservation.table_ids or "[]"),
         "status": reservation.status,
     }
+
+   
