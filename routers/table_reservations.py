@@ -188,9 +188,10 @@ def creer_reservation(
         # SMS interne uniquement vers ALI_PHONE_NUMBER.
         # Court + sans emoji/URL pour rester sur un seul segment Twilio.
         send_admin_sms(
-            f"Miss Chawarma: nouvelle reservation table - "
-            f"{d.first_name} {d.last_name} - {d.date} {d.time} - {d.guests} pers."
-        )
+        f"Miss Chawarma: nouvelle reservation table - "
+        f"{d.first_name} {d.last_name} - {d.date} {d.time} - {d.guests} pers. "
+        f"Dashboard: {ADMIN_DASHBOARD_URL}"
+       )
         email_body = (
             f"<p>Nouvelle réservation reçue :</p>"
             f"<p>👤 {d.first_name} {d.last_name}<br>"
