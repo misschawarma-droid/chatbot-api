@@ -8,7 +8,7 @@ from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 from starlette.responses import RedirectResponse, HTMLResponse
 from markupsafe import Markup, escape
-
+from routers.menu import invalidate_menu_cache
 from database import engine, SessionLocal
 from models import (
     Category,
@@ -186,7 +186,11 @@ class CategoryAdmin(ModelView, model=Category):
         Category.position,
     ]
 
+    async def after_model_change(self, data, model, is_created, request) -> None:
+        invalidate_menu_cache()
 
+    async def after_model_delete(self, model, request) -> None:
+        invalidate_menu_cache()
 class DishAdmin(ModelView, model=Dish):
     name = "Plat"
     name_plural = "Plats"
@@ -236,7 +240,11 @@ class DishAdmin(ModelView, model=Dish):
         Dish.category,
         Dish.position,
     ]
+    async def after_model_change(self, data, model, is_created, request) -> None:
+        invalidate_menu_cache()
 
+    async def after_model_delete(self, model, request) -> None:
+        invalidate_menu_cache()
 
 class OrderAdmin(ModelView, model=Order):
     name = "Commande"

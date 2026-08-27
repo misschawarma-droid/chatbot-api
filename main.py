@@ -13,6 +13,8 @@ from routers import chatbot  # ← décommente après avoir créé routers/chatb
 from routers import stripe_webhook 
 from routers import maintenance
 from fastapi.middleware.gzip import GZipMiddleware
+from starlette.types import ASGIApp, Receive, Scope, Send
+
 load_dotenv()
 # Crée les tables si elles n'existent pas
 Base.metadata.create_all(bind=engine)
@@ -57,7 +59,27 @@ app.include_router(verification.router)
 app.include_router(event_reservations.router)
 app.include_router(maintenance.router)
 
-app.add_middleware(GZipMiddleware, minimum_size=1000)
+
+# ─────────────── Compression Gzip (sauf /admin) ───────────────
+# GZipMiddleware compresse le HTML en octets binaires — mais
+# AdminBrandMiddleware a besoin du HTML en clair pour y injecter le
+# thème (recherche littérale de b"</head>"). On désactive donc la
+# compression uniquement sur /admin, pour ne pas casser l'injection.
+class ConditionalGZipMiddleware:
+    def __init__(self, app: ASGIApp, minimum_size: int = 1000):
+        self.gzip_app = GZipMiddleware(app, minimum_size=minimum_size)
+        self.plain_app = app
+
+    async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
+        path = scope.get("path", "")
+        if scope["type"] == "http" and (path == "/admin" or path.startswith("/admin/")):
+            await self.plain_app(scope, receive, send)
+        else:
+            await self.gzip_app(scope, receive, send)
+
+
+app.add_middleware(ConditionalGZipMiddleware, minimum_size=1000)
+
 # ─────────────── Admin (/admin) ───────────────
 setup_admin(app)
 
