@@ -27,9 +27,12 @@ def _notify_staff(event_type, first_name, last_name, email, phone, date, time, g
     # SMS interne uniquement vers ALI_PHONE_NUMBER.
     # Court + sans emoji/URL pour rester sur un seul segment Twilio.
     send_admin_sms(
-        f"Miss Chawarma: nouvel evenement - {event_type} - "
-        f"{first_name} {last_name} - {date} {time} - {guests} pers."
+        f"Miss Chawarma 😊\n\n"
+        f"Nouvel événement : {event_type}\n"
+        f"{first_name} {last_name} — {date} à {time} — {guests} pers.\n\n"
+        f"📊 Dashboard : {ADMIN_DASHBOARD_URL}"
     )
+
 
     email_body = (
         f"<p>Nouvelle demande d'événement reçue :</p>"
