@@ -3,15 +3,14 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models import ContactMessage
 from schemas import ContactIn
-from notifications import send_sms, send_email, ALI_PHONE, ADMIN_DASHBOARD_URL, SMTP_EMAIL
+from notifications import send_admin_sms, send_email, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 
 router = APIRouter(prefix="/api/contact", tags=["contact"])
 
 
 def _notify_staff(name: str, email: str, message: str):
-    sms_ali = f"🔔 Nouveau message contact de {name}. Dashboard : {ADMIN_DASHBOARD_URL}"
-    if ALI_PHONE:
-        send_sms(ALI_PHONE, sms_ali)
+    # SMS interne uniquement vers ALI_PHONE_NUMBER.
+    send_admin_sms(f"Miss Chawarma: nouveau contact - {name} - {email}.")
 
     email_body = (
         f"<p>Nouveau message reçu :</p>"

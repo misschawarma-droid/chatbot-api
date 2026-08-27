@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import os
 import logging
+import unicodedata
 import requests
 
 logger = logging.getLogger("notifications")
@@ -104,12 +105,43 @@ def send_sms(to_phone: str, body: str) -> bool:
 
         client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
         normalized_phone = _normalize_phone_e164(to_phone)
-        client.messages.create(to=normalized_phone, from_=TWILIO_FROM_NUMBER, body=body)
+        message = client.messages.create(
+            to=normalized_phone,
+            from_=TWILIO_FROM_NUMBER,
+            body=body,
+        )
+        logger.info(
+            "SMS Twilio cree : sid=%s status=%s to=%s",
+            getattr(message, "sid", "?"),
+            getattr(message, "status", "?"),
+            normalized_phone,
+        )
 
         return True
     except Exception:
         logger.exception("Échec de l'envoi de SMS à %s", to_phone)
         return False
+
+
+def _admin_sms_text(body: str, max_length: int = 150) -> str:
+    """Rend une notification admin courte et ASCII pour rester sur 1 segment SMS.
+
+    Les emojis / accents peuvent faire passer Twilio en Unicode (UCS-2), ce qui
+    réduit fortement la taille d'un segment. Pour les alertes internes, on
+    retire donc les accents/emojis et on limite le texte à 150 caractères.
+    """
+    normalized = unicodedata.normalize("NFKD", body or "")
+    ascii_text = normalized.encode("ascii", "ignore").decode("ascii")
+    compact = " ".join(ascii_text.split())
+    return compact[:max_length]
+
+
+def send_admin_sms(body: str) -> bool:
+    """Envoie une notification SMS uniquement au numéro admin ALI_PHONE_NUMBER."""
+    if not ALI_PHONE:
+        logger.warning("ALI_PHONE_NUMBER manquant : notification admin non envoyee")
+        return False
+    return send_sms(ALI_PHONE, _admin_sms_text(body))
 
 
 # ─────────────── Modèles de messages (FR / EN) ───────────────

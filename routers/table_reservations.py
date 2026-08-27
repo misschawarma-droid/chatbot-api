@@ -22,7 +22,7 @@ from schemas import (
     TableReservationLookupIn, TableReservationLookupOut,
     TableReservationModifyIn, TableReservationCancelIn,
 )
-from notifications import send_sms, send_email, ALI_PHONE, ADMIN_DASHBOARD_URL, SMTP_EMAIL
+from notifications import send_admin_sms, send_email, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 
 router = APIRouter(prefix="/table-reservations", tags=["table-reservations"])
 
@@ -184,12 +184,12 @@ def creer_reservation(
         raise HTTPException(status_code=409, detail={"table_ids": prises})
 
     def _notify_new():
-        sms_ali = (
-            f"🔔 Nouvelle réservation table : {d.first_name} {d.last_name} le {d.date} "
-            f"à {d.time} pour {d.guests} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
+        # SMS interne uniquement vers ALI_PHONE_NUMBER.
+        # Court + sans emoji/URL pour rester sur un seul segment Twilio.
+        send_admin_sms(
+            f"Miss Chawarma: nouvelle reservation table - "
+            f"{d.first_name} {d.last_name} - {d.date} {d.time} - {d.guests} pers."
         )
-        if ALI_PHONE:
-            send_sms(ALI_PHONE, sms_ali)
         email_body = (
             f"<p>Nouvelle réservation reçue :</p>"
             f"<p>👤 {d.first_name} {d.last_name}<br>"

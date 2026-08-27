@@ -17,19 +17,19 @@ from schemas import (
     EventReservationModifyIn,
     EventReservationCancelIn,
 )
-from notifications import send_sms, send_email, ALI_PHONE, ADMIN_DASHBOARD_URL, SMTP_EMAIL
+from notifications import send_admin_sms, send_email, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 
 router = APIRouter(prefix="/api/reservations/event", tags=["event-reservations"])
 
 
 def _notify_staff(event_type, first_name, last_name, email, phone, date, time, guests, details, note):
     """Exécuté en arrière-plan, après que la réponse HTTP soit déjà partie."""
-    sms_ali = (
-        f"🔔 Nouvel événement : {first_name} {last_name} : \"{event_type}\" "
-        f"le {date} à {time} pour {guests} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
+    # SMS interne uniquement vers ALI_PHONE_NUMBER.
+    # Court + sans emoji/URL pour rester sur un seul segment Twilio.
+    send_admin_sms(
+        f"Miss Chawarma: nouvel evenement - {event_type} - "
+        f"{first_name} {last_name} - {date} {time} - {guests} pers."
     )
-    if ALI_PHONE:
-        send_sms(ALI_PHONE, sms_ali)
 
     email_body = (
         f"<p>Nouvelle demande d'événement reçue :</p>"
