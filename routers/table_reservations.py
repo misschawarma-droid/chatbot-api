@@ -22,6 +22,7 @@ from schemas import (
     TableReservationLookupIn, TableReservationLookupOut,
     TableReservationModifyIn, TableReservationCancelIn,
 )
+
 from notifications import send_admin_sms, send_email, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 
 router = APIRouter(prefix="/table-reservations", tags=["table-reservations"])
@@ -305,22 +306,19 @@ def modifier_reservation(
         db.rollback()
         raise HTTPException(status_code=409, detail="Ce créneau vient d'être pris, réessayez.")
 
-    def _notify_modif():
-        sms_ali = (
-            f"✏️ Réservation modifiée : {reservation.first_name} {reservation.last_name} → "
-            f"{d.date} à {d.time} pour {d.guests} pers. Dashboard : {ADMIN_DASHBOARD_URL}"
-        )
-        if ALI_PHONE:
-            send_sms(ALI_PHONE, sms_ali)
-        email_body = (
-            f"<p>Une réservation a été modifiée par le client :</p>"
-            f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
-            f"📅 Nouveau créneau : {d.date} à {d.time}<br>"
-            f"👥 {d.guests} personne(s)</p>"
-            f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
-        )
-        send_email(SMTP_EMAIL, "✏️ Réservation modifiée — Miss Chawarma", email_body, html=True)
-
+def _notify_modif():
+    send_admin_sms(
+        f"Miss Chawarma: reservation modifiee - "
+        f"{reservation.first_name} {reservation.last_name} - {d.date} {d.time} - {d.guests} pers."
+    )
+    email_body = (
+        f"<p>Une réservation a été modifiée par le client :</p>"
+        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
+        f"📅 Nouveau créneau : {d.date} à {d.time}<br>"
+        f"👥 {d.guests} personne(s)</p>"
+        f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
+    )
+    send_email(SMTP_EMAIL, "✏️ Réservation modifiée — Miss Chawarma", email_body, html=True)
     background_tasks.add_task(_notify_modif)
 
     db.refresh(reservation)
@@ -338,22 +336,19 @@ def annuler_reservation(
         db.delete(slot)
     reservation.status = "annulée"
     db.commit()
-
-    def _notify_annulation():
-        sms_ali = (
-            f"❌ Réservation annulée : {reservation.first_name} {reservation.last_name} "
-            f"({reservation.date} à {reservation.time})"
-        )
-        if ALI_PHONE:
-            send_sms(ALI_PHONE, sms_ali)
-        email_body = (
-            f"<p>Une réservation a été annulée par le client :</p>"
-            f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
-            f"📅 {reservation.date} à {reservation.time}<br>"
-            f"👥 {reservation.guests} personne(s)</p>"
-        )
-        send_email(SMTP_EMAIL, "❌ Réservation annulée : Miss Chawarma", email_body, html=True)
-
+    
+def _notify_annulation():
+    send_admin_sms(
+        f"Miss Chawarma: reservation annulee - "
+        f"{reservation.first_name} {reservation.last_name} - {reservation.date} {reservation.time}"
+    )
+    email_body = (
+        f"<p>Une réservation a été annulée par le client :</p>"
+        f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
+        f"📅 {reservation.date} à {reservation.time}<br>"
+        f"👥 {reservation.guests} personne(s)</p>"
+    )
+    send_email(SMTP_EMAIL, "❌ Réservation annulée : Miss Chawarma", email_body, html=True)
     background_tasks.add_task(_notify_annulation)
 
     db.refresh(reservation)
