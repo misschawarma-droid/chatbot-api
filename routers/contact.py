@@ -12,8 +12,8 @@ def _notify_staff(name: str, email: str, message: str):
     # SMS interne uniquement vers ALI_PHONE_NUMBER.
     send_admin_sms(
         f"Miss Chawarma 😊\n\n"
-        f"Nouveau Message : {message} "
-        f"de {name} avec le mail: {email}. "
+        f"Nouveau Message : '{message}'\n\n "
+        f"de '{name}' avec le mail: {email}. "
         f"Dashboard: {ADMIN_DASHBOARD_URL}"
        )
     email_body = (
