@@ -12,6 +12,7 @@ from routers import menu, orders, table_reservations, contact, verification, eve
 from routers import chatbot  # ← décommente après avoir créé routers/chatbot.py
 from routers import stripe_webhook 
 from routers import maintenance
+from fastapi.middleware.gzip import GZipMiddleware
 load_dotenv()
 # Crée les tables si elles n'existent pas
 Base.metadata.create_all(bind=engine)
@@ -55,6 +56,8 @@ app.include_router(stripe_webhook.router)
 app.include_router(verification.router)
 app.include_router(event_reservations.router)
 app.include_router(maintenance.router)
+
+app.add_middleware(GZipMiddleware, minimum_size=1000)
 # ─────────────── Admin (/admin) ───────────────
 setup_admin(app)
 
