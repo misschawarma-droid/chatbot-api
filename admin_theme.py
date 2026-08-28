@@ -764,8 +764,9 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 }
 
 .mc-calendar-day.mc-mixed .mc-calendar-number{
-  background:rgba(255,255,255,.72);
-  box-shadow:0 4px 12px rgba(18,63,29,.06);
+  background:rgba(255,255,255,.92);
+  box-shadow:0 4px 12px rgba(18,63,29,.10);
+  border:1px solid rgba(31,107,45,.10);
 }
 
 .mc-day-summary{
@@ -963,18 +964,19 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     text-align:center!important;gap:6px!important;font-size:12px!important;line-height:1.25!important}
   .mc-quick-link span:first-child{font-size:20px!important}
 
-  /* Calendrier : cellules plus lisibles, chiffre et badge bien séparés */
+  /* Calendrier : cellules plus lisibles, chiffre et badge bien séparés
+     (tablette : on reste proche de la taille desktop, il y a la place) */
   .mc-calendar-panel{padding:16px!important;border-radius:19px!important}
   .mc-calendar-header{flex-direction:column!important;align-items:flex-start!important}
   .mc-calendar-legend{margin-top:8px!important}
   .mc-calendar-controls{width:100%!important;justify-content:space-between!important;margin-top:10px!important}
-  .mc-calendar-weekdays,.mc-calendar-grid{gap:6px!important}
-  .mc-calendar-weekday{font-size:9px!important;padding:6px 2px!important}
-  .mc-calendar-day{min-height:60px!important;padding:6px!important;border-radius:13px!important}
-  .mc-calendar-number{width:22px!important;height:22px!important;font-size:11.5px!important}
-  .mc-calendar-count{right:4px!important;bottom:4px!important;min-width:20px!important;height:20px!important;
-    padding:0 5px!important;font-size:10px!important}
-  .mc-calendar-dot{display:none!important}
+  .mc-calendar-weekdays,.mc-calendar-grid{gap:7px!important}
+  .mc-calendar-weekday{font-size:10px!important;padding:6px 2px!important}
+  .mc-calendar-day{min-height:88px!important;padding:10px!important;border-radius:15px!important}
+  .mc-calendar-number{width:27px!important;height:27px!important;font-size:12.5px!important;z-index:3!important;position:relative!important}
+  .mc-calendar-badges{right:7px!important;bottom:7px!important;gap:5px!important}
+  .mc-calendar-type-badge{min-width:26px!important;height:25px!important;padding:0 7px!important;font-size:10px!important;gap:3px!important}
+  .mc-calendar-count{right:7px!important;bottom:7px!important;min-width:25px!important;height:25px!important}
   .mc-calendar-footer{align-items:flex-start!important;flex-direction:column!important;gap:8px!important}
 
   /* Tableaux : on garde le scroll horizontal natif (fiable avec les filtres/actions
@@ -993,18 +995,679 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 }
 
 @media(max-width:575.98px){
-  .mc-dashboard{padding:2px 6px 40px!important}
+  .mc-dashboard{padding:2px 4px 40px!important}
   .card-header{padding:14px!important}
   .card-body{padding:12px!important}
   .mc-dashboard h1{font-size:25px!important}
   .mc-stat-value{font-size:21px!important}
   .mc-quick-link{font-size:11.5px!important}
+
+  /* =========================================================
+     CALENDRIER MOBILE COMPACT ET RESPONSIVE
+     - 7 colonnes toujours visibles
+     - cellules plus petites
+     - badges réduits au nombre uniquement
+  ========================================================= */
+  .mc-calendar-panel{
+    margin-top:18px!important;
+    padding:14px 10px 16px!important;
+    border-radius:18px!important;
+    overflow:hidden!important;
+  }
+
+  .mc-calendar-header{
+    margin-bottom:14px!important;
+    gap:10px!important;
+  }
+
+  .mc-calendar-title{
+    font-size:21px!important;
+  }
+
+  .mc-calendar-subtitle{
+    margin-top:7px!important;
+    font-size:11.5px!important;
+    line-height:1.45!important;
+  }
+
+  .mc-calendar-legend{
+    gap:6px!important;
+    margin-top:10px!important;
+  }
+
+  .mc-calendar-legend-item{
+    padding:6px 9px!important;
+    gap:5px!important;
+    font-size:10px!important;
+  }
+
+  .mc-calendar-legend-dot{
+    width:7px!important;
+    height:7px!important;
+  }
+
+  .mc-calendar-controls{
+    width:100%!important;
+    height:48px!important;
+    margin-top:5px!important;
+    padding:4px!important;
+    border-radius:14px!important;
+  }
+
+  .mc-calendar-nav{
+    width:40px!important;
+    height:40px!important;
+    border-radius:11px!important;
+    font-size:23px!important;
+    flex-shrink:0!important;
+  }
+
+  .mc-calendar-month{
+    min-width:0!important;
+    flex:1!important;
+    font-size:17px!important;
+    font-weight:600!important;
+  }
+
+  .mc-calendar-weekdays,
+  .mc-calendar-grid{
+    width:100%!important;
+    display:grid!important;
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+    gap:4px!important;
+  }
+
+  .mc-calendar-weekdays{
+    margin-bottom:5px!important;
+  }
+
+  .mc-calendar-weekday{
+    padding:5px 0!important;
+    font-size:8px!important;
+    letter-spacing:.04em!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-calendar-grid{
+    min-height:0!important;
+  }
+
+  .mc-calendar-day{
+    position:relative!important;
+    min-width:0!important;
+    width:100%!important;
+    min-height:52px!important;
+    height:52px!important;
+    padding:5px!important;
+    border-radius:10px!important;
+    overflow:hidden!important;
+  }
+
+  .mc-calendar-day:hover:not(.mc-empty){
+    transform:none!important;
+  }
+
+  .mc-calendar-number{
+    position:relative!important;
+    z-index:3!important;
+    width:20px!important;
+    height:20px!important;
+    padding:0!important;
+    font-size:10px!important;
+    line-height:20px!important;
+    border-radius:7px!important;
+  }
+
+  .mc-calendar-badges{
+    position:absolute!important;
+    z-index:4!important;
+    left:4px!important;
+    right:4px!important;
+    bottom:4px!important;
+    display:flex!important;
+    justify-content:flex-end!important;
+    align-items:center!important;
+    gap:2px!important;
+  }
+
+  .mc-calendar-type-badge{
+    min-width:17px!important;
+    width:auto!important;
+    height:17px!important;
+    padding:0 4px!important;
+    gap:0!important;
+    border-radius:999px!important;
+    font-size:0!important;
+    line-height:17px!important;
+    box-shadow:none!important;
+  }
+
+  .mc-calendar-type-badge .mc-badge-count{
+    font-size:8px!important;
+    line-height:1!important;
+    font-weight:900!important;
+  }
+
+  .mc-calendar-type-badge .mc-badge-icon{
+    display:none!important;
+  }
+
+  .mc-calendar-count{
+    right:4px!important;
+    bottom:4px!important;
+    min-width:17px!important;
+    height:17px!important;
+    padding:0 4px!important;
+    font-size:8px!important;
+  }
+
+  .mc-calendar-dot{
+    display:none!important;
+  }
+
+  .mc-calendar-day.mc-today{
+    box-shadow:inset 0 0 0 1px rgba(196,125,14,.25)!important;
+  }
+
+  .mc-calendar-day.mc-mixed .mc-calendar-number{
+    background:rgba(255,255,255,.94)!important;
+    box-shadow:none!important;
+  }
+
+  .mc-calendar-footer{
+    margin-top:12px!important;
+    padding-top:11px!important;
+    gap:7px!important;
+    font-size:10px!important;
+  }
+
+  .mc-calendar-total{
+    padding:7px 9px!important;
+    font-size:9.5px!important;
+  }
+
+  .mc-calendar-total strong{
+    font-size:10px!important;
+  }
+
+  /* Modal de réservations optimisé téléphone */
+  .mc-day-modal{
+    padding:8px!important;
+  }
+
+  .mc-day-dialog{
+    width:100%!important;
+    max-height:calc(100vh - 16px)!important;
+    border-radius:18px!important;
+  }
+
+  .mc-day-dialog-header{
+    padding:16px!important;
+  }
+
+  .mc-day-dialog-title{
+    font-size:19px!important;
+  }
+
+  .mc-day-close{
+    width:38px!important;
+    height:38px!important;
+  }
+
+  .mc-day-dialog-body{
+    padding:12px!important;
+  }
+
+  .mc-reservation-card{
+    grid-template-columns:1fr!important;
+    gap:8px!important;
+    padding:13px!important;
+    border-radius:14px!important;
+  }
+
+  .mc-reservation-time{
+    font-size:19px!important;
+  }
+
+  .mc-reservation-status{
+    grid-column:auto!important;
+    justify-self:start!important;
+  }
+
+  .mc-day-summary{
+    gap:6px!important;
+  }
+
+  .mc-day-summary-badge{
+    padding:7px 9px!important;
+    font-size:10px!important;
+  }
 }
 
 @media(max-width:359.98px){
   /* Écrans très étroits uniquement : on passe l'intitulé "Déconnexion" en icône seule */
   .mc-logout-text{display:none!important}
   .mc-topbar-logout{padding:0 11px!important}
+}
+
+
+/* =========================================================
+   MISS CHAWARMA — REFERENCE CALENDAR DESIGN
+   Inspired by the approved visual reference:
+   compact deep-green sidebar, warm cream workspace,
+   calendar-focused dashboard, top-left day numbers,
+   small green/gold count dots.
+========================================================= */
+
+:root{
+  --mc-ref-sidebar:#0d4829;
+  --mc-ref-sidebar-dark:#07391f;
+  --mc-ref-green:#1f6b2d;
+  --mc-ref-gold:#d49a00;
+  --mc-ref-cream:#faf8ef;
+  --mc-ref-paper:#fffefa;
+  --mc-ref-text:#173d22;
+  --mc-ref-muted:#758078;
+}
+
+/* Page */
+html,body,.page,.page-wrapper,.page-body{
+  background:
+    radial-gradient(circle at 93% 3%,rgba(208,195,143,.13),transparent 260px),
+    #faf8ef!important;
+}
+.page-wrapper{margin-left:220px!important}
+.page-body{padding-top:0!important}
+.container-xl{max-width:none!important;padding:0!important}
+
+/* Desktop: reference has no top bar */
+@media(min-width:992px){
+  .mc-topbar{display:none!important}
+}
+
+/* Sidebar */
+.navbar-vertical{
+  width:220px!important;
+  background:linear-gradient(180deg,#124e2d 0%,#0d4829 55%,#07391f 100%)!important;
+  box-shadow:none!important;
+  border-right:1px solid rgba(255,255,255,.05)!important;
+}
+.navbar-vertical .navbar-brand{
+  min-height:160px!important;
+  padding:20px 18px 18px!important;
+  background:transparent!important;
+  font-size:18px!important;
+  text-align:center!important;
+}
+.navbar-vertical .navbar-brand::before{
+  width:72px!important;height:72px!important;
+  margin-bottom:14px!important;
+  border-radius:18px!important;
+  box-shadow:none!important;
+  animation:none!important;
+}
+.navbar-vertical .navbar-brand::after{
+  margin-top:10px!important;
+  color:#e6b73c!important;
+  font-size:8px!important;
+  letter-spacing:.24em!important;
+}
+.navbar-vertical .navbar-collapse{padding:10px 12px 20px!important}
+.navbar-vertical .navbar-nav{gap:6px!important}
+.navbar-vertical .nav-link{
+  min-height:46px!important;
+  margin:0!important;
+  padding:11px 13px!important;
+  border-radius:13px!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  color:rgba(255,255,255,.90)!important;
+}
+.navbar-vertical .nav-link:hover{
+  background:rgba(255,255,255,.07)!important;
+  transform:none!important;
+}
+.navbar-vertical .nav-item.active>.nav-link,
+.navbar-vertical .nav-link.active,
+.navbar-vertical .nav-link[aria-current="page"]{
+  background:rgba(255,255,255,.14)!important;
+  box-shadow:none!important;
+  color:white!important;
+}
+
+/* Dashboard */
+.mc-dashboard-reference{
+  max-width:none!important;
+  min-height:100vh;
+  margin:0!important;
+  padding:20px 28px 42px!important;
+  position:relative;
+  overflow:hidden;
+  animation:none!important;
+}
+.mc-dashboard-reference::before{
+  content:"";
+  position:absolute;
+  top:-80px;right:-70px;
+  width:250px;height:250px;
+  pointer-events:none;
+  opacity:.32;
+  background:
+    radial-gradient(ellipse at 45% 40%,rgba(173,164,116,.16),transparent 35%),
+    radial-gradient(ellipse at 68% 48%,rgba(173,164,116,.12),transparent 28%);
+}
+.mc-dashboard-reference::after{
+  content:"";
+  position:absolute;
+  right:-90px;bottom:-100px;
+  width:260px;height:260px;
+  pointer-events:none;
+  opacity:.28;
+  background:radial-gradient(ellipse,rgba(173,164,116,.15),transparent 62%);
+}
+.mc-reference-content{
+  position:relative;
+  z-index:2;
+  max-width:1180px;
+  margin:0 auto;
+}
+
+/* Intro */
+.mc-reference-intro{margin-bottom:14px}
+.mc-reference-intro .mc-calendar-subtitle{
+  margin:0 0 10px!important;
+  color:#6f7b73;
+  font-size:14px;
+  line-height:1.5;
+}
+.mc-calendar-legend{margin-top:0!important;gap:10px!important}
+.mc-calendar-legend-item{
+  padding:7px 13px!important;
+  border-radius:999px!important;
+  font-size:11px!important;
+  box-shadow:none!important;
+}
+.mc-calendar-legend-item.mc-table{color:#225e2e;background:#e8f2e5}
+.mc-calendar-legend-item.mc-event{color:#8d6200;background:#fff0bd}
+
+/* Calendar main card */
+.mc-reference-calendar{
+  margin-top:0!important;
+  padding:9px 10px 14px!important;
+  border:1px solid rgba(31,107,45,.09)!important;
+  border-radius:24px!important;
+  background:rgba(255,254,250,.83)!important;
+  box-shadow:0 12px 34px rgba(18,63,29,.07)!important;
+  backdrop-filter:blur(7px);
+  animation:none!important;
+}
+
+/* Month navigation */
+.mc-reference-calendar .mc-calendar-controls{
+  width:100%!important;
+  height:66px;
+  margin:0 0 10px!important;
+  padding:7px 10px!important;
+  display:grid!important;
+  grid-template-columns:52px 1fr 52px;
+  align-items:center;
+  border:1px solid rgba(31,107,45,.10)!important;
+  border-radius:19px!important;
+  background:rgba(255,255,255,.91)!important;
+  box-shadow:0 7px 20px rgba(18,63,29,.04)!important;
+}
+.mc-calendar-nav{
+  width:44px!important;height:44px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:13px!important;
+  color:#143f21!important;
+  background:#eef5ec!important;
+  font-size:28px!important;
+  box-shadow:none!important;
+  transition:background .18s ease,transform .18s ease!important;
+}
+.mc-calendar-nav:hover{
+  color:#143f21!important;
+  background:#e3eee1!important;
+  transform:scale(1.03)!important;
+  box-shadow:none!important;
+}
+#mc-calendar-prev{justify-self:start}
+#mc-calendar-next{justify-self:end}
+.mc-calendar-month{
+  min-width:0!important;
+  color:#174623!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:29px!important;
+  font-weight:500!important;
+  text-align:center!important;
+  text-transform:capitalize;
+}
+
+/* Weekdays */
+.mc-calendar-weekdays{
+  margin:0 0 6px!important;
+  padding:0 4px!important;
+}
+.mc-calendar-weekday{
+  padding:8px 2px!important;
+  color:#536d5c!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  letter-spacing:.13em!important;
+}
+
+/* Grid */
+.mc-calendar-weekdays,.mc-calendar-grid{
+  display:grid!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  gap:8px!important;
+}
+.mc-calendar-grid{min-height:0!important}
+
+/* Day cards */
+.mc-calendar-day{
+  position:relative;
+  width:100%!important;
+  min-width:0!important;
+  min-height:79px!important;
+  height:79px!important;
+  padding:9px 10px!important;
+  overflow:hidden;
+  border:1px solid rgba(24,78,39,.10)!important;
+  border-radius:13px!important;
+  background:rgba(255,255,255,.82)!important;
+  box-shadow:none!important;
+  text-align:left!important;
+  transition:border .18s ease,background .18s ease!important;
+}
+.mc-calendar-day:hover:not(.mc-empty){
+  transform:none!important;
+  border-color:rgba(31,107,45,.20)!important;
+  box-shadow:none!important;
+}
+.mc-calendar-day.mc-empty{
+  border-color:transparent!important;
+  background:transparent!important;
+}
+
+/* Number: top-left */
+.mc-calendar-number{
+  position:absolute!important;
+  top:8px!important;
+  left:9px!important;
+  z-index:5!important;
+  width:auto!important;
+  height:auto!important;
+  display:block!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#143f21!important;
+  font-size:12px!important;
+  font-weight:850!important;
+  line-height:1!important;
+}
+
+/* Today */
+.mc-calendar-day.mc-today{
+  border-color:rgba(196,125,14,.33)!important;
+  background:linear-gradient(145deg,#fffefa,#fff8e3)!important;
+}
+.mc-calendar-day.mc-today .mc-calendar-number{color:#9c6900!important}
+
+/* Coloured days */
+.mc-calendar-day.mc-table-only{
+  background:linear-gradient(145deg,#ffffff 0%,#edf6ec 100%)!important;
+  border-color:rgba(31,107,45,.14)!important;
+}
+.mc-calendar-day.mc-event-only{
+  background:linear-gradient(145deg,#ffffff 0%,#fff4d5 100%)!important;
+  border-color:rgba(196,125,14,.18)!important;
+}
+.mc-calendar-day.mc-mixed{
+  background:linear-gradient(135deg,#edf6ec 0%,#edf6ec 49%,#fff3d2 51%,#fff3d2 100%)!important;
+  border-color:rgba(145,123,55,.15)!important;
+}
+.mc-calendar-day.mc-mixed .mc-calendar-number{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+
+/* Small count dots */
+.mc-calendar-badges{
+  position:absolute!important;
+  left:9px!important;
+  right:auto!important;
+  bottom:8px!important;
+  z-index:5!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:5px!important;
+}
+.mc-calendar-type-badge{
+  width:20px!important;
+  min-width:20px!important;
+  height:20px!important;
+  padding:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  border-radius:50%!important;
+  color:white!important;
+  font-size:9px!important;
+  font-weight:850!important;
+  line-height:20px!important;
+  box-shadow:none!important;
+}
+.mc-calendar-type-badge.mc-table{background:#26823c!important}
+.mc-calendar-type-badge.mc-event{background:#d59a00!important}
+.mc-calendar-type-badge .mc-badge-icon{display:none!important}
+.mc-calendar-type-badge .mc-badge-count{
+  font-size:9px!important;
+  font-weight:850!important;
+}
+
+/* Footer */
+.mc-reference-footer{
+  min-height:46px;
+  margin:12px 40px 0!important;
+  padding:8px 14px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex-direction:row!important;
+  gap:14px!important;
+  border:1px solid rgba(31,107,45,.06)!important;
+  border-radius:15px!important;
+  background:rgba(255,255,255,.72)!important;
+  color:#57665b!important;
+  font-size:10px!important;
+}
+.mc-reference-footer strong{font-size:11px!important}
+.mc-footer-calendar-icon{color:#3c7450;font-size:17px}
+.mc-footer-divider{width:1px;height:18px;background:rgba(52,84,59,.18)}
+.mc-footer-table-total,.mc-footer-table-total strong{
+  color:#28743a!important;font-weight:800!important;
+}
+.mc-footer-event-total,.mc-footer-event-total strong{
+  color:#c28700!important;font-weight:800!important;
+}
+
+/* Tablet */
+@media(max-width:991.98px){
+  .page-wrapper{margin-left:0!important}
+  .mc-dashboard-reference{padding:18px 15px 35px!important}
+  .mc-reference-content{max-width:900px}
+  .mc-calendar-day{min-height:70px!important;height:70px!important}
+}
+
+/* Mobile */
+@media(max-width:575.98px){
+  .mc-dashboard-reference{padding:13px 7px 30px!important}
+  .mc-reference-intro{padding:0 5px}
+  .mc-reference-intro .mc-calendar-subtitle{font-size:11px!important}
+  .mc-calendar-legend-item{padding:6px 9px!important;font-size:9px!important}
+  .mc-reference-calendar{
+    padding:6px 5px 10px!important;
+    border-radius:17px!important;
+  }
+  .mc-reference-calendar .mc-calendar-controls{
+    height:49px;
+    grid-template-columns:39px 1fr 39px;
+    padding:4px 6px!important;
+    border-radius:14px!important;
+  }
+  .mc-calendar-nav{
+    width:34px!important;height:34px!important;
+    border-radius:10px!important;
+    font-size:22px!important;
+  }
+  .mc-calendar-month{font-size:20px!important}
+  .mc-calendar-weekdays,.mc-calendar-grid{gap:4px!important}
+  .mc-calendar-weekday{
+    padding:5px 0!important;
+    font-size:7px!important;
+    letter-spacing:.05em!important;
+  }
+  .mc-calendar-day{
+    min-height:52px!important;
+    height:52px!important;
+    padding:5px!important;
+    border-radius:9px!important;
+  }
+  .mc-calendar-number{
+    top:6px!important;
+    left:6px!important;
+    font-size:9px!important;
+  }
+  .mc-calendar-badges{
+    left:6px!important;
+    bottom:5px!important;
+    gap:3px!important;
+  }
+  .mc-calendar-type-badge{
+    width:16px!important;
+    min-width:16px!important;
+    height:16px!important;
+    font-size:7px!important;
+    line-height:16px!important;
+  }
+  .mc-calendar-type-badge .mc-badge-count{font-size:7px!important}
+  .mc-reference-footer{
+    margin:9px 4px 0!important;
+    padding:7px 8px!important;
+    min-height:40px;
+    gap:7px!important;
+    flex-wrap:wrap!important;
+    font-size:8px!important;
+  }
+  .mc-reference-footer strong{font-size:9px!important}
+  .mc-footer-divider{height:13px}
 }
 
 </style>
@@ -1392,11 +2055,68 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
   function dashboardMarkup(){
-    return '<main class="mc-dashboard"><section class="mc-dashboard-hero"><div class="mc-hero-content"><div class="mc-eyebrow">Bienvenue dans votre espace</div><h1>Bonjour, <span>Miss Chawarma</span></h1><p class="mc-hero-copy">Pilotez les commandes, les réservations et les messages depuis un espace pensé pour votre équipe. Les informations importantes sont accessibles en un seul regard.</p><div class="mc-hero-actions"><a class="mc-hero-button" href="/admin/order/list">🛍 Voir les commandes</a><a class="mc-hero-button mc-secondary" href="/admin/table-reservation/list">🍽 Toutes les réservations</a></div></div></section>'+
-    '<section class="mc-stats-grid"><article class="mc-stat-card"><div class="mc-stat-icon">🛍</div><div class="mc-stat-value" data-stat="orders">—</div><div class="mc-stat-label">Commandes enregistrées</div></article><article class="mc-stat-card"><div class="mc-stat-icon">🍽</div><div class="mc-stat-value" data-stat="tables">—</div><div class="mc-stat-label">Réservations de tables</div></article><article class="mc-stat-card"><div class="mc-stat-icon">🥂</div><div class="mc-stat-value" data-stat="events">—</div><div class="mc-stat-label">Événements privés</div></article><article class="mc-stat-card"><div class="mc-stat-icon">✉</div><div class="mc-stat-value" data-stat="messages">—</div><div class="mc-stat-label">Messages non lus</div></article></section>'+
-    '<section class="mc-calendar-panel"><div class="mc-calendar-header"><div><div class="mc-calendar-title">Calendrier des réservations</div><div class="mc-calendar-subtitle">Cliquez sur une journée pour afficher ses réservations de tables et ses événements.</div><div class="mc-calendar-legend"><span class="mc-calendar-legend-item mc-table"><span class="mc-calendar-legend-dot"></span>Tables</span><span class="mc-calendar-legend-item mc-event"><span class="mc-calendar-legend-dot"></span>Événements</span></div></div><div class="mc-calendar-controls"><button class="mc-calendar-nav" id="mc-calendar-prev" type="button" aria-label="Mois précédent">‹</button><div class="mc-calendar-month" id="mc-calendar-month"></div><button class="mc-calendar-nav" id="mc-calendar-next" type="button" aria-label="Mois suivant">›</button></div></div><div class="mc-calendar-weekdays"><div class="mc-calendar-weekday">Lun</div><div class="mc-calendar-weekday">Mar</div><div class="mc-calendar-weekday">Mer</div><div class="mc-calendar-weekday">Jeu</div><div class="mc-calendar-weekday">Ven</div><div class="mc-calendar-weekday">Sam</div><div class="mc-calendar-weekday">Dim</div></div><div class="mc-calendar-grid" id="mc-calendar-grid"><div class="mc-calendar-loading">Chargement du calendrier…</div></div><div class="mc-calendar-footer"><span>Cliquez sur un jour contenant un badge vert.</span><span class="mc-calendar-total">Tables : <strong id="mc-calendar-table-total">0</strong>&nbsp;&nbsp;·&nbsp;&nbsp;Événements : <strong id="mc-calendar-event-total">0</strong></span></div></section>'+
-    '<section class="mc-dashboard-bottom"><div class="mc-panel"><div class="mc-panel-title">Accès rapides</div><div class="mc-panel-copy">Les actions les plus utilisées par votre équipe.</div><div class="mc-quick-grid"><a class="mc-quick-link" href="/admin/order/list"><span>🛍</span><span>Gérer les commandes</span></a><a class="mc-quick-link" href="/admin/dish/list"><span>🍴</span><span>Modifier les plats</span></a><a class="mc-quick-link" href="/admin/table-reservation/list"><span>🪑</span><span>Voir les réservations</span></a><a class="mc-quick-link" href="/admin/contact-message/list"><span>✉</span><span>Lire les messages</span></a></div></div><div class="mc-panel"><div class="mc-panel-title">Aujourd’hui</div><div class="mc-panel-copy">Une belle journée commence avec une équipe bien organisée.</div><div class="mc-clock" id="mc-dashboard-clock">--:--</div><div class="mc-date" id="mc-dashboard-date"></div></div></section>'+
-    '<div class="mc-day-modal" id="mc-day-modal" aria-hidden="true"><div class="mc-day-dialog" role="dialog" aria-modal="true"><div class="mc-day-dialog-header"><div><div class="mc-day-dialog-eyebrow">Réservations de la journée</div><div class="mc-day-dialog-title" id="mc-day-dialog-title"></div></div><button class="mc-day-close" id="mc-day-close" type="button" aria-label="Fermer">×</button></div><div class="mc-day-dialog-body" id="mc-day-dialog-body"></div></div></div></main>';
+    return `
+    <main class="mc-dashboard mc-dashboard-reference">
+      <section class="mc-reference-content">
+        <div class="mc-reference-intro">
+          <div class="mc-calendar-subtitle">
+            Cliquez sur une journée pour afficher ses réservations de tables et ses événements.
+          </div>
+          <div class="mc-calendar-legend">
+            <span class="mc-calendar-legend-item mc-table">
+              <span class="mc-calendar-legend-dot"></span>Tables
+            </span>
+            <span class="mc-calendar-legend-item mc-event">
+              <span class="mc-calendar-legend-dot"></span>Événements
+            </span>
+          </div>
+        </div>
+
+        <section class="mc-calendar-panel mc-reference-calendar">
+          <div class="mc-calendar-controls">
+            <button class="mc-calendar-nav" id="mc-calendar-prev" type="button" aria-label="Mois précédent">‹</button>
+            <div class="mc-calendar-month" id="mc-calendar-month"></div>
+            <button class="mc-calendar-nav" id="mc-calendar-next" type="button" aria-label="Mois suivant">›</button>
+          </div>
+
+          <div class="mc-calendar-weekdays">
+            <div class="mc-calendar-weekday">Lun</div>
+            <div class="mc-calendar-weekday">Mar</div>
+            <div class="mc-calendar-weekday">Mer</div>
+            <div class="mc-calendar-weekday">Jeu</div>
+            <div class="mc-calendar-weekday">Ven</div>
+            <div class="mc-calendar-weekday">Sam</div>
+            <div class="mc-calendar-weekday">Dim</div>
+          </div>
+
+          <div class="mc-calendar-grid" id="mc-calendar-grid">
+            <div class="mc-calendar-loading">Chargement du calendrier…</div>
+          </div>
+
+          <div class="mc-calendar-footer mc-reference-footer">
+            <span class="mc-footer-calendar-icon">▣</span>
+            <span>Total du mois : <strong id="mc-calendar-days-total">—</strong> jours</span>
+            <span class="mc-footer-divider"></span>
+            <span class="mc-footer-table-total"><strong id="mc-calendar-table-total">0</strong> tables</span>
+            <span class="mc-footer-divider"></span>
+            <span class="mc-footer-event-total"><strong id="mc-calendar-event-total">0</strong> événements</span>
+          </div>
+        </section>
+      </section>
+
+      <div class="mc-day-modal" id="mc-day-modal" aria-hidden="true">
+        <div class="mc-day-dialog" role="dialog" aria-modal="true">
+          <div class="mc-day-dialog-header">
+            <div>
+              <div class="mc-day-dialog-eyebrow">Réservations de la journée</div>
+              <div class="mc-day-dialog-title" id="mc-day-dialog-title"></div>
+            </div>
+            <button class="mc-day-close" id="mc-day-close" type="button" aria-label="Fermer">×</button>
+          </div>
+          <div class="mc-day-dialog-body" id="mc-day-dialog-body"></div>
+        </div>
+      </div>
+    </main>`;
   }
 
   var mcCalendarCursor = new Date();
@@ -1577,6 +2297,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       var grid = document.getElementById("mc-calendar-grid");
       var tableTotal = document.getElementById("mc-calendar-table-total");
       var eventTotal = document.getElementById("mc-calendar-event-total");
+      var daysTotal = document.getElementById("mc-calendar-days-total");
       if (!monthLabel || !grid || !tableTotal || !eventTotal) return;
 
       var year = mcCalendarCursor.getFullYear();
@@ -1599,6 +2320,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       .then(function (data) {
           var firstDay = new Date(year, month, 1);
           var lastDay = new Date(year, month + 1, 0);
+          if (daysTotal) daysTotal.textContent = lastDay.getDate();
           var mondayIndex = (firstDay.getDay() + 6) % 7;
           var today = new Date();
           var html = "";
@@ -1632,12 +2354,16 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
                       (count > 0
                           ? '<span class="mc-calendar-badges">' +
                                 (tableCount > 0
-                                    ? '<span class="mc-calendar-type-badge mc-table">🍽 ' +
-                                      tableCount + '</span>'
+                                    ? '<span class="mc-calendar-type-badge mc-table" aria-label="' +
+                                      tableCount + ' réservation(s) de table">' +
+                                        '<span class="mc-badge-count">' + tableCount + '</span>' +
+                                      '</span>'
                                     : '') +
                                 (eventCount > 0
-                                    ? '<span class="mc-calendar-type-badge mc-event">🥂 ' +
-                                      eventCount + '</span>'
+                                    ? '<span class="mc-calendar-type-badge mc-event" aria-label="' +
+                                      eventCount + ' événement(s)">' +
+                                        '<span class="mc-badge-count">' + eventCount + '</span>' +
+                                      '</span>'
                                     : '') +
                             '</span>'
                           : "") +
@@ -1726,29 +2452,6 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     }
 
     mcInitCalendar();
-
-    fetch('/admin-dashboard-data',{credentials:'same-origin'})
-      .then(function(r){if(!r.ok)throw new Error();return r.json()})
-      .then(function(data){
-        Object.keys(data).forEach(function(k){
-          var el=document.querySelector('[data-stat="'+k+'"]');
-          if(el)el.textContent=data[k];
-        });
-      })
-      .catch(function(){
-        document.querySelectorAll('[data-stat]').forEach(function(el){el.textContent='0'});
-      });
-
-    function clock(){
-      var n=new Date(),
-          c=document.getElementById('mc-dashboard-clock'),
-          d=document.getElementById('mc-dashboard-date');
-      var locale=mcCurrentLang()==='en'?'en-GB':'fr-FR';
-      if(c)c.textContent=n.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'});
-      if(d)d.textContent=n.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-    }
-    clock();
-    setInterval(clock,30000);
   }
 
 
