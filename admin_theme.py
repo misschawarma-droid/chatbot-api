@@ -1077,6 +1077,62 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
   }
 }
 
+
+/* =========================================================
+   LÉGENDE DES COULEURS DU CALENDRIER
+   Vert = réservations de tables
+   Orange / Or = événements
+========================================================= */
+.mc-calendar-legend{
+  margin-top:10px;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.mc-calendar-legend-item{
+  min-height:30px;
+  padding:6px 11px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:850;
+  white-space:nowrap;
+}
+
+.mc-calendar-legend-item.mc-table{
+  color:#236d31;
+  background:#eaf5e8;
+  border:1px solid rgba(47,132,59,.14);
+}
+
+.mc-calendar-legend-item.mc-event{
+  color:#956600;
+  background:#fff1c8;
+  border:1px solid rgba(211,154,0,.18);
+}
+
+.mc-calendar-legend-dot{
+  width:9px;
+  height:9px;
+  display:block;
+  flex:0 0 auto;
+  border-radius:50%;
+}
+
+.mc-calendar-legend-item.mc-table .mc-calendar-legend-dot{
+  background:#2f843b;
+  box-shadow:0 0 0 3px rgba(47,132,59,.10);
+}
+
+.mc-calendar-legend-item.mc-event .mc-calendar-legend-dot{
+  background:#d39a00;
+  box-shadow:0 0 0 3px rgba(211,154,0,.11);
+}
+
 /* Modal des réservations d'une journée */
 
 .mc-day-modal{
@@ -3258,6 +3314,160 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 }
 
+
+/* =========================================================
+   FILTRE PLATS PAR CATÉGORIE — DESKTOP
+========================================================= */
+@media(min-width:576px){
+  .mc-dish-desktop-filters{
+    margin:18px 22px 16px;
+    padding:16px 18px;
+    display:flex;
+    align-items:end;
+    gap:14px;
+    border:1px solid rgba(31,107,45,.10);
+    border-radius:18px;
+    background:linear-gradient(135deg,#f8fbf6,#fff9ed);
+    box-shadow:0 8px 20px rgba(18,63,29,.05);
+  }
+
+  .mc-dish-desktop-filter-main{
+    flex:1 1 auto;
+    display:grid;
+    gap:7px;
+    min-width:220px;
+  }
+
+  .mc-dish-desktop-filter-label{
+    color:#6f7c73;
+    font-size:9px;
+    font-weight:900;
+    letter-spacing:.09em;
+    text-transform:uppercase;
+  }
+
+  .mc-dish-desktop-filter-select{
+    width:100%;
+    min-height:44px!important;
+    padding:0 38px 0 13px!important;
+    border:1px solid rgba(31,107,45,.18)!important;
+    border-radius:13px!important;
+    background:#fff!important;
+    color:#24402a!important;
+    font-size:12px!important;
+    font-weight:750!important;
+    box-shadow:none!important;
+  }
+
+  .mc-dish-desktop-filter-select:focus{
+    border-color:var(--mc-green)!important;
+    box-shadow:0 0 0 4px rgba(31,107,45,.08)!important;
+  }
+
+  .mc-dish-desktop-filter-reset{
+    min-height:44px!important;
+    padding:0 16px!important;
+    border:1px solid rgba(196,125,14,.20)!important;
+    border-radius:13px!important;
+    background:#fff8e8!important;
+    color:#8c5d00!important;
+    font-size:11px!important;
+    font-weight:850!important;
+    white-space:nowrap;
+  }
+
+  .mc-dish-desktop-filter-result{
+    min-width:145px;
+    padding-bottom:12px;
+    color:#6f7c73;
+    font-size:10px;
+    font-weight:750;
+    text-align:right;
+    white-space:nowrap;
+  }
+
+  .mc-dish-desktop-empty{
+    margin:0 22px 20px;
+    padding:28px 18px;
+    border:1px dashed rgba(31,107,45,.16);
+    border-radius:16px;
+    background:rgba(255,255,255,.66);
+    color:#78827b;
+    text-align:center;
+    font-size:12px;
+  }
+}
+
+
+/* =========================================================
+   FIX — NEVER SHOW DESKTOP + MOBILE DISH FILTERS TOGETHER
+========================================================= */
+
+/* Mobile: hide desktop filter completely */
+@media(max-width:575.98px){
+  .mc-dish-desktop-filters,
+  .mc-dish-desktop-empty{
+    display:none!important;
+  }
+}
+
+/* Desktop: hide the mobile dish filter completely */
+@media(min-width:576px){
+  .mc-dish-filters,
+  .mc-dish-no-results{
+    display:none!important;
+  }
+
+  /* Desktop must keep the real SQLAdmin table visible */
+  .card.mc-mobile-card-mode .table-responsive{
+    display:block!important;
+  }
+
+  .card.mc-mobile-card-mode .mc-mobile-cards{
+    display:none!important;
+  }
+}
+
+
+/* =========================================================
+   DESKTOP SIDEBAR ACCOUNT — remove duplicated bottom-left text
+   Keep only the MC avatar and chevron on desktop.
+========================================================= */
+@media(min-width:992px){
+  .mc-sidebar-account{
+    left:16px!important;
+    right:16px!important;
+    bottom:14px!important;
+    height:48px!important;
+    padding:0 12px!important;
+    justify-content:space-between!important;
+    gap:8px!important;
+  }
+
+  .mc-sidebar-account-name{
+    display:none!important;
+  }
+
+  .mc-sidebar-avatar{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    flex:0 0 auto!important;
+  }
+
+  .mc-sidebar-chevron{
+    display:block!important;
+    margin-left:auto!important;
+    flex:0 0 auto!important;
+  }
+
+  /* Extra safety: disable the old pseudo-account if any previous rule still exists */
+  .navbar-vertical::after{
+    display:none!important;
+    content:none!important;
+  }
+}
+
 </style>
 
 <script id="miss-chawarma-admin-script">
@@ -3399,6 +3609,8 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       "Click a day to see its table bookings and events.",
     "Tables": "Tables",
     "Événements": "Events",
+    "Vert = Réservations de tables": "Green = Table bookings",
+    "Orange = Événements": "Orange = Events",
     "Cliquez sur un jour contenant un badge vert.": "Click a day with a green badge.",
     "Accès rapides": "Quick access",
     "Les actions les plus utilisées par votre équipe.": "The actions your team uses most.",
@@ -4095,7 +4307,18 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
      - les actions restent cliquables
   ========================================================= */
   function mcInitMobileTableCards(root){
-    if (window.innerWidth > 575.98) return;
+    if (window.innerWidth > 575.98) {
+      document.querySelectorAll('.mc-mobile-cards').forEach(function(el){
+        el.remove();
+      });
+      document.querySelectorAll('.card.mc-mobile-card-mode').forEach(function(el){
+        el.classList.remove('mc-mobile-card-mode');
+      });
+      document.querySelectorAll('.mc-dish-filters,.mc-dish-no-results').forEach(function(el){
+        el.remove();
+      });
+      return;
+    }
     if (!/^\/admin\/[^/]+\/list\/?$/.test(window.location.pathname)) return;
 
     var scope = root || document;
@@ -4543,16 +4766,12 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     var oldEmpty = cardsWrap.querySelector('.mc-dish-no-results');
     if (oldEmpty) oldEmpty.remove();
 
-    function norm(value){
-      return (value || '')
-        .toString()
-        .trim()
-        .replace(/\s+/g,' ')
-        .toLowerCase();
+    function clean(value){
+      return (value || '').toString().replace(/\s+/g,' ').trim();
     }
 
-    function clean(value){
-      return (value || '').replace(/\s+/g,' ').trim();
+    function norm(value){
+      return clean(value).toLowerCase();
     }
 
     var table = card.querySelector('.table-responsive table');
@@ -4561,61 +4780,140 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     var tbody = table.querySelector('tbody');
     if (!tbody) return;
 
-    var headers = Array.prototype.slice.call(
-      table.querySelectorAll('thead th')
-    ).map(function(th){
-      return clean(th.textContent);
-    });
+    /* -------------------------------------------------------
+       Le filtre mobile travaille sur TOUTES les pages.
+       On ne dépend plus des cartes visibles seulement.
+    ------------------------------------------------------- */
 
-    function extractCategoryFromRow(row){
-      var cells = Array.prototype.slice.call(row.children);
-      var category = '';
+    function getCategoryColumnIndex(sourceTable){
+      var headers = Array.prototype.slice.call(
+        sourceTable.querySelectorAll('thead th')
+      );
 
-      cells.forEach(function(cell, index){
-        if (category) return;
-
-        var label = norm(headers[index] || '');
+      for (var i = 0; i < headers.length; i++) {
+        var label = norm(headers[i].textContent);
         if (
-          label.indexOf('catégorie') !== -1 ||
-          label.indexOf('categorie') !== -1 ||
-          label.indexOf('category') !== -1
+          label === 'catégorie' ||
+          label === 'categorie' ||
+          label === 'category'
         ) {
-          category = clean(cell.textContent);
-        }
-      });
-
-      /* Fallback: sur la liste Plats, la catégorie est généralement
-         la deuxième vraie colonne textuelle. */
-      if (!category) {
-        var textCells = cells.filter(function(cell){
-          if (cell.querySelector('input[type="checkbox"]')) return false;
-          if (cell.querySelector('a[href*="/view"],a[href*="/edit"],a[href*="/delete"]')) return false;
-          return clean(cell.textContent) !== '';
-        });
-
-        if (textCells.length > 1) {
-          category = clean(textCells[1].textContent);
+          return i;
         }
       }
-
-      return category;
+      return -1;
     }
 
-    /* -------------------------------------------------------
-       Cache global des 79 plats, toutes pages confondues.
-       Le filtre travaille ensuite sur ce cache, donc il n'est
-       plus limité à la pagination courante.
-    ------------------------------------------------------- */
-    window.__mcDishFilterCache = window.__mcDishFilterCache || {
+    function extractRows(sourceTable){
+      var categoryIndex = getCategoryColumnIndex(sourceTable);
+      if (categoryIndex < 0) return [];
+
+      return Array.prototype.slice.call(
+        sourceTable.querySelectorAll('tbody tr')
+      ).map(function(row){
+        var cells = Array.prototype.slice.call(row.children);
+
+        var category =
+          cells[categoryIndex]
+            ? clean(cells[categoryIndex].textContent)
+            : '';
+
+        /* IMPORTANT:
+           Les checkboxes SQLAdmin peuvent toutes avoir la même value
+           (souvent "on"). On ne peut donc PAS les utiliser comme ID,
+           sinon le dédoublonnage considère 79 plats comme une seule ligne.
+
+           On cherche d'abord un vrai identifiant dans les URLs
+           view/edit/delete. Sinon on utilise le HTML complet de la ligne.
+        */
+        var actionLink = row.querySelector(
+          'a[href*="/view/"],a[href*="/edit/"],a[href*="/delete/"],a[href*="pks="]'
+        );
+
+        var rowKey = '';
+
+        if (actionLink) {
+          var href = actionLink.getAttribute('href') || '';
+          var idMatch =
+            href.match(/\/(?:view|edit|delete)\/([^/?#]+)/i) ||
+            href.match(/[?&]pks=([^&#]+)/i);
+
+          if (idMatch) {
+            rowKey = 'pk:' + decodeURIComponent(idMatch[1]);
+          }
+        }
+
+        if (!rowKey) {
+          rowKey = 'row:' + row.outerHTML;
+        }
+
+        return {
+          key: rowKey,
+          html: row.outerHTML,
+          category: category
+        };
+      });
+    }
+
+    function dedupeRows(rows){
+      var seen = {};
+      return rows.filter(function(item){
+        if (seen[item.key]) return false;
+        seen[item.key] = true;
+        return true;
+      });
+    }
+
+    function detectTotalPages(doc){
+      var pageNumbers = Array.prototype.slice.call(
+        doc.querySelectorAll('.pagination .page-link')
+      )
+      .map(function(link){
+        var n = parseInt(clean(link.textContent), 10);
+        return isNaN(n) ? null : n;
+      })
+      .filter(function(n){ return n !== null; });
+
+      return pageNumbers.length
+        ? Math.max.apply(null, pageNumbers)
+        : 1;
+    }
+
+    function fetchPage(pageNo){
+      var url = new URL(window.location.href);
+
+      /* On garde le pageSize actuel, mais on force la page demandée
+         et on enlève la recherche pour toujours charger la liste complète. */
+      url.searchParams.delete('search');
+      url.searchParams.set('page', String(pageNo));
+
+      return fetch(url.toString(), {
+        method:'GET',
+        credentials:'same-origin',
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+      })
+      .then(function(response){
+        if (!response.ok) throw new Error('dish page');
+        return response.text();
+      })
+      .then(function(htmlText){
+        var doc = new DOMParser().parseFromString(htmlText, 'text/html');
+        var sourceTable = doc.querySelector('.table-responsive table');
+
+        return {
+          rows: sourceTable ? extractRows(sourceTable) : [],
+          pages: detectTotalPages(doc)
+        };
+      });
+    }
+
+    var cache = window.__mcDishMobileCategoryCache || {
       ready:false,
       loading:false,
-      applying:false,
       rows:[],
       categories:[],
       selected:''
     };
-
-    var cache = window.__mcDishFilterCache;
+    window.__mcDishMobileCategoryCache = cache;
 
     var filters = document.createElement('section');
     filters.className = 'mc-dish-filters';
@@ -4631,9 +4929,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           '<option value="">Chargement des catégories…</option>' +
         '</select>' +
       '</label>' +
-      '<div class="mc-dish-filter-result">Chargement de tous les plats…</div>';
+      '<div class="mc-dish-filter-result">Chargement…</div>';
 
     var selectBar = cardsWrap.querySelector('.mc-mobile-selectbar');
+
     if (selectBar) {
       selectBar.insertAdjacentElement('afterend', filters);
     } else {
@@ -4646,228 +4945,210 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
     var empty = document.createElement('div');
     empty.className = 'mc-dish-no-results';
-    empty.textContent = 'Aucun plat ne correspond à cette catégorie.';
+    empty.textContent = 'Aucun plat dans cette catégorie.';
     empty.style.display = 'none';
     cardsWrap.appendChild(empty);
 
     function renderOptions(){
-      var previous = cache.selected || '';
-
       select.innerHTML =
         '<option value="">Toutes les catégories</option>' +
-        cache.categories.map(function(value){
-          return '<option value="'+mcEscape(value)+'">'+mcEscape(value)+'</option>';
+        cache.categories.map(function(category){
+          return '<option value="' + mcEscape(category) + '">' +
+            mcEscape(category) +
+          '</option>';
         }).join('');
 
-      select.value = previous;
+      select.value = cache.selected || '';
     }
 
-    function hideNativePagination(hidden){
+    function hidePagination(){
       var footer = card.querySelector('.card-footer');
-      if (footer) {
-        footer.style.display = hidden ? 'none' : '';
-      }
+      if (footer) footer.style.display = 'none';
     }
 
-    function rebuildCardsFromRows(rows, categoryLabel){
+    function showPagination(){
+      var footer = card.querySelector('.card-footer');
+      if (footer) footer.style.display = '';
+    }
+
+    function rebuildMobileCardsFromRows(rows){
+      /* On remplace le contenu du tbody caché,
+         puis on laisse mcInitMobileTableCards recréer les cartes. */
       tbody.innerHTML = rows.map(function(item){
         return item.html;
       }).join('');
 
-      /* Supprime l'ancien rendu mobile avant reconstruction */
-      var oldCardsWrap = card.querySelector('.mc-mobile-cards');
-      if (oldCardsWrap) oldCardsWrap.remove();
+      var oldCards = card.querySelector('.mc-mobile-cards');
+      if (oldCards) oldCards.remove();
 
       card.classList.remove('mc-mobile-card-mode');
 
       mcInitMobileTableCards(document);
+    }
 
-      if (categoryLabel) {
-        result.textContent =
-          rows.length + (rows.length > 1 ? ' plats affichés' : ' plat affiché');
-        hideNativePagination(true);
-      } else {
-        result.textContent =
-          cache.rows.length + (cache.rows.length > 1 ? ' plats au total' : ' plat au total');
-        hideNativePagination(false);
-      }
+    function restoreNativeCurrentPage(){
+      /* Le reset doit revenir à la vraie page SQLAdmin actuelle.
+         Le plus fiable est de recharger la page courante sans filtre. */
+      var url = new URL(window.location.href);
+      url.searchParams.delete('search');
 
-      empty.style.display = rows.length === 0 ? 'block' : 'none';
+      fetch(url.toString(), {
+        method:'GET',
+        credentials:'same-origin',
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+      })
+      .then(function(response){
+        if (!response.ok) throw new Error('restore');
+        return response.text();
+      })
+      .then(function(htmlText){
+        var doc = new DOMParser().parseFromString(htmlText, 'text/html');
+        var sourceTable = doc.querySelector('.table-responsive table');
+        if (!sourceTable) return;
+
+        tbody.innerHTML = Array.prototype.slice.call(
+          sourceTable.querySelectorAll('tbody tr')
+        ).map(function(row){
+          return row.outerHTML;
+        }).join('');
+
+        var oldCards = card.querySelector('.mc-mobile-cards');
+        if (oldCards) oldCards.remove();
+
+        card.classList.remove('mc-mobile-card-mode');
+        showPagination();
+        mcInitMobileTableCards(document);
+      })
+      .catch(function(){
+        showPagination();
+      });
     }
 
     function applyCategory(category){
       cache.selected = clean(category);
-      var wanted = norm(cache.selected);
 
       if (!cache.ready) return;
 
-      /* Empêche la boucle infinie : rebuildCardsFromRows() reconstruit les
-         cartes via mcInitMobileTableCards(), qui ré-invoque
-         mcInitDishMobileFilters() -> loadAllDishRows() -> applyCategory()
-         pour resynchroniser le <select> nouvellement recréé. On laisse ce
-         second appel juste re-render les options, sans relancer un
-         nouveau cycle de reconstruction. */
-      if (cache.applying) return;
-      cache.applying = true;
+      var wanted = norm(cache.selected);
 
-      try {
-        if (!wanted) {
-          rebuildCardsFromRows(cache.rows, '');
-          return;
-        }
+      if (!wanted) {
+        restoreNativeCurrentPage();
+        return;
+      }
 
-        var filtered = cache.rows.filter(function(item){
-          return norm(item.category) === wanted;
-        });
+      var filtered = cache.rows.filter(function(item){
+        return norm(item.category) === wanted;
+      });
 
-        rebuildCardsFromRows(filtered, cache.selected);
-      } finally {
-        cache.applying = false;
+      rebuildMobileCardsFromRows(filtered);
+      hidePagination();
+
+      var liveSelect = card.querySelector('.mc-dish-filter-select');
+      var liveResult = card.querySelector('.mc-dish-filter-result');
+      var liveEmpty = card.querySelector('.mc-dish-no-results');
+
+      if (liveSelect) liveSelect.value = cache.selected;
+
+      if (liveResult) {
+        liveResult.textContent =
+          filtered.length +
+          (filtered.length > 1 ? ' plats affichés' : ' plat affiché');
+      }
+
+      if (liveEmpty) {
+        liveEmpty.style.display = filtered.length === 0 ? 'block' : 'none';
       }
     }
 
-    function collectRowsFromDocument(doc){
-      var sourceTable = doc.querySelector('.table-responsive table');
-      if (!sourceTable) return [];
-
-      var sourceHeaders = Array.prototype.slice.call(
-        sourceTable.querySelectorAll('thead th')
-      ).map(function(th){
-        return clean(th.textContent);
-      });
-
-      var oldHeaders = headers;
-      headers = sourceHeaders;
-
-      var out = Array.prototype.slice.call(
-        sourceTable.querySelectorAll('tbody tr')
-      ).map(function(row){
-        return {
-          html: row.outerHTML,
-          category: extractCategoryFromRow(row)
-        };
-      });
-
-      headers = oldHeaders;
-      return out;
-    }
-
-    function dedupeRows(rows){
-      var seen = {};
-      return rows.filter(function(item){
-        var key = item.html;
-        if (seen[key]) return false;
-        seen[key] = true;
-        return true;
-      });
-    }
-
-    function loadAllDishRows(){
+    function loadAllRows(){
       if (cache.ready) {
         renderOptions();
-        /* Si on est déjà au milieu d'un applyCategory() (cas du rebuild
-           interne ci-dessus), on ne relance pas le filtrage : le <select>
-           vient d'être resynchronisé, c'est suffisant. */
-        if (!cache.applying) {
-          applyCategory(cache.selected);
-        }
+        result.textContent = cache.rows.length + ' plats disponibles';
         return;
       }
 
-      if (cache.loading) {
-        var waiter = setInterval(function(){
-          if (!cache.loading) {
-            clearInterval(waiter);
-            renderOptions();
-            if (!cache.applying) {
-              applyCategory(cache.selected);
-            }
-          }
-        },100);
-        return;
-      }
-
+      if (cache.loading) return;
       cache.loading = true;
 
-      var currentRows = collectRowsFromDocument(document);
-      var allRows = dedupeRows(currentRows.slice());
+      /* MOBILE FIX:
+         On ne parcourt plus la pagination visible, car SQLAdmin peut
+         masquer certaines pages numériques dans la barre de pagination.
+         Exemple : 79 plats avec 10/page => 8 pages, mais le DOM peut
+         n'afficher que 1..7 + "suivant". Résultat : la page 8 n'était
+         jamais chargée et une catégorie pouvait afficher 6 plats au lieu de 7.
 
-      function fetchPage(pageNo){
-        var url = new URL(window.location.href);
-        /* On charge toujours la liste complète, sans recherche active */
-        url.searchParams.delete('search');
-        url.searchParams.set('page', pageNo);
+         Comme sur desktop, on demande directement tous les plats en une fois.
+      */
+      var url = new URL(window.location.href);
+      url.searchParams.delete('search');
+      url.searchParams.delete('page_size');
+      url.searchParams.set('pageSize', '1000');
+      url.searchParams.set('page', '1');
 
-        return fetch(url.toString(), {
-          method:'GET',
-          credentials:'same-origin',
-          headers:{'X-Requested-With':'XMLHttpRequest'}
-        })
-        .then(function(response){
-          if (!response.ok) throw new Error('dish page');
-          return response.text();
-        })
-        .then(function(htmlText){
-          var doc = new DOMParser().parseFromString(htmlText,'text/html');
-          return collectRowsFromDocument(doc);
-        })
-        .catch(function(){
-          return null;
-        });
-      }
+      fetch(url.toString(), {
+        method:'GET',
+        credentials:'same-origin',
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+      })
+      .then(function(response){
+        if (!response.ok) {
+          throw new Error('Impossible de charger tous les plats sur mobile.');
+        }
+        return response.text();
+      })
+      .then(function(htmlText){
+        var doc = new DOMParser().parseFromString(htmlText, 'text/html');
+        var sourceTable = doc.querySelector('.table-responsive table');
 
-      /* On ne se fie plus au texte de pagination (fragile : format différent
-         selon la langue, l'affichage XHR, ou une taille de page inattendue,
-         ce qui pouvait faire manquer des plats situés sur une page non
-         chargée, ex. "Jus de fruits rouge fait maison"). À la place on
-         récupère les pages une par une, en s'arrêtant seulement quand une
-         page ne ramène plus aucune ligne nouvelle : ainsi TOUS les plats
-         sont garantis d'être chargés, quel que soit le nombre réel de pages. */
-      var SAFETY_MAX_PAGES = 60;
+        if (!sourceTable) {
+          throw new Error('Table Plats introuvable sur mobile.');
+        }
 
-      function loadNextPage(pageNo){
-        if (pageNo > SAFETY_MAX_PAGES) return Promise.resolve();
-
-        return fetchPage(pageNo).then(function(rows){
-          if (!rows || !rows.length) return; // page vide ou erreur : on arrête
-
-          var before = allRows.length;
-          allRows = dedupeRows(allRows.concat(rows));
-
-          /* Aucune ligne nouvelle ajoutée : on a dépassé la dernière page
-             (le serveur a probablement renvoyé la dernière page à nouveau). */
-          if (allRows.length === before) return;
-
-          return loadNextPage(pageNo + 1);
-        });
-      }
-
-      loadNextPage(2).then(function(){
-        /* Fallback si absolument tout a échoué */
-        if (!allRows.length) allRows = currentRows;
+        var allRows = dedupeRows(extractRows(sourceTable));
 
         cache.rows = allRows;
 
-        var categorySet = {};
+        var categoryMap = {};
         allRows.forEach(function(item){
-          if (item.category) categorySet[item.category] = true;
+          if (item.category) categoryMap[item.category] = true;
         });
 
-        cache.categories = Object.keys(categorySet).sort(function(a,b){
-          return a.localeCompare(b,'fr',{sensitivity:'base'});
+        cache.categories = Object.keys(categoryMap).sort(function(a,b){
+          return a.localeCompare(b, 'fr', {sensitivity:'base'});
         });
 
         cache.ready = true;
         cache.loading = false;
 
         renderOptions();
+        result.textContent = cache.rows.length + ' plats disponibles';
 
-        /* Toujours reconstruire l'affichage avec le jeu complet de plats,
-           même sans catégorie choisie : sinon les cartes visibles restaient
-           celles de la première page seulement, pendant que le compteur en
-           bas affichait déjà le vrai total — d'où des plats "invisibles"
-           bien que chargés. */
-        applyCategory(cache.selected);
+        /* Si une catégorie était déjà sélectionnée, on la réapplique
+           maintenant sur la collection complète. */
+        if (cache.selected) {
+          applyCategory(cache.selected);
+        }
+      })
+      .catch(function(error){
+        console.error('Miss Chawarma mobile category filter:', error);
+
+        /* Fallback : au moins la page visible */
+        cache.rows = extractRows(table);
+
+        var fallbackMap = {};
+        cache.rows.forEach(function(item){
+          if (item.category) fallbackMap[item.category] = true;
+        });
+
+        cache.categories = Object.keys(fallbackMap).sort(function(a,b){
+          return a.localeCompare(b, 'fr', {sensitivity:'base'});
+        });
+
+        cache.ready = true;
+        cache.loading = false;
+
+        renderOptions();
+        result.textContent = cache.rows.length + ' plats chargés';
       });
     }
 
@@ -4878,12 +5159,282 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     reset.addEventListener('click', function(){
       cache.selected = '';
       select.value = '';
-      applyCategory('');
+      restoreNativeCurrentPage();
     });
 
-    renderOptions();
-    loadAllDishRows();
+    loadAllRows();
     mcApplyLanguage(filters);
+  }
+
+  /* =========================================================
+     FILTRE PLATS PAR CATÉGORIE — DESKTOP
+     - utilise uniquement la colonne Catégorie
+     - charge tous les plats en arrière-plan
+     - ne dépend pas de la pagination courante
+  ========================================================= */
+  function mcInitDishDesktopFilters(){
+    if (window.innerWidth < 576) {
+      document.querySelectorAll('.mc-dish-desktop-filters,.mc-dish-desktop-empty').forEach(function(el){
+        el.remove();
+      });
+      return;
+    }
+
+    document.querySelectorAll('.mc-dish-filters,.mc-dish-no-results').forEach(function(el){
+      el.remove();
+    });
+
+    var path = window.location.pathname.replace(/\/+$/,'');
+    if (path !== '/admin/dish/list') return;
+
+    var card = document.querySelector('.card');
+    if (!card) return;
+
+    /* Remove stale duplicate desktop filters before rebuilding */
+    var existingDesktopFilters = card.querySelectorAll('.mc-dish-desktop-filters');
+    if (existingDesktopFilters.length > 1) {
+      Array.prototype.slice.call(existingDesktopFilters, 1).forEach(function(el){
+        el.remove();
+      });
+    }
+
+    if (card.dataset.mcDishDesktopFilterReady === '1' &&
+        card.querySelector('.mc-dish-desktop-filters')) return;
+
+    var table = card.querySelector('.table-responsive table');
+    if (!table) return;
+
+    var tbody = table.querySelector('tbody');
+    if (!tbody) return;
+
+    card.dataset.mcDishDesktopFilterReady = '1';
+
+    function clean(value){
+      return (value || '').toString().replace(/\s+/g,' ').trim();
+    }
+
+    function norm(value){
+      return clean(value).toLowerCase();
+    }
+
+    function getCategoryColumnIndex(sourceTable){
+      var headers = Array.prototype.slice.call(
+        sourceTable.querySelectorAll('thead th')
+      );
+
+      for (var i = 0; i < headers.length; i++) {
+        var label = norm(headers[i].textContent);
+        if (
+          label === 'catégorie' ||
+          label === 'categorie' ||
+          label === 'category'
+        ) {
+          return i;
+        }
+      }
+      return -1;
+    }
+
+    function extractRows(sourceTable){
+      var categoryIndex = getCategoryColumnIndex(sourceTable);
+      if (categoryIndex < 0) return [];
+
+      return Array.prototype.slice.call(
+        sourceTable.querySelectorAll('tbody tr')
+      ).map(function(row){
+        var cells = Array.prototype.slice.call(row.children);
+        var category =
+          cells[categoryIndex]
+            ? clean(cells[categoryIndex].textContent)
+            : '';
+
+        return {
+          html: row.outerHTML,
+          category: category
+        };
+      });
+    }
+
+    var originalRowsHtml = tbody.innerHTML;
+    var footer = card.querySelector('.card-footer');
+    var originalFooterDisplay = footer ? footer.style.display : '';
+
+    var filter = document.createElement('section');
+    filter.className = 'mc-dish-desktop-filters';
+    filter.innerHTML =
+      '<label class="mc-dish-desktop-filter-main">' +
+        '<span class="mc-dish-desktop-filter-label">Filtrer par catégorie</span>' +
+        '<select class="mc-dish-desktop-filter-select">' +
+          '<option value="">Chargement des catégories…</option>' +
+        '</select>' +
+      '</label>' +
+      '<div class="mc-dish-desktop-filter-result">Chargement…</div>' +
+      '<button type="button" class="mc-dish-desktop-filter-reset">Réinitialiser</button>';
+
+    var tableResponsive = table.closest('.table-responsive');
+    tableResponsive.insertAdjacentElement('beforebegin', filter);
+
+    var select = filter.querySelector('.mc-dish-desktop-filter-select');
+    var result = filter.querySelector('.mc-dish-desktop-filter-result');
+    var reset = filter.querySelector('.mc-dish-desktop-filter-reset');
+
+    var empty = document.createElement('div');
+    empty.className = 'mc-dish-desktop-empty';
+    empty.textContent = 'Aucun plat dans cette catégorie.';
+    empty.style.display = 'none';
+    tableResponsive.insertAdjacentElement('afterend', empty);
+
+    function showRows(rows){
+      tbody.innerHTML = rows.map(function(item){
+        return item.html;
+      }).join('');
+      mcApplyLanguage(tbody);
+    }
+
+    function restoreOriginalPage(){
+      tbody.innerHTML = originalRowsHtml;
+      if (footer) footer.style.display = originalFooterDisplay;
+      empty.style.display = 'none';
+      mcApplyLanguage(tbody);
+    }
+
+    var cache = window.__mcDishDesktopCategoryCache || {
+      ready:false,
+      loading:false,
+      rows:[],
+      categories:[]
+    };
+    window.__mcDishDesktopCategoryCache = cache;
+
+    function renderOptions(){
+      select.innerHTML =
+        '<option value="">Toutes les catégories</option>' +
+        cache.categories.map(function(category){
+          return '<option value="' + mcEscape(category) + '">' +
+            mcEscape(category) +
+          '</option>';
+        }).join('');
+    }
+
+    function applyCategory(){
+      var wantedLabel = clean(select.value);
+      var wanted = norm(wantedLabel);
+
+      if (!wanted) {
+        restoreOriginalPage();
+        result.textContent = 'Toutes les catégories';
+        return;
+      }
+
+      if (!cache.ready) return;
+
+      var filtered = cache.rows.filter(function(item){
+        return norm(item.category) === wanted;
+      });
+
+      showRows(filtered);
+
+      /* Le résultat filtré contient déjà les plats de TOUTES les pages,
+         donc la pagination SQLAdmin native n'a plus de sens. */
+      var liveFooter = card.querySelector('.card-footer');
+      if (liveFooter) liveFooter.style.display = 'none';
+
+      result.textContent =
+        filtered.length +
+        (filtered.length > 1 ? ' plats affichés' : ' plat affiché');
+
+      empty.style.display = filtered.length === 0 ? 'block' : 'none';
+    }
+
+    function loadAllDishes(){
+      if (cache.ready) {
+        renderOptions();
+        result.textContent = cache.rows.length + ' plats disponibles';
+        return;
+      }
+
+      if (cache.loading) return;
+      cache.loading = true;
+
+      var url = new URL(window.location.href);
+      url.searchParams.delete('search');
+
+      /* IMPORTANT:
+         Ton SQLAdmin utilise `pageSize` (ex: ?pageSize=25&page=2),
+         pas `page_size`. Si on laisse pageSize=25, le serveur ne renvoie
+         que 25 plats et le filtre reste limité à une page.
+      */
+      url.searchParams.delete('page_size');
+      url.searchParams.set('pageSize', '1000');
+      url.searchParams.set('page', '1');
+
+      fetch(url.toString(), {
+        method:'GET',
+        credentials:'same-origin',
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+      })
+      .then(function(response){
+        if (!response.ok) throw new Error('Impossible de charger tous les plats.');
+        return response.text();
+      })
+      .then(function(htmlText){
+        var doc = new DOMParser().parseFromString(htmlText, 'text/html');
+        var sourceTable = doc.querySelector('.table-responsive table');
+        if (!sourceTable) throw new Error('Table Plats introuvable.');
+
+        cache.rows = extractRows(sourceTable);
+
+        var categoryMap = {};
+        cache.rows.forEach(function(item){
+          if (item.category) categoryMap[item.category] = true;
+        });
+
+        cache.categories = Object.keys(categoryMap).sort(function(a,b){
+          return a.localeCompare(b, 'fr', {sensitivity:'base'});
+        });
+
+        cache.ready = true;
+        cache.loading = false;
+
+        renderOptions();
+        result.textContent = cache.rows.length + ' plats disponibles';
+      })
+      .catch(function(error){
+        console.error('Miss Chawarma desktop category filter:', error);
+        cache.loading = false;
+
+        /* Fallback: catégories de la page visible */
+        cache.rows = extractRows(table);
+
+        var fallbackMap = {};
+        cache.rows.forEach(function(item){
+          if (item.category) fallbackMap[item.category] = true;
+        });
+
+        cache.categories = Object.keys(fallbackMap).sort(function(a,b){
+          return a.localeCompare(b, 'fr', {sensitivity:'base'});
+        });
+
+        cache.ready = true;
+        renderOptions();
+        result.textContent = cache.rows.length + ' plats chargés';
+      });
+    }
+
+    select.addEventListener('change', applyCategory);
+
+    reset.addEventListener('click', function(){
+      select.value = '';
+      restoreOriginalPage();
+
+      var liveFooter = card.querySelector('.card-footer');
+      if (liveFooter) liveFooter.style.display = originalFooterDisplay;
+
+      result.textContent = 'Toutes les catégories';
+    });
+
+    loadAllDishes();
+    mcApplyLanguage(filter);
   }
 
   /* =========================================================
@@ -4980,6 +5531,18 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       mcApplyLanguage(nextTable);
       if (nextFooter) mcApplyLanguage(nextFooter);
       mcInitMobileTableCards(document);
+
+      /* Le tableau vient d'être remplacé par la recherche :
+         on reconstruit aussi le filtre desktop. */
+      var currentCard = nextTable.closest('.card');
+      if (currentCard) {
+        currentCard.dataset.mcDishDesktopFilterReady = '';
+        var oldDesktopFilter = currentCard.querySelector('.mc-dish-desktop-filters');
+        if (oldDesktopFilter) oldDesktopFilter.remove();
+        var oldDesktopEmpty = currentCard.querySelector('.mc-dish-desktop-empty');
+        if (oldDesktopEmpty) oldDesktopEmpty.remove();
+      }
+      mcInitDishDesktopFilters();
 
       if (hadFocus) {
         searchInput.focus();
@@ -5132,14 +5695,24 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     renderDashboard();
     mcInitLiveSearch();
     mcInitMobileTableCards(document);
+    mcInitDishDesktopFilters();
     window.addEventListener('resize', function(){
       if (window.innerWidth <= 575.98) {
+        document.querySelectorAll('.mc-dish-desktop-filters,.mc-dish-desktop-empty').forEach(function(el){
+          el.remove();
+        });
+        document.querySelectorAll('.card').forEach(function(el){
+          el.dataset.mcDishDesktopFilterReady = '';
+        });
         mcInitMobileTableCards(document);
       } else {
-        document.querySelectorAll('.mc-mobile-cards').forEach(function(el){ el.remove(); });
+        document.querySelectorAll('.mc-mobile-cards,.mc-dish-filters,.mc-dish-no-results').forEach(function(el){
+          el.remove();
+        });
         document.querySelectorAll('.card.mc-mobile-card-mode').forEach(function(el){
           el.classList.remove('mc-mobile-card-mode');
         });
+        mcInitDishDesktopFilters();
       }
     });
     // Traduit aussi les pages de liste SQLAdmin natives (Plats, Commandes, etc.)
