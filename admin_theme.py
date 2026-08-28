@@ -1974,6 +1974,1290 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 }
 
+
+/* =========================================================
+   FINAL SIDEBAR POLISH
+   Clean mobile rail + elegant expanded drawer.
+   Overrides previous sidebar mobile rules only.
+========================================================= */
+@media(max-width:991.98px){
+
+  /* ---------- GLOBAL DRAWER ---------- */
+  .navbar-vertical{
+    top:74px!important;
+    bottom:0!important;
+    left:0!important;
+    height:calc(100vh - 74px)!important;
+
+    width:64px!important;
+    max-width:none!important;
+
+    transform:none!important;
+    transition:width .26s cubic-bezier(.2,.8,.2,1)!important;
+
+    overflow:hidden!important;
+    border-radius:0 0 24px 0!important;
+    box-shadow:10px 0 30px rgba(9,43,18,.16)!important;
+    background:linear-gradient(180deg,#124f2d 0%,#0d4326 58%,#08371f 100%)!important;
+  }
+
+  html.mc-nav-open .navbar-vertical{
+    width:248px!important;
+    transform:none!important;
+    box-shadow:22px 0 54px rgba(9,43,18,.28)!important;
+  }
+
+  .page-wrapper{
+    margin-left:64px!important;
+    transition:margin-left .26s cubic-bezier(.2,.8,.2,1)!important;
+  }
+
+  html.mc-nav-open .page-wrapper{
+    margin-left:64px!important;
+  }
+
+  .mc-nav-backdrop{
+    left:64px!important;
+    background:rgba(9,43,18,.38)!important;
+    backdrop-filter:blur(2px)!important;
+  }
+
+  /* ---------- CLOSED RAIL ---------- */
+  .mc-sidebar-custom{
+    position:relative!important;
+    height:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:hidden!important;
+    background:transparent!important;
+  }
+
+  .mc-sidebar-head{
+    min-height:88px!important;
+    padding:14px 8px 10px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-start!important;
+  }
+
+  .mc-sidebar-logo{
+    width:44px!important;
+    height:44px!important;
+    margin:0 auto!important;
+    border-radius:14px!important;
+    object-fit:cover!important;
+    box-shadow:0 7px 16px rgba(0,0,0,.18)!important;
+  }
+
+  .mc-sidebar-name,
+  .mc-sidebar-role{
+    display:none!important;
+  }
+
+  .mc-sidebar-menu{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    padding:8px 7px 74px!important;
+    gap:6px!important;
+    overflow-y:auto!important;
+  }
+
+  .mc-sidebar-link{
+    min-height:46px!important;
+    width:100%!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:0!important;
+    border-radius:13px!important;
+    color:rgba(255,255,255,.92)!important;
+    background:transparent!important;
+  }
+
+  .mc-sidebar-link:hover{
+    background:rgba(255,255,255,.08)!important;
+  }
+
+  .mc-sidebar-link.mc-active{
+    background:linear-gradient(135deg,rgba(112,183,108,.42),rgba(255,255,255,.10))!important;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.06)!important;
+  }
+
+  .mc-sidebar-link > span:not(.mc-sidebar-icon){
+    display:none!important;
+  }
+
+  .mc-sidebar-icon{
+    width:24px!important;
+    min-width:24px!important;
+    height:24px!important;
+    display:grid!important;
+    place-items:center!important;
+    font-size:18px!important;
+    line-height:1!important;
+  }
+
+  /* Remove the ugly fake decorative blobs in mobile */
+  .mc-sidebar-leaves,
+  .navbar-vertical .container-fluid::after{
+    display:none!important;
+  }
+
+  /* Compact profile chip in rail */
+  .mc-sidebar-account{
+    left:9px!important;
+    right:9px!important;
+    bottom:11px!important;
+    height:44px!important;
+    padding:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:0!important;
+    overflow:hidden!important;
+    border:1px solid rgba(255,255,255,.13)!important;
+    border-radius:14px!important;
+    background:rgba(255,255,255,.045)!important;
+    box-shadow:none!important;
+  }
+
+  .mc-sidebar-avatar{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:50%!important;
+    background:rgba(111,179,108,.58)!important;
+    color:white!important;
+    font-size:9px!important;
+    font-weight:900!important;
+  }
+
+  .mc-sidebar-account-name,
+  .mc-sidebar-chevron{
+    display:none!important;
+  }
+
+  /* Remove pseudo-account from previous CSS to avoid duplicated text */
+  .navbar-vertical::after{
+    display:none!important;
+    content:none!important;
+  }
+
+  /* ---------- OPEN DRAWER ---------- */
+  html.mc-nav-open .mc-sidebar-head{
+    min-height:156px!important;
+    padding:20px 16px 15px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-logo{
+    width:68px!important;
+    height:68px!important;
+    margin:0 auto!important;
+    border-radius:19px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-name{
+    display:block!important;
+    margin-top:12px!important;
+    color:#fffdf8!important;
+    font-family:Georgia,"Times New Roman",serif!important;
+    font-size:18px!important;
+    font-weight:700!important;
+    line-height:1.1!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-role{
+    display:block!important;
+    margin-top:8px!important;
+    color:#e6bd46!important;
+    font-size:7.5px!important;
+    font-weight:900!important;
+    letter-spacing:.22em!important;
+    text-align:center!important;
+    white-space:nowrap!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-menu{
+    padding:8px 13px 78px!important;
+    gap:5px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-link{
+    min-height:44px!important;
+    padding:10px 12px!important;
+    justify-content:flex-start!important;
+    gap:12px!important;
+    border-radius:13px!important;
+    font-size:11.5px!important;
+    font-weight:750!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-link > span:not(.mc-sidebar-icon){
+    display:inline!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-icon{
+    width:22px!important;
+    min-width:22px!important;
+    height:22px!important;
+    font-size:17px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-account{
+    left:13px!important;
+    right:13px!important;
+    bottom:13px!important;
+    height:48px!important;
+    padding:0 12px!important;
+    justify-content:flex-start!important;
+    gap:9px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-avatar{
+    width:30px!important;
+    height:30px!important;
+    min-width:30px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-account-name{
+    display:block!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+    color:white!important;
+    font-size:10px!important;
+    font-weight:800!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-chevron{
+    display:block!important;
+    flex:0 0 auto!important;
+    color:rgba(255,255,255,.9)!important;
+    font-size:13px!important;
+  }
+}
+
+/* Smaller phones */
+@media(max-width:420px){
+  .navbar-vertical{
+    width:56px!important;
+  }
+
+  .page-wrapper{
+    margin-left:56px!important;
+  }
+
+  .mc-nav-backdrop{
+    left:56px!important;
+  }
+
+  html.mc-nav-open .navbar-vertical{
+    width:min(82vw,242px)!important;
+  }
+
+  .mc-sidebar-head{
+    min-height:82px!important;
+    padding-left:6px!important;
+    padding-right:6px!important;
+  }
+
+  .mc-sidebar-logo{
+    width:40px!important;
+    height:40px!important;
+  }
+
+  .mc-sidebar-menu{
+    padding-left:5px!important;
+    padding-right:5px!important;
+  }
+
+  .mc-sidebar-account{
+    left:7px!important;
+    right:7px!important;
+  }
+}
+
+
+/* =========================================================
+   FIX GAP BETWEEN TOPBAR AND MOBILE SIDEBAR
+   Sidebar sits flush directly under the topbar.
+========================================================= */
+@media(max-width:991.98px){
+
+  :root{
+    --mc-mobile-topbar-h:58px;
+  }
+
+  .mc-topbar{
+    min-height:var(--mc-mobile-topbar-h)!important;
+    height:var(--mc-mobile-topbar-h)!important;
+    padding-top:0!important;
+    padding-bottom:0!important;
+  }
+
+  .navbar-vertical{
+    top:var(--mc-mobile-topbar-h)!important;
+    height:calc(100vh - var(--mc-mobile-topbar-h))!important;
+    bottom:auto!important;
+    margin-top:0!important;
+  }
+
+  .page-body{
+    padding-top:var(--mc-mobile-topbar-h)!important;
+  }
+
+  .mc-nav-backdrop{
+    top:var(--mc-mobile-topbar-h)!important;
+    bottom:0!important;
+    height:calc(100vh - var(--mc-mobile-topbar-h))!important;
+  }
+
+  .mc-sidebar-custom,
+  .mc-sidebar-head{
+    margin-top:0!important;
+  }
+}
+
+
+/* =========================================================
+   TABLES SQLADMIN -> CARTES SUR MOBILE UNIQUEMENT
+   Desktop/tablette restent inchangés.
+========================================================= */
+
+.mc-mobile-cards{
+  display:none;
+}
+
+@media(max-width:575.98px){
+
+  /* On cache seulement le tableau natif sur téléphone */
+  .card.mc-mobile-card-mode .table-responsive{
+    display:none!important;
+  }
+
+  .card.mc-mobile-card-mode .mc-mobile-cards{
+    display:grid!important;
+    gap:10px!important;
+    padding:12px!important;
+    background:transparent!important;
+  }
+
+  .mc-mobile-record-card{
+    overflow:hidden;
+    border:1px solid rgba(31,107,45,.12);
+    border-radius:16px;
+    background:rgba(255,253,248,.98);
+    box-shadow:0 8px 22px rgba(18,63,29,.07);
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+
+  .mc-mobile-record-card.mc-open{
+    border-color:rgba(196,125,14,.28);
+    box-shadow:0 12px 26px rgba(18,63,29,.10);
+  }
+
+  .mc-mobile-card-summary{
+    width:100%;
+    min-height:76px;
+    padding:13px 14px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border:0;
+    background:transparent;
+    color:var(--mc-text);
+    text-align:left;
+    cursor:pointer;
+  }
+
+  .mc-mobile-card-main{
+    min-width:0;
+    flex:1 1 auto;
+  }
+
+  .mc-mobile-card-title{
+    overflow:hidden;
+    color:var(--mc-dark);
+    font-size:14px;
+    font-weight:850;
+    line-height:1.25;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .mc-mobile-card-subtitle{
+    margin-top:4px;
+    overflow:hidden;
+    color:var(--mc-muted);
+    font-size:11px;
+    line-height:1.3;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+
+  .mc-mobile-card-chevron{
+    width:28px;
+    height:28px;
+    flex:0 0 auto;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    color:var(--mc-dark);
+    background:#edf4eb;
+    font-size:17px;
+    font-weight:800;
+    transition:transform .18s ease, background .18s ease;
+  }
+
+  .mc-mobile-record-card.mc-open .mc-mobile-card-chevron{
+    transform:rotate(180deg);
+    background:#fff0c7;
+  }
+
+  .mc-mobile-card-details{
+    display:none;
+    padding:0 14px 14px;
+    border-top:1px solid rgba(31,107,45,.08);
+  }
+
+  .mc-mobile-record-card.mc-open .mc-mobile-card-details{
+    display:block;
+  }
+
+  .mc-mobile-card-grid{
+    padding-top:10px;
+    display:grid;
+    gap:0;
+  }
+
+  .mc-mobile-detail-row{
+    padding:9px 0;
+    display:grid;
+    grid-template-columns:112px minmax(0,1fr);
+    gap:10px;
+    align-items:start;
+    border-bottom:1px solid rgba(31,107,45,.07);
+  }
+
+  .mc-mobile-detail-row:last-child{
+    border-bottom:0;
+  }
+
+  .mc-mobile-detail-label{
+    color:#728077;
+    font-size:9px;
+    font-weight:850;
+    letter-spacing:.07em;
+    text-transform:uppercase;
+  }
+
+  .mc-mobile-detail-value{
+    min-width:0;
+    overflow-wrap:anywhere;
+    color:var(--mc-text);
+    font-size:12px;
+    line-height:1.4;
+  }
+
+  .mc-mobile-detail-value a{
+    min-height:auto!important;
+    display:inline!important;
+  }
+
+  /* Actions du tableau conservées dans une zone dédiée */
+  .mc-mobile-card-actions{
+    margin-top:10px;
+    padding-top:10px;
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:8px;
+    border-top:1px solid rgba(31,107,45,.09);
+  }
+
+  .mc-mobile-card-actions a,
+  .mc-mobile-card-actions button{
+    min-width:36px;
+    min-height:36px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:10px!important;
+  }
+
+  /* Toolbar plus compacte au-dessus des cartes */
+  .card.mc-mobile-card-mode .card-body{
+    padding:10px!important;
+  }
+
+  .card.mc-mobile-card-mode .card-body form{
+    gap:8px!important;
+  }
+}
+
+
+/* =========================================================
+   MOBILE CARDS — FINAL ELEGANT VERSION
+   Selection is synced with the hidden SQLAdmin checkboxes so
+   the existing "Actions" bulk menu keeps working.
+========================================================= */
+@media(max-width:575.98px){
+
+  .card.mc-mobile-card-mode .mc-mobile-cards{
+    gap:12px!important;
+    padding:14px 12px 18px!important;
+  }
+
+  .mc-mobile-selectbar{
+    min-height:46px;
+    padding:9px 12px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    border:1px solid rgba(31,107,45,.10);
+    border-radius:14px;
+    background:rgba(255,253,248,.86);
+    box-shadow:0 6px 16px rgba(18,63,29,.04);
+  }
+
+  .mc-mobile-selectbar-left{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    color:var(--mc-dark);
+    font-size:11px;
+    font-weight:800;
+  }
+
+  .mc-mobile-selected-count{
+    padding:5px 8px;
+    border-radius:999px;
+    background:#edf4eb;
+    color:var(--mc-green);
+    font-size:9px;
+    font-weight:900;
+    white-space:nowrap;
+  }
+
+  .mc-mobile-select,
+  .mc-mobile-select-all{
+    width:18px!important;
+    height:18px!important;
+    min-height:18px!important;
+    margin:0!important;
+    accent-color:var(--mc-green);
+    cursor:pointer;
+  }
+
+  .mc-mobile-record-card{
+    position:relative;
+    overflow:hidden;
+    border:1px solid rgba(31,107,45,.11)!important;
+    border-radius:19px!important;
+    background:
+      linear-gradient(145deg,rgba(255,255,255,.97),rgba(255,252,245,.96))!important;
+    box-shadow:0 9px 24px rgba(18,63,29,.065)!important;
+  }
+
+  .mc-mobile-record-card::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    width:3px;
+    opacity:0;
+    background:linear-gradient(180deg,var(--mc-green),var(--mc-gold));
+    transition:opacity .18s ease;
+  }
+
+  .mc-mobile-record-card.mc-open::before,
+  .mc-mobile-record-card.mc-selected::before{
+    opacity:1;
+  }
+
+  .mc-mobile-record-card.mc-selected{
+    border-color:rgba(31,107,45,.28)!important;
+    box-shadow:0 12px 28px rgba(18,63,29,.11)!important;
+  }
+
+  .mc-mobile-card-summary{
+    min-height:82px!important;
+    padding:14px 14px 14px 13px!important;
+    gap:11px!important;
+  }
+
+  .mc-mobile-card-select-wrap{
+    width:26px;
+    min-width:26px;
+    height:26px;
+    display:grid;
+    place-items:center;
+    border-radius:9px;
+    background:#f5f7f2;
+  }
+
+  .mc-mobile-card-title{
+    color:#174623!important;
+    font-size:14px!important;
+    font-weight:850!important;
+  }
+
+  .mc-mobile-card-title > *{
+    max-width:100%;
+  }
+
+  .mc-mobile-card-subtitle{
+    margin-top:5px!important;
+    color:#7b8490!important;
+    font-size:11px!important;
+    font-weight:650!important;
+  }
+
+  .mc-mobile-card-chevron{
+    width:31px!important;
+    height:31px!important;
+    border:1px solid rgba(31,107,45,.08);
+    background:#eef5ec!important;
+    color:#174623!important;
+    font-family:Arial,sans-serif!important;
+    font-size:16px!important;
+  }
+
+  .mc-mobile-record-card.mc-open .mc-mobile-card-chevron{
+    color:#805500!important;
+    background:#fff0c7!important;
+    border-color:rgba(196,125,14,.12)!important;
+  }
+
+  .mc-mobile-card-details{
+    padding:0 15px 15px!important;
+    background:linear-gradient(180deg,rgba(247,240,228,.18),rgba(255,255,255,0));
+  }
+
+  .mc-mobile-card-grid{
+    padding-top:5px!important;
+  }
+
+  .mc-mobile-detail-row{
+    padding:11px 0!important;
+    grid-template-columns:102px minmax(0,1fr)!important;
+    gap:13px!important;
+    border-bottom:1px solid rgba(31,107,45,.075)!important;
+  }
+
+  .mc-mobile-detail-label{
+    padding-top:2px;
+    color:#78847b!important;
+    font-size:8.5px!important;
+    font-weight:900!important;
+    letter-spacing:.09em!important;
+  }
+
+  .mc-mobile-detail-value{
+    color:#253228!important;
+    font-size:12px!important;
+    line-height:1.45!important;
+    font-weight:500!important;
+  }
+
+  /* Action icons inside expanded card */
+  .mc-mobile-card-actions{
+    margin-top:5px!important;
+    padding-top:13px!important;
+    gap:9px!important;
+  }
+
+  .mc-mobile-card-actions a,
+  .mc-mobile-card-actions button{
+    width:38px!important;
+    min-width:38px!important;
+    height:38px!important;
+    min-height:38px!important;
+    padding:0!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    border-radius:11px!important;
+    background:white!important;
+    box-shadow:0 5px 12px rgba(18,63,29,.055)!important;
+    text-decoration:none!important;
+  }
+
+  .mc-mobile-card-actions a:hover,
+  .mc-mobile-card-actions button:hover{
+    transform:none!important;
+    background:#f8fbf7!important;
+  }
+
+  /* View stays green */
+  .mc-mobile-card-actions a[href*="/view"]{
+    color:var(--mc-green)!important;
+  }
+
+  /* Edit is warm gold/green */
+  .mc-mobile-card-actions a[href*="/edit"]{
+    color:#a96f00!important;
+  }
+
+  /* DELETE / TRASH — RED */
+  .mc-mobile-card-actions a[href*="/delete"],
+  .mc-mobile-card-actions a[data-bs-target*="delete"],
+  .mc-mobile-card-actions button[data-bs-target*="delete"],
+  .mc-mobile-card-actions .text-danger{
+    color:#c63f35!important;
+    border-color:rgba(198,63,53,.16)!important;
+    background:#fff8f7!important;
+  }
+
+  .mc-mobile-card-actions a[href*="/delete"] svg,
+  .mc-mobile-card-actions a[data-bs-target*="delete"] svg,
+  .mc-mobile-card-actions button[data-bs-target*="delete"] svg{
+    color:#c63f35!important;
+    stroke:#c63f35!important;
+  }
+
+  /* Keep top Actions menu accessible and visually separate */
+  .card.mc-mobile-card-mode .card-body{
+    border-bottom:1px solid rgba(31,107,45,.08);
+  }
+}
+
+
+/* =========================================================
+   MOBILE UX V2 — cartes + recherche plus premium
+   Uniquement téléphone. Desktop/tablette restent inchangés.
+========================================================= */
+@media(max-width:575.98px){
+
+  /* ---------- CARD SHELL ---------- */
+  .card.mc-mobile-card-mode{
+    border-radius:22px!important;
+    overflow:hidden!important;
+    background:
+      linear-gradient(180deg,rgba(255,253,248,.98),rgba(250,247,238,.98))!important;
+  }
+
+  .card.mc-mobile-card-mode .card-header{
+    padding:16px 16px 13px!important;
+    gap:8px!important;
+    background:
+      radial-gradient(circle at 95% 0,rgba(228,184,63,.17),transparent 120px),
+      linear-gradient(120deg,#fffdf8,#fbf4e5)!important;
+  }
+
+  .card.mc-mobile-card-mode .card-title{
+    font-size:23px!important;
+    line-height:1.1!important;
+  }
+
+  .card.mc-mobile-card-mode .card-title::after{
+    width:38px!important;
+    margin-top:8px!important;
+  }
+
+  /* ---------- TOOLBAR / SEARCH EXPERIENCE ---------- */
+  .card.mc-mobile-card-mode .card-body{
+    padding:12px!important;
+    background:rgba(255,253,248,.92)!important;
+  }
+
+  .card.mc-mobile-card-mode .card-body form{
+    display:grid!important;
+    grid-template-columns:1fr auto!important;
+    gap:8px!important;
+    align-items:center!important;
+  }
+
+  /* Search input becomes the main object */
+  .card.mc-mobile-card-mode input[name="search"]{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    min-height:50px!important;
+    padding:0 44px 0 43px!important;
+    border:1px solid rgba(31,107,45,.15)!important;
+    border-radius:16px!important;
+    background:
+      linear-gradient(180deg,#fff,#fffdf8)!important;
+    box-shadow:
+      0 7px 18px rgba(18,63,29,.055),
+      inset 0 0 0 1px rgba(255,255,255,.7)!important;
+    color:#1e3825!important;
+    font-size:15px!important;
+  }
+
+  .card.mc-mobile-card-mode input[name="search"]:focus{
+    border-color:rgba(31,107,45,.42)!important;
+    box-shadow:
+      0 0 0 4px rgba(31,107,45,.085),
+      0 9px 20px rgba(18,63,29,.07)!important;
+  }
+
+  /* Search form pseudo icon */
+  .card.mc-mobile-card-mode .card-body form{
+    position:relative!important;
+  }
+
+  .card.mc-mobile-card-mode .card-body form::before{
+    content:"⌕";
+    position:absolute;
+    left:15px;
+    top:13px;
+    z-index:2;
+    color:#4f7057;
+    font-family:Georgia,serif;
+    font-size:24px;
+    line-height:1;
+    pointer-events:none;
+  }
+
+  /* Native buttons in the toolbar become secondary compact controls */
+  .card.mc-mobile-card-mode .card-body form .btn{
+    min-height:42px!important;
+    padding:0 13px!important;
+    border-radius:13px!important;
+    font-size:11px!important;
+    box-shadow:none!important;
+  }
+
+  /* Hide redundant Search submit button: typing is already instant */
+  .card.mc-mobile-card-mode .card-body form button[type="submit"],
+  .card.mc-mobile-card-mode .card-body form input[type="submit"]{
+    display:none!important;
+  }
+
+  /* Clear button / X */
+  .card.mc-mobile-card-mode .card-body form a[href*="search="],
+  .card.mc-mobile-card-mode .card-body form .btn-close,
+  .card.mc-mobile-card-mode .card-body form [aria-label="Clear"]{
+    position:absolute!important;
+    right:8px!important;
+    top:8px!important;
+    width:34px!important;
+    min-width:34px!important;
+    height:34px!important;
+    min-height:34px!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    border:0!important;
+    border-radius:10px!important;
+    background:#f2f5ef!important;
+    color:#728077!important;
+  }
+
+  /* Actions / Export: softer pills */
+  .card.mc-mobile-card-mode .dropdown .btn,
+  .card.mc-mobile-card-mode .btn-group .btn{
+    min-height:42px!important;
+    padding:0 14px!important;
+    border-radius:13px!important;
+    background:#f5f7f3!important;
+    border:1px solid rgba(31,107,45,.09)!important;
+    color:#243126!important;
+    font-size:11px!important;
+    font-weight:800!important;
+  }
+
+  /* ---------- SELECTION BAR ---------- */
+  .mc-mobile-selectbar{
+    min-height:44px!important;
+    margin:0 0 2px!important;
+    padding:8px 11px!important;
+    border-radius:13px!important;
+    border:1px solid rgba(31,107,45,.09)!important;
+    background:
+      linear-gradient(90deg,#f7faf5,#fffaf0)!important;
+    box-shadow:none!important;
+  }
+
+  .mc-mobile-selectbar-left{
+    font-size:10.5px!important;
+  }
+
+  .mc-mobile-selected-count{
+    padding:5px 8px!important;
+    background:white!important;
+    border:1px solid rgba(31,107,45,.09)!important;
+    color:#2f793d!important;
+    font-size:8.5px!important;
+  }
+
+  /* ---------- LIST CARDS ---------- */
+  .card.mc-mobile-card-mode .mc-mobile-cards{
+    gap:10px!important;
+    padding:12px!important;
+  }
+
+  .mc-mobile-record-card{
+    border-radius:17px!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    background:
+      linear-gradient(145deg,#fffefb,#fbf9f2)!important;
+    box-shadow:0 7px 18px rgba(18,63,29,.055)!important;
+  }
+
+  .mc-mobile-record-card::before{
+    width:3px!important;
+    background:linear-gradient(180deg,#2f843b,#d39a00)!important;
+  }
+
+  .mc-mobile-record-card.mc-selected{
+    background:
+      linear-gradient(145deg,#f5fbf4,#fffaf0)!important;
+  }
+
+  .mc-mobile-card-summary{
+    min-height:76px!important;
+    padding:12px 12px 12px 11px!important;
+    gap:9px!important;
+  }
+
+  .mc-mobile-card-select-wrap{
+    width:25px!important;
+    min-width:25px!important;
+    height:25px!important;
+    border-radius:8px!important;
+    background:#f1f5ef!important;
+  }
+
+  .mc-mobile-select,
+  .mc-mobile-select-all{
+    width:17px!important;
+    height:17px!important;
+    min-height:17px!important;
+  }
+
+  .mc-mobile-card-title{
+    font-size:13.5px!important;
+    line-height:1.25!important;
+  }
+
+  .mc-mobile-card-subtitle{
+    margin-top:4px!important;
+    font-size:10.5px!important;
+    font-weight:600!important;
+    color:#7d8690!important;
+  }
+
+  .mc-mobile-card-chevron{
+    width:30px!important;
+    height:30px!important;
+    border-radius:10px!important;
+    background:#edf4eb!important;
+    font-size:15px!important;
+  }
+
+  .mc-mobile-record-card.mc-open .mc-mobile-card-chevron{
+    background:#fff0c7!important;
+  }
+
+  /* ---------- EXPANDED CONTENT ---------- */
+  .mc-mobile-card-details{
+    padding:0 12px 13px!important;
+    border-top:1px solid rgba(31,107,45,.07)!important;
+    background:
+      linear-gradient(180deg,rgba(245,240,228,.22),rgba(255,255,255,0))!important;
+  }
+
+  .mc-mobile-card-grid{
+    padding-top:5px!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+  }
+
+  .mc-mobile-detail-row{
+    min-height:auto!important;
+    padding:9px 10px!important;
+    display:grid!important;
+    grid-template-columns:88px minmax(0,1fr)!important;
+    gap:10px!important;
+    align-items:center!important;
+    border:1px solid rgba(31,107,45,.065)!important;
+    border-radius:11px!important;
+    background:rgba(255,255,255,.76)!important;
+  }
+
+  .mc-mobile-detail-label{
+    padding:0!important;
+    color:#79847b!important;
+    font-size:7.8px!important;
+    letter-spacing:.08em!important;
+  }
+
+  .mc-mobile-detail-value{
+    color:#26362a!important;
+    font-size:11.5px!important;
+    line-height:1.4!important;
+  }
+
+  /* Message field gets a readable note treatment */
+  .mc-mobile-detail-row:has(.mc-mobile-detail-label){
+    transition:background .18s ease!important;
+  }
+
+  .mc-mobile-card-actions{
+    margin-top:9px!important;
+    padding-top:10px!important;
+    gap:7px!important;
+    border-top:0!important;
+  }
+
+  .mc-mobile-card-actions a,
+  .mc-mobile-card-actions button{
+    width:36px!important;
+    min-width:36px!important;
+    height:36px!important;
+    min-height:36px!important;
+    border-radius:10px!important;
+    box-shadow:none!important;
+  }
+
+  .mc-mobile-card-actions a[href*="/delete"],
+  .mc-mobile-card-actions a[data-bs-target*="delete"],
+  .mc-mobile-card-actions button[data-bs-target*="delete"],
+  .mc-mobile-card-actions .text-danger{
+    color:#c63f35!important;
+    background:#fff3f1!important;
+    border-color:rgba(198,63,53,.14)!important;
+  }
+
+  /* ---------- DETAIL / VIEW PAGES ---------- */
+  /* Since list-card conversion is now restricted to /list, native view pages
+     get a clean "information sheet" treatment instead of many accordions. */
+  body .card:not(.mc-mobile-card-mode) .table-responsive{
+    border-radius:15px!important;
+  }
+
+  body .card:not(.mc-mobile-card-mode) .table tbody tr{
+    background:transparent!important;
+  }
+
+  body .card:not(.mc-mobile-card-mode) .table tbody td{
+    padding:12px 10px!important;
+  }
+}
+
+
+/* =========================================================
+   FILTRES ÉVÉNEMENTS — MOBILE
+   Type d'événement + statut, générés depuis les données visibles.
+========================================================= */
+@media(max-width:575.98px){
+  .mc-event-filters{
+    margin:0 0 2px;
+    padding:11px;
+    display:grid;
+    gap:9px;
+    border:1px solid rgba(31,107,45,.10);
+    border-radius:15px;
+    background:linear-gradient(135deg,#f8fbf6,#fff9ed);
+  }
+
+  .mc-event-filter-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .mc-event-filter-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:var(--mc-dark);
+    font-size:11px;
+    font-weight:850;
+  }
+
+  .mc-event-filter-title::before{
+    content:"⚲";
+    width:25px;
+    height:25px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:#edf4eb;
+    color:var(--mc-green);
+    font-size:14px;
+  }
+
+  .mc-event-filter-reset{
+    min-height:30px!important;
+    padding:0 9px!important;
+    border:1px solid rgba(196,125,14,.16)!important;
+    border-radius:9px!important;
+    background:#fff8e8!important;
+    color:#936200!important;
+    font-size:8.5px!important;
+    font-weight:850!important;
+  }
+
+  .mc-event-filter-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+
+  .mc-event-filter-field{
+    display:grid;
+    gap:5px;
+  }
+
+  .mc-event-filter-label{
+    color:#77827a;
+    font-size:7.5px;
+    font-weight:900;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .mc-event-filter-select{
+    width:100%;
+    min-height:38px!important;
+    padding:0 28px 0 10px!important;
+    border:1px solid rgba(31,107,45,.13)!important;
+    border-radius:11px!important;
+    background:#fff!important;
+    color:#24402a!important;
+    font-size:10px!important;
+    font-weight:700!important;
+    box-shadow:none!important;
+  }
+
+  .mc-event-filter-result{
+    color:#738078;
+    font-size:8.5px;
+    font-weight:700;
+  }
+
+  .mc-mobile-record-card.mc-event-filter-hidden{
+    display:none!important;
+  }
+
+  .mc-event-no-results{
+    padding:24px 14px;
+    border:1px dashed rgba(31,107,45,.16);
+    border-radius:14px;
+    background:rgba(255,255,255,.62);
+    color:#78827b;
+    text-align:center;
+    font-size:11px;
+  }
+}
+
+
+/* =========================================================
+   FILTRE PLATS PAR CATÉGORIE — MOBILE
+========================================================= */
+@media(max-width:575.98px){
+  .mc-dish-filters{
+    margin:0 0 2px;
+    padding:11px;
+    display:grid;
+    gap:9px;
+    border:1px solid rgba(31,107,45,.10);
+    border-radius:15px;
+    background:linear-gradient(135deg,#f8fbf6,#fff9ed);
+  }
+
+  .mc-dish-filter-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .mc-dish-filter-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    color:var(--mc-dark);
+    font-size:11px;
+    font-weight:850;
+  }
+
+  .mc-dish-filter-title::before{
+    content:"☷";
+    width:25px;
+    height:25px;
+    display:grid;
+    place-items:center;
+    border-radius:8px;
+    background:#edf4eb;
+    color:var(--mc-green);
+    font-size:14px;
+  }
+
+  .mc-dish-filter-reset{
+    min-height:30px!important;
+    padding:0 9px!important;
+    border:1px solid rgba(196,125,14,.16)!important;
+    border-radius:9px!important;
+    background:#fff8e8!important;
+    color:#936200!important;
+    font-size:8.5px!important;
+    font-weight:850!important;
+  }
+
+  .mc-dish-filter-field{
+    display:grid;
+    gap:5px;
+  }
+
+  .mc-dish-filter-label{
+    color:#77827a;
+    font-size:7.5px;
+    font-weight:900;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+
+  .mc-dish-filter-select{
+    width:100%;
+    min-height:40px!important;
+    padding:0 34px 0 11px!important;
+    border:1px solid rgba(31,107,45,.13)!important;
+    border-radius:11px!important;
+    background:#fff!important;
+    color:#24402a!important;
+    font-size:10.5px!important;
+    font-weight:700!important;
+    box-shadow:none!important;
+  }
+
+  .mc-dish-filter-result{
+    color:#738078;
+    font-size:8.5px;
+    font-weight:700;
+  }
+
+  .mc-mobile-record-card.mc-dish-filter-hidden{
+    display:none!important;
+  }
+
+  .mc-dish-no-results{
+    padding:24px 14px;
+    border:1px dashed rgba(31,107,45,.16);
+    border-radius:14px;
+    background:rgba(255,255,255,.62);
+    color:#78827b;
+    text-align:center;
+    font-size:11px;
+  }
+}
+
 </style>
 
 <script id="miss-chawarma-admin-script">
@@ -2321,17 +3605,16 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
     var items = [
       {label:'Tableau de bord', href:'/admin', tokens:['tableau','dashboard'], icon:'⌂'},
+      {label:'Catégories', href:findHref(['category','catégorie','categories'],'/admin/category/list'), tokens:['category','catégorie','categories'], icon:'☷'},
+      {label:'Plats', href:findHref(['dish','plat','dishes'],'/admin/dish/list'), tokens:['dish','plat','dishes'], icon:'♨'},
+      {label:'Commandes', href:findHref(['order','commande','orders'],'/admin/order/list'), tokens:['order','commande','orders'], icon:'🛍'},
+      {label:'Articles commandés', href:findHref(['order-item','ordered item','articles commandés'],'/admin/order-item/list'), tokens:['order-item','ordered item','articles commandés'], icon:'▤'},
       {label:'Réservations', href:findHref(['table-reservation','réservations tables','table bookings'],'/admin/table-reservation/list'), icon:'▣'},
       {label:'Événements', href:findHref(['event-reservation','réservations événements','event bookings'],'/admin/event-reservation/list'), icon:'☆'},
-      {label:'QR Codes', href:'#', tokens:['qr'], icon:'⌘'},
-      {label:'Analyses', href:'#', tokens:['analys'], icon:'↗'},
-      {label:'Messages', href:findHref(['contact-message','messages contact','contact messages'],'/admin/contact-message/list'), icon:'✉'},
-      {label:'Paramètres', href:'#', tokens:['param','setting'], icon:'⚙'}
+      {label:'Messages', href:findHref(['contact-message','messages contact','contact messages'],'/admin/contact-message/list'), icon:'✉'}
     ];
 
-    /* Si les entrées QR / Analyses / Paramètres existent vraiment dans SQLAdmin,
-       on réutilise leurs URL; sinon elles restent visuellement présentes sans
-       casser les pages existantes. */
+    /* Réutilise les URL SQLAdmin existantes quand elles sont disponibles. */
     items.forEach(function(item){
       if(item.tokens){
         var found=findHref(item.tokens,item.href);
@@ -2803,6 +4086,806 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
 
+
+  /* =========================================================
+     CARTES MOBILE POUR LES LISTES SQLADMIN
+     - uniquement <= 575px
+     - desktop/tablette inchangés
+     - clic sur la carte = détails
+     - les actions restent cliquables
+  ========================================================= */
+  function mcInitMobileTableCards(root){
+    if (window.innerWidth > 575.98) return;
+    if (!/^\/admin\/[^/]+\/list\/?$/.test(window.location.pathname)) return;
+
+    var scope = root || document;
+    var tables = scope.querySelectorAll
+      ? scope.querySelectorAll('.card .table-responsive table')
+      : [];
+
+    tables.forEach(function(table){
+      var card = table.closest('.card');
+      if (!card) return;
+
+      var responsive = table.closest('.table-responsive');
+      if (!responsive) return;
+
+      var oldCards = card.querySelector('.mc-mobile-cards');
+      if (oldCards) oldCards.remove();
+
+      var headers = Array.prototype.slice.call(
+        table.querySelectorAll('thead th')
+      ).map(function(th){
+        return (th.textContent || '').replace(/\s+/g,' ').trim();
+      });
+
+      var rows = Array.prototype.slice.call(
+        table.querySelectorAll('tbody tr')
+      );
+
+      if (!rows.length) return;
+
+      var cardsWrap = document.createElement('div');
+      cardsWrap.className = 'mc-mobile-cards';
+
+      /* -----------------------------------------------------
+         Selection bar
+         It controls the ORIGINAL SQLAdmin checkboxes in the
+         hidden table, so the native "Actions" dropdown works.
+      ----------------------------------------------------- */
+      var selectableOriginals = [];
+      rows.forEach(function(row){
+        var cb = row.querySelector('input[type="checkbox"]');
+        if (cb && !cb.disabled) selectableOriginals.push(cb);
+      });
+
+      var selectBar = null;
+      var selectAll = null;
+      var selectedCount = null;
+
+      if (selectableOriginals.length) {
+        selectBar = document.createElement('div');
+        selectBar.className = 'mc-mobile-selectbar';
+        selectBar.innerHTML =
+          '<label class="mc-mobile-selectbar-left">' +
+            '<input type="checkbox" class="mc-mobile-select-all" aria-label="Tout sélectionner">' +
+            '<span>Tout sélectionner</span>' +
+          '</label>' +
+          '<span class="mc-mobile-selected-count">0 sélectionné</span>';
+
+        selectAll = selectBar.querySelector('.mc-mobile-select-all');
+        selectedCount = selectBar.querySelector('.mc-mobile-selected-count');
+        cardsWrap.appendChild(selectBar);
+      }
+
+      var mobileCheckboxes = [];
+
+      function updateSelectionUI(){
+        var checked = mobileCheckboxes.filter(function(info){
+          return info.mobile.checked;
+        }).length;
+
+        if (selectedCount) {
+          selectedCount.textContent =
+            checked + (checked > 1 ? ' sélectionnés' : ' sélectionné');
+        }
+
+        if (selectAll) {
+          selectAll.checked =
+            mobileCheckboxes.length > 0 && checked === mobileCheckboxes.length;
+          selectAll.indeterminate =
+            checked > 0 && checked < mobileCheckboxes.length;
+        }
+      }
+
+      rows.forEach(function(row, rowIndex){
+        var cells = Array.prototype.slice.call(row.children);
+        if (!cells.length) return;
+
+        var originalCheckbox = row.querySelector('input[type="checkbox"]');
+        var record = document.createElement('article');
+        record.className = 'mc-mobile-record-card';
+
+        var useful = [];
+        var actionCell = null;
+
+        cells.forEach(function(cell, index){
+          var label = headers[index] || '';
+          var normalized = label.toLowerCase();
+          var html = cell.innerHTML;
+          var textValue = (cell.textContent || '').replace(/\s+/g,' ').trim();
+
+          var isCheckbox = !!cell.querySelector('input[type="checkbox"]');
+          var hasActions = !!cell.querySelector(
+            'a[href*="/view"],a[href*="/edit"],a[href*="/delete"],[data-bs-target*="delete"],button'
+          );
+          var isActions =
+            normalized.indexOf('action') !== -1 ||
+            hasActions;
+
+          if (isCheckbox) return;
+
+          if (isActions) {
+            if (!actionCell && cell.querySelector('a,button')) {
+              actionCell = cell;
+            }
+            return;
+          }
+
+          if (!textValue && !cell.querySelector('img,span,a')) return;
+
+          useful.push({
+            label: label || ('Info ' + (index + 1)),
+            html: html,
+            text: textValue
+          });
+        });
+
+        var titleItem = useful[0] || {text:'Détails', html:'Détails', label:''};
+        var subtitleItem = useful[1] || null;
+
+        var summary = document.createElement('div');
+        summary.className = 'mc-mobile-card-summary';
+
+        var selectHtml = '';
+        if (originalCheckbox && !originalCheckbox.disabled) {
+          selectHtml =
+            '<label class="mc-mobile-card-select-wrap" title="Sélectionner">' +
+              '<input type="checkbox" class="mc-mobile-select" aria-label="Sélectionner cette ligne">' +
+            '</label>';
+        }
+
+        summary.innerHTML =
+          selectHtml +
+          '<button type="button" class="mc-mobile-card-main" aria-expanded="false" ' +
+            'style="border:0;background:transparent;padding:0;text-align:left;min-width:0;">' +
+            '<div class="mc-mobile-card-title">' + titleItem.html + '</div>' +
+            (subtitleItem
+              ? '<div class="mc-mobile-card-subtitle">' + subtitleItem.text + '</div>'
+              : '') +
+          '</button>' +
+          '<button type="button" class="mc-mobile-card-chevron" aria-label="Afficher les détails">⌄</button>';
+
+        var mainButton = summary.querySelector('.mc-mobile-card-main');
+        var chevronButton = summary.querySelector('.mc-mobile-card-chevron');
+        var mobileCheckbox = summary.querySelector('.mc-mobile-select');
+
+        var details = document.createElement('div');
+        details.className = 'mc-mobile-card-details';
+
+        var grid = document.createElement('div');
+        grid.className = 'mc-mobile-card-grid';
+
+        useful.forEach(function(item){
+          var detailRow = document.createElement('div');
+          detailRow.className = 'mc-mobile-detail-row';
+          detailRow.innerHTML =
+            '<div class="mc-mobile-detail-label">' + mcEscape(item.label) + '</div>' +
+            '<div class="mc-mobile-detail-value">' + item.html + '</div>';
+          grid.appendChild(detailRow);
+        });
+
+        details.appendChild(grid);
+
+        if (actionCell && actionCell.querySelector('a,button')) {
+          var actions = document.createElement('div');
+          actions.className = 'mc-mobile-card-actions';
+          actions.innerHTML = actionCell.innerHTML;
+          details.appendChild(actions);
+        }
+
+        function toggleDetails(){
+          var open = record.classList.toggle('mc-open');
+          mainButton.setAttribute('aria-expanded', open ? 'true' : 'false');
+          chevronButton.setAttribute(
+            'aria-label',
+            open ? 'Masquer les détails' : 'Afficher les détails'
+          );
+        }
+
+        mainButton.addEventListener('click', toggleDetails);
+        chevronButton.addEventListener('click', toggleDetails);
+
+        if (mobileCheckbox && originalCheckbox) {
+          mobileCheckbox.checked = !!originalCheckbox.checked;
+          record.classList.toggle('mc-selected', mobileCheckbox.checked);
+
+          mobileCheckboxes.push({
+            mobile: mobileCheckbox,
+            original: originalCheckbox,
+            card: record
+          });
+
+          mobileCheckbox.addEventListener('change', function(event){
+            event.stopPropagation();
+
+            originalCheckbox.checked = mobileCheckbox.checked;
+            record.classList.toggle('mc-selected', mobileCheckbox.checked);
+
+            /* Trigger native listeners used by SQLAdmin bulk actions */
+            originalCheckbox.dispatchEvent(
+              new Event('change', {bubbles:true})
+            );
+
+            updateSelectionUI();
+          });
+
+          /* Clicking the selection label must not open the card */
+          var selectWrap = summary.querySelector('.mc-mobile-card-select-wrap');
+          if (selectWrap) {
+            selectWrap.addEventListener('click', function(event){
+              event.stopPropagation();
+            });
+          }
+        }
+
+        details.addEventListener('click', function(event){
+          if (event.target.closest('a,button,input,label')) {
+            event.stopPropagation();
+          }
+        });
+
+        record.appendChild(summary);
+        record.appendChild(details);
+        cardsWrap.appendChild(record);
+      });
+
+      if (!cardsWrap.querySelector('.mc-mobile-record-card')) return;
+
+      if (selectAll) {
+        selectAll.addEventListener('change', function(){
+          mobileCheckboxes.forEach(function(info){
+            info.mobile.checked = selectAll.checked;
+            info.original.checked = selectAll.checked;
+            info.card.classList.toggle('mc-selected', selectAll.checked);
+            info.original.dispatchEvent(
+              new Event('change', {bubbles:true})
+            );
+          });
+          updateSelectionUI();
+        });
+      }
+
+      responsive.insertAdjacentElement('afterend', cardsWrap);
+      card.classList.add('mc-mobile-card-mode');
+      mcApplyLanguage(cardsWrap);
+      updateSelectionUI();
+      mcInitEventMobileFilters(card, cardsWrap);
+      mcInitDishMobileFilters(card, cardsWrap);
+    });
+  }
+
+
+  /* =========================================================
+     FILTRES ÉVÉNEMENTS — MOBILE
+     Construit les options à partir des lignes SQLAdmin présentes.
+  ========================================================= */
+  function mcInitEventMobileFilters(card, cardsWrap){
+    var path = window.location.pathname.replace(/\/+$/,'');
+    if (path !== '/admin/event-reservation/list') return;
+    if (!card || !cardsWrap) return;
+
+    var old = cardsWrap.querySelector('.mc-event-filters');
+    if (old) old.remove();
+
+    var records = Array.prototype.slice.call(
+      cardsWrap.querySelectorAll('.mc-mobile-record-card')
+    );
+    if (!records.length) return;
+
+    function norm(value){
+      return (value || '')
+        .toString()
+        .trim()
+        .replace(/\s+/g,' ')
+        .toLowerCase();
+    }
+
+    var types = [];
+    var statuses = [];
+
+    records.forEach(function(record){
+      var details = Array.prototype.slice.call(
+        record.querySelectorAll('.mc-mobile-detail-row')
+      );
+
+      var eventType = '';
+      var status = '';
+
+      details.forEach(function(row){
+        var labelEl = row.querySelector('.mc-mobile-detail-label');
+        var valueEl = row.querySelector('.mc-mobile-detail-value');
+        if (!labelEl || !valueEl) return;
+
+        var label = norm(labelEl.textContent);
+        var value = (valueEl.textContent || '').replace(/\s+/g,' ').trim();
+
+        if (
+          !eventType &&
+          (
+            label.indexOf('événement') !== -1 ||
+            label.indexOf('event') !== -1 ||
+            label.indexOf('type') !== -1
+          )
+        ) {
+          eventType = value;
+        }
+
+        if (
+          !status &&
+          (
+            label.indexOf('statut') !== -1 ||
+            label.indexOf('status') !== -1 ||
+            label.indexOf('état') !== -1
+          )
+        ) {
+          status = value;
+        }
+      });
+
+      /* Fallback: sur cette liste, le titre de la carte est le type d'événement. */
+      if (!eventType) {
+        var title = record.querySelector('.mc-mobile-card-title');
+        eventType = title ? (title.textContent || '').replace(/\s+/g,' ').trim() : '';
+      }
+
+      record.dataset.mcEventType = norm(eventType);
+      record.dataset.mcEventStatus = norm(status);
+
+      if (eventType && types.indexOf(eventType) === -1) types.push(eventType);
+      if (status && statuses.indexOf(status) === -1) statuses.push(status);
+    });
+
+    types.sort(function(a,b){ return a.localeCompare(b, 'fr'); });
+    statuses.sort(function(a,b){ return a.localeCompare(b, 'fr'); });
+
+    var filters = document.createElement('section');
+    filters.className = 'mc-event-filters';
+
+    var typeOptions =
+      '<option value="">Tous les types</option>' +
+      types.map(function(value){
+        return '<option value="'+mcEscape(norm(value))+'">'+mcEscape(value)+'</option>';
+      }).join('');
+
+    var statusOptions =
+      '<option value="">Tous les statuts</option>' +
+      statuses.map(function(value){
+        return '<option value="'+mcEscape(norm(value))+'">'+mcEscape(value)+'</option>';
+      }).join('');
+
+    filters.innerHTML =
+      '<div class="mc-event-filter-head">' +
+        '<div class="mc-event-filter-title">Filtrer les événements</div>' +
+        '<button type="button" class="mc-event-filter-reset">Réinitialiser</button>' +
+      '</div>' +
+      '<div class="mc-event-filter-grid">' +
+        '<label class="mc-event-filter-field">' +
+          '<span class="mc-event-filter-label">Type</span>' +
+          '<select class="mc-event-filter-select" data-event-filter="type">' +
+            typeOptions +
+          '</select>' +
+        '</label>' +
+        '<label class="mc-event-filter-field">' +
+          '<span class="mc-event-filter-label">Statut</span>' +
+          '<select class="mc-event-filter-select" data-event-filter="status">' +
+            statusOptions +
+          '</select>' +
+        '</label>' +
+      '</div>' +
+      '<div class="mc-event-filter-result"></div>';
+
+    var selectBar = cardsWrap.querySelector('.mc-mobile-selectbar');
+    if (selectBar) {
+      selectBar.insertAdjacentElement('afterend', filters);
+    } else {
+      cardsWrap.insertBefore(filters, cardsWrap.firstChild);
+    }
+
+    var typeSelect = filters.querySelector('[data-event-filter="type"]');
+    var statusSelect = filters.querySelector('[data-event-filter="status"]');
+    var reset = filters.querySelector('.mc-event-filter-reset');
+    var result = filters.querySelector('.mc-event-filter-result');
+
+    var empty = document.createElement('div');
+    empty.className = 'mc-event-no-results';
+    empty.textContent = 'Aucun événement ne correspond à ces filtres.';
+    empty.style.display = 'none';
+    cardsWrap.appendChild(empty);
+
+    function apply(){
+      var wantedType = norm(typeSelect.value);
+      var wantedStatus = norm(statusSelect.value);
+      var visible = 0;
+
+      records.forEach(function(record){
+        var matchType =
+          !wantedType || record.dataset.mcEventType === wantedType;
+        var matchStatus =
+          !wantedStatus || record.dataset.mcEventStatus === wantedStatus;
+
+        var show = matchType && matchStatus;
+        record.classList.toggle('mc-event-filter-hidden', !show);
+        if (show) visible += 1;
+      });
+
+      result.textContent =
+        visible + (visible > 1 ? ' événements affichés' : ' événement affiché');
+      empty.style.display = visible === 0 ? 'block' : 'none';
+    }
+
+    typeSelect.addEventListener('change', apply);
+    statusSelect.addEventListener('change', apply);
+
+    reset.addEventListener('click', function(){
+      typeSelect.value = '';
+      statusSelect.value = '';
+      apply();
+    });
+
+    apply();
+    mcApplyLanguage(filters);
+  }
+
+
+  /* =========================================================
+     FILTRE PLATS PAR CATÉGORIE — MOBILE
+     Les catégories sont récupérées directement depuis les cartes.
+  ========================================================= */
+  function mcInitDishMobileFilters(card, cardsWrap){
+    var path = window.location.pathname.replace(/\/+$/,'');
+    if (path !== '/admin/dish/list') return;
+    if (!card || !cardsWrap) return;
+
+    var old = cardsWrap.querySelector('.mc-dish-filters');
+    if (old) old.remove();
+
+    var oldEmpty = cardsWrap.querySelector('.mc-dish-no-results');
+    if (oldEmpty) oldEmpty.remove();
+
+    function norm(value){
+      return (value || '')
+        .toString()
+        .trim()
+        .replace(/\s+/g,' ')
+        .toLowerCase();
+    }
+
+    function clean(value){
+      return (value || '').replace(/\s+/g,' ').trim();
+    }
+
+    var table = card.querySelector('.table-responsive table');
+    if (!table) return;
+
+    var tbody = table.querySelector('tbody');
+    if (!tbody) return;
+
+    var headers = Array.prototype.slice.call(
+      table.querySelectorAll('thead th')
+    ).map(function(th){
+      return clean(th.textContent);
+    });
+
+    function extractCategoryFromRow(row){
+      var cells = Array.prototype.slice.call(row.children);
+      var category = '';
+
+      cells.forEach(function(cell, index){
+        if (category) return;
+
+        var label = norm(headers[index] || '');
+        if (
+          label.indexOf('catégorie') !== -1 ||
+          label.indexOf('categorie') !== -1 ||
+          label.indexOf('category') !== -1
+        ) {
+          category = clean(cell.textContent);
+        }
+      });
+
+      /* Fallback: sur la liste Plats, la catégorie est généralement
+         la deuxième vraie colonne textuelle. */
+      if (!category) {
+        var textCells = cells.filter(function(cell){
+          if (cell.querySelector('input[type="checkbox"]')) return false;
+          if (cell.querySelector('a[href*="/view"],a[href*="/edit"],a[href*="/delete"]')) return false;
+          return clean(cell.textContent) !== '';
+        });
+
+        if (textCells.length > 1) {
+          category = clean(textCells[1].textContent);
+        }
+      }
+
+      return category;
+    }
+
+    /* -------------------------------------------------------
+       Cache global des 79 plats, toutes pages confondues.
+       Le filtre travaille ensuite sur ce cache, donc il n'est
+       plus limité à la pagination courante.
+    ------------------------------------------------------- */
+    window.__mcDishFilterCache = window.__mcDishFilterCache || {
+      ready:false,
+      loading:false,
+      applying:false,
+      rows:[],
+      categories:[],
+      selected:''
+    };
+
+    var cache = window.__mcDishFilterCache;
+
+    var filters = document.createElement('section');
+    filters.className = 'mc-dish-filters';
+
+    filters.innerHTML =
+      '<div class="mc-dish-filter-head">' +
+        '<div class="mc-dish-filter-title">Filtrer les plats</div>' +
+        '<button type="button" class="mc-dish-filter-reset">Réinitialiser</button>' +
+      '</div>' +
+      '<label class="mc-dish-filter-field">' +
+        '<span class="mc-dish-filter-label">Catégorie</span>' +
+        '<select class="mc-dish-filter-select">' +
+          '<option value="">Chargement des catégories…</option>' +
+        '</select>' +
+      '</label>' +
+      '<div class="mc-dish-filter-result">Chargement de tous les plats…</div>';
+
+    var selectBar = cardsWrap.querySelector('.mc-mobile-selectbar');
+    if (selectBar) {
+      selectBar.insertAdjacentElement('afterend', filters);
+    } else {
+      cardsWrap.insertBefore(filters, cardsWrap.firstChild);
+    }
+
+    var select = filters.querySelector('.mc-dish-filter-select');
+    var reset = filters.querySelector('.mc-dish-filter-reset');
+    var result = filters.querySelector('.mc-dish-filter-result');
+
+    var empty = document.createElement('div');
+    empty.className = 'mc-dish-no-results';
+    empty.textContent = 'Aucun plat ne correspond à cette catégorie.';
+    empty.style.display = 'none';
+    cardsWrap.appendChild(empty);
+
+    function renderOptions(){
+      var previous = cache.selected || '';
+
+      select.innerHTML =
+        '<option value="">Toutes les catégories</option>' +
+        cache.categories.map(function(value){
+          return '<option value="'+mcEscape(value)+'">'+mcEscape(value)+'</option>';
+        }).join('');
+
+      select.value = previous;
+    }
+
+    function hideNativePagination(hidden){
+      var footer = card.querySelector('.card-footer');
+      if (footer) {
+        footer.style.display = hidden ? 'none' : '';
+      }
+    }
+
+    function rebuildCardsFromRows(rows, categoryLabel){
+      tbody.innerHTML = rows.map(function(item){
+        return item.html;
+      }).join('');
+
+      /* Supprime l'ancien rendu mobile avant reconstruction */
+      var oldCardsWrap = card.querySelector('.mc-mobile-cards');
+      if (oldCardsWrap) oldCardsWrap.remove();
+
+      card.classList.remove('mc-mobile-card-mode');
+
+      mcInitMobileTableCards(document);
+
+      if (categoryLabel) {
+        result.textContent =
+          rows.length + (rows.length > 1 ? ' plats affichés' : ' plat affiché');
+        hideNativePagination(true);
+      } else {
+        result.textContent =
+          cache.rows.length + (cache.rows.length > 1 ? ' plats au total' : ' plat au total');
+        hideNativePagination(false);
+      }
+
+      empty.style.display = rows.length === 0 ? 'block' : 'none';
+    }
+
+    function applyCategory(category){
+      cache.selected = clean(category);
+      var wanted = norm(cache.selected);
+
+      if (!cache.ready) return;
+
+      /* Empêche la boucle infinie : rebuildCardsFromRows() reconstruit les
+         cartes via mcInitMobileTableCards(), qui ré-invoque
+         mcInitDishMobileFilters() -> loadAllDishRows() -> applyCategory()
+         pour resynchroniser le <select> nouvellement recréé. On laisse ce
+         second appel juste re-render les options, sans relancer un
+         nouveau cycle de reconstruction. */
+      if (cache.applying) return;
+      cache.applying = true;
+
+      try {
+        if (!wanted) {
+          rebuildCardsFromRows(cache.rows, '');
+          return;
+        }
+
+        var filtered = cache.rows.filter(function(item){
+          return norm(item.category) === wanted;
+        });
+
+        rebuildCardsFromRows(filtered, cache.selected);
+      } finally {
+        cache.applying = false;
+      }
+    }
+
+    function collectRowsFromDocument(doc){
+      var sourceTable = doc.querySelector('.table-responsive table');
+      if (!sourceTable) return [];
+
+      var sourceHeaders = Array.prototype.slice.call(
+        sourceTable.querySelectorAll('thead th')
+      ).map(function(th){
+        return clean(th.textContent);
+      });
+
+      var oldHeaders = headers;
+      headers = sourceHeaders;
+
+      var out = Array.prototype.slice.call(
+        sourceTable.querySelectorAll('tbody tr')
+      ).map(function(row){
+        return {
+          html: row.outerHTML,
+          category: extractCategoryFromRow(row)
+        };
+      });
+
+      headers = oldHeaders;
+      return out;
+    }
+
+    function dedupeRows(rows){
+      var seen = {};
+      return rows.filter(function(item){
+        var key = item.html;
+        if (seen[key]) return false;
+        seen[key] = true;
+        return true;
+      });
+    }
+
+    function loadAllDishRows(){
+      if (cache.ready) {
+        renderOptions();
+        /* Si on est déjà au milieu d'un applyCategory() (cas du rebuild
+           interne ci-dessus), on ne relance pas le filtrage : le <select>
+           vient d'être resynchronisé, c'est suffisant. */
+        if (!cache.applying) {
+          applyCategory(cache.selected);
+        }
+        return;
+      }
+
+      if (cache.loading) {
+        var waiter = setInterval(function(){
+          if (!cache.loading) {
+            clearInterval(waiter);
+            renderOptions();
+            if (!cache.applying) {
+              applyCategory(cache.selected);
+            }
+          }
+        },100);
+        return;
+      }
+
+      cache.loading = true;
+
+      var currentRows = collectRowsFromDocument(document);
+      var allRows = dedupeRows(currentRows.slice());
+
+      function fetchPage(pageNo){
+        var url = new URL(window.location.href);
+        /* On charge toujours la liste complète, sans recherche active */
+        url.searchParams.delete('search');
+        url.searchParams.set('page', pageNo);
+
+        return fetch(url.toString(), {
+          method:'GET',
+          credentials:'same-origin',
+          headers:{'X-Requested-With':'XMLHttpRequest'}
+        })
+        .then(function(response){
+          if (!response.ok) throw new Error('dish page');
+          return response.text();
+        })
+        .then(function(htmlText){
+          var doc = new DOMParser().parseFromString(htmlText,'text/html');
+          return collectRowsFromDocument(doc);
+        })
+        .catch(function(){
+          return null;
+        });
+      }
+
+      /* On ne se fie plus au texte de pagination (fragile : format différent
+         selon la langue, l'affichage XHR, ou une taille de page inattendue,
+         ce qui pouvait faire manquer des plats situés sur une page non
+         chargée, ex. "Jus de fruits rouge fait maison"). À la place on
+         récupère les pages une par une, en s'arrêtant seulement quand une
+         page ne ramène plus aucune ligne nouvelle : ainsi TOUS les plats
+         sont garantis d'être chargés, quel que soit le nombre réel de pages. */
+      var SAFETY_MAX_PAGES = 60;
+
+      function loadNextPage(pageNo){
+        if (pageNo > SAFETY_MAX_PAGES) return Promise.resolve();
+
+        return fetchPage(pageNo).then(function(rows){
+          if (!rows || !rows.length) return; // page vide ou erreur : on arrête
+
+          var before = allRows.length;
+          allRows = dedupeRows(allRows.concat(rows));
+
+          /* Aucune ligne nouvelle ajoutée : on a dépassé la dernière page
+             (le serveur a probablement renvoyé la dernière page à nouveau). */
+          if (allRows.length === before) return;
+
+          return loadNextPage(pageNo + 1);
+        });
+      }
+
+      loadNextPage(2).then(function(){
+        /* Fallback si absolument tout a échoué */
+        if (!allRows.length) allRows = currentRows;
+
+        cache.rows = allRows;
+
+        var categorySet = {};
+        allRows.forEach(function(item){
+          if (item.category) categorySet[item.category] = true;
+        });
+
+        cache.categories = Object.keys(categorySet).sort(function(a,b){
+          return a.localeCompare(b,'fr',{sensitivity:'base'});
+        });
+
+        cache.ready = true;
+        cache.loading = false;
+
+        renderOptions();
+
+        /* Toujours reconstruire l'affichage avec le jeu complet de plats,
+           même sans catégorie choisie : sinon les cartes visibles restaient
+           celles de la première page seulement, pendant que le compteur en
+           bas affichait déjà le vrai total — d'où des plats "invisibles"
+           bien que chargés. */
+        applyCategory(cache.selected);
+      });
+    }
+
+    select.addEventListener('change', function(){
+      applyCategory(select.value);
+    });
+
+    reset.addEventListener('click', function(){
+      cache.selected = '';
+      select.value = '';
+      applyCategory('');
+    });
+
+    renderOptions();
+    loadAllDishRows();
+    mcApplyLanguage(filters);
+  }
+
   /* =========================================================
      RECHERCHE À CHAQUE LETTRE SQLADMIN — sans rechargement de page
      Version robuste : intercepte TOUT clic dans la zone de recherche
@@ -2842,6 +4925,12 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     }
 
     searchInput.dataset.mcLiveSearchReady = "1";
+    searchInput.setAttribute(
+      "placeholder",
+      mcCurrentLang()==="en"
+        ? "Search by name, email, phone…"
+        : "Rechercher par nom, email, téléphone…"
+    );
 
     var activeController = null;
     var lastRequestedValue = searchInput.value || "";
@@ -2890,6 +4979,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       // actifs pendant que l'utilisateur tape.
       mcApplyLanguage(nextTable);
       if (nextFooter) mcApplyLanguage(nextFooter);
+      mcInitMobileTableCards(document);
 
       if (hadFocus) {
         searchInput.focus();
@@ -2986,12 +5076,72 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
 
+  /* =========================================================
+     TABLE RESERVATION FORM
+     Hide the internal "Slots" relation field from create/edit.
+  ========================================================= */
+  function mcHideTableReservationSlots(){
+    var path = window.location.pathname.toLowerCase();
+
+    var isTableReservationForm =
+      path.indexOf('/admin/table-reservation/') !== -1 &&
+      (path.indexOf('/edit') !== -1 || path.indexOf('/create') !== -1);
+
+    if (!isTableReservationForm) return;
+
+    var slotField = document.querySelector(
+      'select[name="slots"], input[name="slots"], [name="slots"]'
+    );
+
+    if (slotField) {
+      var wrapper =
+        slotField.closest('.mb-3') ||
+        slotField.closest('.form-group') ||
+        slotField.closest('.col-md-12') ||
+        slotField.closest('.col-12') ||
+        slotField.parentElement;
+
+      if (wrapper) {
+        wrapper.remove();
+        return;
+      }
+    }
+
+    /* Fallback for SQLAdmin variants where the field name is not exposed
+       directly but the visible label is "Slots". */
+    document.querySelectorAll('label').forEach(function(label){
+      if ((label.textContent || '').trim().toLowerCase() !== 'slots') return;
+
+      var wrapper =
+        label.closest('.mb-3') ||
+        label.closest('.form-group') ||
+        label.closest('.col-md-12') ||
+        label.closest('.col-12') ||
+        label.parentElement;
+
+      if (wrapper) wrapper.remove();
+    });
+  }
+
+
   function init(){
     mcBuildCustomSidebar();
     createTopbar();
     initMobileNav();
+    mcHideTableReservationSlots();
     renderDashboard();
     mcInitLiveSearch();
+    mcInitMobileTableCards(document);
+    window.addEventListener('resize', function(){
+      if (window.innerWidth <= 575.98) {
+        mcInitMobileTableCards(document);
+      } else {
+        document.querySelectorAll('.mc-mobile-cards').forEach(function(el){ el.remove(); });
+        document.querySelectorAll('.card.mc-mobile-card-mode').forEach(function(el){
+          el.classList.remove('mc-mobile-card-mode');
+        });
+      }
+    });
     // Traduit aussi les pages de liste SQLAdmin natives (Plats, Commandes, etc.)
     // qui ne passent pas par renderDashboard.
     if (location.pathname.replace(/\/+$/,'') !== '/admin') {
