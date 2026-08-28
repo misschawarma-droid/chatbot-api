@@ -188,16 +188,17 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 <style>
 /* =========================================================
    CALENDRIER DES RÉSERVATIONS
+   Design compact inspiré de la référence
+   IMPORTANT : le reste du dashboard reste inchangé.
 ========================================================= */
 
 .mc-calendar-panel{
   margin-top:26px;
-  padding:28px;
-  border:1px solid rgba(31,107,45,.13);
-  border-radius:28px;
-  background:
-    linear-gradient(145deg,rgba(255,253,248,.98),rgba(247,240,228,.90));
-  box-shadow:0 20px 55px rgba(18,63,29,.10);
+  padding:18px 18px 20px;
+  border:1px solid rgba(31,107,45,.10);
+  border-radius:24px;
+  background:rgba(255,254,250,.90);
+  box-shadow:0 14px 38px rgba(18,63,29,.07);
   animation:mcCardIn .65s ease .12s both;
 }
 
@@ -205,43 +206,45 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
   display:flex;
   align-items:flex-start;
   justify-content:space-between;
-  gap:22px;
-  margin-bottom:22px;
+  gap:18px;
+  margin-bottom:12px;
 }
 
 .mc-calendar-title{
   color:var(--mc-dark);
   font-family:Georgia,"Times New Roman",serif;
-  font-size:27px;
+  font-size:24px;
   line-height:1.2;
 }
 
 .mc-calendar-title::after{
   content:"";
   display:block;
-  width:46px;
+  width:42px;
   height:3px;
-  margin-top:10px;
+  margin-top:8px;
   border-radius:999px;
   background:linear-gradient(90deg,var(--mc-gold),var(--mc-gold-2));
 }
 
 .mc-calendar-subtitle{
-  margin-top:10px;
+  margin-top:8px;
   color:var(--mc-muted);
-  font-size:13px;
-  line-height:1.55;
+  font-size:12px;
+  line-height:1.5;
 }
 
 .mc-calendar-controls{
-  display:flex;
+  display:grid;
+  grid-template-columns:48px minmax(160px,1fr) 48px;
   align-items:center;
-  gap:10px;
-  padding:6px;
-  border:1px solid rgba(31,107,45,.12);
-  border-radius:16px;
-  background:rgba(255,255,255,.82);
-  box-shadow:0 8px 22px rgba(18,63,29,.06);
+  gap:8px;
+  width:min(100%,520px);
+  padding:6px 8px;
+  border:1px solid rgba(31,107,45,.10);
+  border-radius:18px;
+  background:rgba(255,255,255,.88);
+  box-shadow:0 6px 18px rgba(18,63,29,.04);
 }
 
 .mc-calendar-nav{
@@ -251,7 +254,7 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
   place-items:center;
   border:0;
   border-radius:12px;
-  background:#edf4eb;
+  background:#eef5ec;
   color:var(--mc-dark);
   font-size:25px;
   line-height:1;
@@ -260,17 +263,21 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 }
 
 .mc-calendar-nav:hover{
-  color:white;
-  background:linear-gradient(135deg,var(--mc-green),var(--mc-green-2));
-  transform:translateY(-2px);
-  box-shadow:0 10px 20px rgba(31,107,45,.18);
+  color:var(--mc-dark);
+  background:#e4efe2;
+  transform:scale(1.03);
+  box-shadow:none;
 }
 
+#mc-calendar-prev{justify-self:start}
+#mc-calendar-next{justify-self:end}
+
 .mc-calendar-month{
-  min-width:170px;
+  min-width:0;
   color:var(--mc-dark);
   font-family:Georgia,"Times New Roman",serif;
-  font-size:19px;
+  font-size:24px;
+  font-weight:500;
   text-align:center;
   text-transform:capitalize;
 }
@@ -279,67 +286,55 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 .mc-calendar-grid{
   display:grid;
   grid-template-columns:repeat(7,minmax(0,1fr));
-  gap:9px;
+  gap:8px;
 }
 
 .mc-calendar-weekdays{
-  margin-bottom:9px;
+  margin-bottom:6px;
   padding:0 2px;
 }
 
 .mc-calendar-weekday{
-  padding:8px 4px;
-  color:#758078;
-  font-size:10px;
+  padding:8px 2px;
+  color:#607165;
+  font-size:9px;
   font-weight:850;
-  letter-spacing:.10em;
+  letter-spacing:.12em;
   text-align:center;
   text-transform:uppercase;
 }
 
 .mc-calendar-grid{
-  min-height:470px;
+  min-height:0;
 }
 
 .mc-calendar-day{
   position:relative;
-  min-height:92px;
-  padding:12px;
+  min-width:0;
+  width:100%;
+  min-height:78px;
+  height:78px;
+  padding:8px 9px;
   overflow:hidden;
   border:1px solid rgba(31,107,45,.10);
-  border-radius:17px;
-  background:rgba(255,255,255,.88);
+  border-radius:13px;
+  background:rgba(255,255,255,.86);
   color:var(--mc-text);
   cursor:pointer;
   text-align:left;
-  transition:
-    transform .2s ease,
-    border-color .2s ease,
-    box-shadow .2s ease,
-    background .2s ease;
+  box-shadow:none;
+  transition:border-color .18s ease,background .18s ease;
 }
 
 .mc-calendar-day::before{
-  content:"";
-  position:absolute;
-  inset:auto -25px -35px auto;
-  width:80px;
-  height:80px;
-  border-radius:50%;
-  background:radial-gradient(circle,rgba(31,107,45,.10),transparent 70%);
-  opacity:0;
-  transition:.2s ease;
+  display:none;
 }
 
 .mc-calendar-day:hover:not(.mc-empty){
-  border-color:rgba(196,125,14,.42);
-  background:#fffaf1;
-  box-shadow:0 13px 26px rgba(18,63,29,.10);
-  transform:translateY(-4px);
-}
-
-.mc-calendar-day:hover:not(.mc-empty)::before{
-  opacity:1;
+  border-color:rgba(31,107,45,.20);
+  background:#fffdf7;
+  box-shadow:none;
+  transform:none;
 }
 
 .mc-calendar-day.mc-empty{
@@ -350,94 +345,148 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 }
 
 .mc-calendar-day.mc-today{
-  border-color:rgba(196,125,14,.70);
-  background:linear-gradient(145deg,#fffdf8,#fff4d8);
-  box-shadow:inset 0 0 0 1px rgba(196,125,14,.12);
+  border-color:rgba(196,125,14,.34);
+  background:linear-gradient(145deg,#fffefa,#fff8e3);
+  box-shadow:inset 0 0 0 1px rgba(196,125,14,.08);
+}
+
+.mc-calendar-day.mc-has-reservations{
+  border-color:rgba(31,107,45,.15);
+}
+
+.mc-calendar-number{
+  position:absolute;
+  top:8px;
+  left:9px;
+  z-index:3;
+  display:block;
+  width:auto;
+  height:auto;
+  padding:0;
+  border:0;
+  border-radius:0;
+  background:transparent;
+  box-shadow:none;
+  color:var(--mc-dark);
+  font-size:12px;
+  font-weight:850;
+  line-height:1;
 }
 
 .mc-calendar-day.mc-today .mc-calendar-number{
   color:var(--mc-gold);
 }
 
-.mc-calendar-day.mc-has-reservations{
-  background:
-    linear-gradient(145deg,rgba(255,253,248,1),rgba(231,242,229,.96));
-  border-color:rgba(31,107,45,.19);
-}
-
-.mc-calendar-number{
-  position:relative;
-  z-index:2;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:30px;
-  height:30px;
-  border-radius:10px;
-  color:var(--mc-dark);
-  font-size:13px;
-  font-weight:850;
-}
-
 .mc-calendar-count{
-  position:absolute;
-  right:10px;
-  bottom:10px;
-  min-width:31px;
-  height:31px;
-  padding:0 9px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border-radius:999px;
-  background:linear-gradient(135deg,var(--mc-green),var(--mc-green-2));
-  color:white;
-  font-size:11px;
-  font-weight:850;
-  box-shadow:0 8px 18px rgba(31,107,45,.22);
+  display:none;
 }
 
 .mc-calendar-dot{
-  position:absolute;
-  left:13px;
-  bottom:16px;
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:var(--mc-gold);
-  box-shadow:0 0 0 5px rgba(196,125,14,.10);
+  display:none;
 }
 
 .mc-calendar-loading,
 .mc-calendar-error{
   grid-column:1/-1;
-  min-height:300px;
+  min-height:250px;
   display:grid;
   place-items:center;
   border:1px dashed rgba(31,107,45,.18);
-  border-radius:18px;
+  border-radius:16px;
   color:var(--mc-muted);
   background:rgba(255,255,255,.55);
   text-align:center;
 }
 
+/* Couleurs par type */
+.mc-calendar-day.mc-table-only{
+  background:linear-gradient(145deg,#ffffff 0%,#edf6ec 100%);
+  border-color:rgba(31,107,45,.15);
+}
+
+.mc-calendar-day.mc-event-only{
+  background:linear-gradient(145deg,#ffffff 0%,#fff4d5 100%);
+  border-color:rgba(196,125,14,.20);
+}
+
+.mc-calendar-day.mc-mixed{
+  background:
+    linear-gradient(135deg,#edf6ec 0%,#edf6ec 49%,#fff3d2 51%,#fff3d2 100%);
+  border-color:rgba(145,123,55,.16);
+}
+
+.mc-calendar-day.mc-mixed .mc-calendar-number{
+  background:transparent;
+  box-shadow:none;
+  border:0;
+}
+
+/* Petits badges comme dans la référence */
+.mc-calendar-badges{
+  position:absolute;
+  left:9px;
+  right:auto;
+  bottom:8px;
+  z-index:3;
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.mc-calendar-type-badge{
+  width:20px;
+  min-width:20px;
+  height:20px;
+  padding:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+  color:white;
+  font-size:0;
+  font-weight:850;
+  line-height:20px;
+  box-shadow:none;
+}
+
+.mc-calendar-type-badge.mc-table{
+  background:#2f843b;
+}
+
+.mc-calendar-type-badge.mc-event{
+  background:#d39a00;
+}
+
+.mc-calendar-type-badge .mc-badge-icon{
+  display:none;
+}
+
+.mc-calendar-type-badge .mc-badge-count{
+  font-size:9px;
+  line-height:1;
+  font-weight:900;
+}
+
+/* Footer compact mais garde les mêmes chiffres/infos */
 .mc-calendar-footer{
-  margin-top:16px;
-  padding-top:15px;
+  margin-top:12px;
+  padding:11px 14px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:14px;
-  border-top:1px solid rgba(31,107,45,.10);
+  gap:12px;
+  border-top:1px solid rgba(31,107,45,.08);
+  border-radius:14px;
   color:var(--mc-muted);
-  font-size:12px;
+  background:rgba(255,255,255,.58);
+  font-size:11px;
 }
 
 .mc-calendar-total{
   display:inline-flex;
   align-items:center;
   gap:6px;
-  padding:8px 12px;
+  padding:7px 10px;
   border-radius:999px;
   background:#edf4eb;
   color:var(--mc-dark);
@@ -445,7 +494,200 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 
 .mc-calendar-total strong{
   color:var(--mc-green);
-  font-size:13px;
+  font-size:12px;
+}
+
+/* Tablette */
+@media(max-width:991.98px){
+  .mc-calendar-panel{
+    padding:15px!important;
+    border-radius:20px!important;
+  }
+
+  .mc-calendar-header{
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:12px!important;
+  }
+
+  .mc-calendar-controls{
+    width:100%!important;
+    grid-template-columns:46px 1fr 46px!important;
+    margin-top:0!important;
+  }
+
+  .mc-calendar-weekdays,
+  .mc-calendar-grid{
+    gap:6px!important;
+  }
+
+  .mc-calendar-day{
+    min-height:68px!important;
+    height:68px!important;
+    padding:7px!important;
+    border-radius:11px!important;
+  }
+
+  .mc-calendar-number{
+    top:7px!important;
+    left:7px!important;
+    font-size:11px!important;
+    width:auto!important;
+    height:auto!important;
+    position:absolute!important;
+  }
+
+  .mc-calendar-badges{
+    left:7px!important;
+    right:auto!important;
+    bottom:7px!important;
+    gap:4px!important;
+  }
+
+  .mc-calendar-type-badge{
+    width:19px!important;
+    min-width:19px!important;
+    height:19px!important;
+    padding:0!important;
+    font-size:0!important;
+  }
+
+  .mc-calendar-type-badge .mc-badge-count{
+    font-size:8.5px!important;
+  }
+
+  .mc-calendar-footer{
+    flex-direction:row!important;
+    align-items:center!important;
+    flex-wrap:wrap!important;
+  }
+}
+
+/* Mobile */
+@media(max-width:575.98px){
+  .mc-calendar-panel{
+    margin-top:18px!important;
+    padding:10px 7px 12px!important;
+    border-radius:17px!important;
+    overflow:hidden!important;
+  }
+
+  .mc-calendar-header{
+    margin-bottom:9px!important;
+    gap:9px!important;
+  }
+
+  .mc-calendar-title{
+    font-size:19px!important;
+  }
+
+  .mc-calendar-subtitle{
+    margin-top:6px!important;
+    font-size:10.5px!important;
+  }
+
+  .mc-calendar-legend{
+    gap:5px!important;
+    margin-top:8px!important;
+  }
+
+  .mc-calendar-legend-item{
+    padding:5px 8px!important;
+    gap:5px!important;
+    font-size:9px!important;
+  }
+
+  .mc-calendar-controls{
+    height:46px!important;
+    grid-template-columns:36px 1fr 36px!important;
+    padding:4px 5px!important;
+    border-radius:13px!important;
+  }
+
+  .mc-calendar-nav{
+    width:32px!important;
+    height:32px!important;
+    border-radius:9px!important;
+    font-size:21px!important;
+  }
+
+  .mc-calendar-month{
+    font-size:18px!important;
+  }
+
+  .mc-calendar-weekdays,
+  .mc-calendar-grid{
+    gap:4px!important;
+  }
+
+  .mc-calendar-weekdays{
+    margin-bottom:4px!important;
+  }
+
+  .mc-calendar-weekday{
+    padding:4px 0!important;
+    font-size:7px!important;
+    letter-spacing:.04em!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-calendar-day{
+    min-height:50px!important;
+    height:50px!important;
+    padding:5px!important;
+    border-radius:9px!important;
+  }
+
+  .mc-calendar-number{
+    top:5px!important;
+    left:5px!important;
+    font-size:9px!important;
+    width:auto!important;
+    height:auto!important;
+    line-height:1!important;
+    position:absolute!important;
+  }
+
+  .mc-calendar-badges{
+    left:5px!important;
+    right:auto!important;
+    bottom:5px!important;
+    gap:3px!important;
+    justify-content:flex-start!important;
+  }
+
+  .mc-calendar-type-badge{
+    width:16px!important;
+    min-width:16px!important;
+    height:16px!important;
+    padding:0!important;
+    border-radius:50%!important;
+    font-size:0!important;
+    line-height:16px!important;
+  }
+
+  .mc-calendar-type-badge .mc-badge-count{
+    font-size:7px!important;
+  }
+
+  .mc-calendar-footer{
+    margin-top:9px!important;
+    padding:8px!important;
+    gap:6px!important;
+    font-size:8.5px!important;
+    flex-wrap:wrap!important;
+    flex-direction:row!important;
+    align-items:center!important;
+  }
+
+  .mc-calendar-total{
+    padding:5px 7px!important;
+    font-size:8.5px!important;
+  }
+
+  .mc-calendar-total strong{
+    font-size:9px!important;
+  }
 }
 
 /* Modal des réservations d'une journée */
@@ -667,190 +909,6 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 /* Les règles mobiles complètes (topbar, tiroir latéral, grilles, calendrier)
    sont regroupées plus bas dans le bloc "VERSION MOBILE" pour éviter les
    doublons/conflits avec les media queries ci-dessus. */
-
-/* =========================================================
-   CALENDRIER BICOLORE : TABLES / ÉVÉNEMENTS
-========================================================= */
-
-.mc-calendar-legend{
-  display:flex;
-  flex-wrap:wrap;
-  align-items:center;
-  gap:10px;
-  margin-top:13px;
-}
-
-.mc-calendar-legend-item{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:7px 10px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:800;
-}
-
-.mc-calendar-legend-item.mc-table{
-  color:#1f6b2d;
-  background:#e8f4ea;
-}
-
-.mc-calendar-legend-item.mc-event{
-  color:#8a5800;
-  background:#fff0c8;
-}
-
-.mc-calendar-legend-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-}
-
-.mc-calendar-legend-item.mc-table .mc-calendar-legend-dot{
-  background:#2f843b;
-}
-
-.mc-calendar-legend-item.mc-event .mc-calendar-legend-dot{
-  background:#c47d0e;
-}
-
-.mc-calendar-day.mc-table-only{
-  background:linear-gradient(145deg,#fffdf8,#e8f4ea);
-  border-color:rgba(31,107,45,.23);
-}
-
-.mc-calendar-day.mc-event-only{
-  background:linear-gradient(145deg,#fffdf8,#fff0cc);
-  border-color:rgba(196,125,14,.28);
-}
-
-.mc-calendar-day.mc-mixed{
-  background:
-    linear-gradient(135deg,rgba(232,244,234,.96) 0 49%,rgba(255,240,204,.96) 51% 100%);
-  border-color:rgba(126,107,38,.25);
-}
-
-.mc-calendar-badges{
-  position:absolute;
-  right:9px;
-  bottom:9px;
-  display:flex;
-  align-items:center;
-  gap:6px;
-  z-index:2;
-}
-
-.mc-calendar-type-badge{
-  min-width:28px;
-  height:28px;
-  padding:0 8px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  border-radius:999px;
-  color:white;
-  font-size:10px;
-  font-weight:850;
-  box-shadow:0 7px 16px rgba(18,63,29,.14);
-}
-
-.mc-calendar-type-badge.mc-table{
-  background:linear-gradient(135deg,#1f6b2d,#3d9650);
-}
-
-.mc-calendar-type-badge.mc-event{
-  background:linear-gradient(135deg,#c47d0e,#e0a825);
-}
-
-.mc-calendar-day.mc-mixed .mc-calendar-number{
-  background:rgba(255,255,255,.92);
-  box-shadow:0 4px 12px rgba(18,63,29,.10);
-  border:1px solid rgba(31,107,45,.10);
-}
-
-.mc-day-summary{
-  display:flex;
-  flex-wrap:wrap;
-  gap:9px;
-  margin-bottom:17px;
-}
-
-.mc-day-summary-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:7px;
-  padding:8px 12px;
-  border-radius:999px;
-  font-size:11px;
-  font-weight:850;
-}
-
-.mc-day-summary-badge.mc-table{
-  color:#1f6b2d;
-  background:#e8f4ea;
-}
-
-.mc-day-summary-badge.mc-event{
-  color:#8a5800;
-  background:#fff0c8;
-}
-
-.mc-day-section + .mc-day-section{
-  margin-top:22px;
-}
-
-.mc-day-section-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:11px;
-  color:var(--mc-dark);
-  font-family:Georgia,"Times New Roman",serif;
-  font-size:20px;
-}
-
-.mc-day-section-title span{
-  font-family:Inter,sans-serif;
-  font-size:10px;
-  font-weight:850;
-  letter-spacing:.08em;
-  text-transform:uppercase;
-}
-
-.mc-day-section.mc-table-section .mc-day-section-title span{
-  color:#1f6b2d;
-}
-
-.mc-day-section.mc-event-section .mc-day-section-title span{
-  color:#a66b00;
-}
-
-.mc-reservation-card.mc-table-card{
-  border-left:5px solid #2f843b;
-  background:linear-gradient(100deg,#fff,#f3faf3);
-}
-
-.mc-reservation-card.mc-event-card{
-  border-left:5px solid #c47d0e;
-  background:linear-gradient(100deg,#fff,#fff8e7);
-}
-
-.mc-reservation-card.mc-event-card .mc-reservation-time{
-  color:#b06f00;
-}
-
-.mc-reservation-status.mc-table-status{
-  color:#1f6b2d;
-  background:#e8f4ea;
-}
-
-.mc-reservation-status.mc-event-status{
-  color:#8a5800;
-  background:#fff0c8;
-}
-
 
 /* Recherche instantanée */
 .card.mc-live-search-loading .table-responsive,
@@ -1250,426 +1308,6 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   .mc-topbar-logout{padding:0 11px!important}
 }
 
-
-/* =========================================================
-   MISS CHAWARMA — REFERENCE CALENDAR DESIGN
-   Inspired by the approved visual reference:
-   compact deep-green sidebar, warm cream workspace,
-   calendar-focused dashboard, top-left day numbers,
-   small green/gold count dots.
-========================================================= */
-
-:root{
-  --mc-ref-sidebar:#0d4829;
-  --mc-ref-sidebar-dark:#07391f;
-  --mc-ref-green:#1f6b2d;
-  --mc-ref-gold:#d49a00;
-  --mc-ref-cream:#faf8ef;
-  --mc-ref-paper:#fffefa;
-  --mc-ref-text:#173d22;
-  --mc-ref-muted:#758078;
-}
-
-/* Page */
-html,body,.page,.page-wrapper,.page-body{
-  background:
-    radial-gradient(circle at 93% 3%,rgba(208,195,143,.13),transparent 260px),
-    #faf8ef!important;
-}
-.page-wrapper{margin-left:220px!important}
-.page-body{padding-top:0!important}
-.container-xl{max-width:none!important;padding:0!important}
-
-/* Desktop: reference has no top bar */
-@media(min-width:992px){
-  .mc-topbar{display:none!important}
-}
-
-/* Sidebar */
-.navbar-vertical{
-  width:220px!important;
-  background:linear-gradient(180deg,#124e2d 0%,#0d4829 55%,#07391f 100%)!important;
-  box-shadow:none!important;
-  border-right:1px solid rgba(255,255,255,.05)!important;
-}
-.navbar-vertical .navbar-brand{
-  min-height:160px!important;
-  padding:20px 18px 18px!important;
-  background:transparent!important;
-  font-size:18px!important;
-  text-align:center!important;
-}
-.navbar-vertical .navbar-brand::before{
-  width:72px!important;height:72px!important;
-  margin-bottom:14px!important;
-  border-radius:18px!important;
-  box-shadow:none!important;
-  animation:none!important;
-}
-.navbar-vertical .navbar-brand::after{
-  margin-top:10px!important;
-  color:#e6b73c!important;
-  font-size:8px!important;
-  letter-spacing:.24em!important;
-}
-.navbar-vertical .navbar-collapse{padding:10px 12px 20px!important}
-.navbar-vertical .navbar-nav{gap:6px!important}
-.navbar-vertical .nav-link{
-  min-height:46px!important;
-  margin:0!important;
-  padding:11px 13px!important;
-  border-radius:13px!important;
-  font-size:12px!important;
-  font-weight:700!important;
-  color:rgba(255,255,255,.90)!important;
-}
-.navbar-vertical .nav-link:hover{
-  background:rgba(255,255,255,.07)!important;
-  transform:none!important;
-}
-.navbar-vertical .nav-item.active>.nav-link,
-.navbar-vertical .nav-link.active,
-.navbar-vertical .nav-link[aria-current="page"]{
-  background:rgba(255,255,255,.14)!important;
-  box-shadow:none!important;
-  color:white!important;
-}
-
-/* Dashboard */
-.mc-dashboard-reference{
-  max-width:none!important;
-  min-height:100vh;
-  margin:0!important;
-  padding:20px 28px 42px!important;
-  position:relative;
-  overflow:hidden;
-  animation:none!important;
-}
-.mc-dashboard-reference::before{
-  content:"";
-  position:absolute;
-  top:-80px;right:-70px;
-  width:250px;height:250px;
-  pointer-events:none;
-  opacity:.32;
-  background:
-    radial-gradient(ellipse at 45% 40%,rgba(173,164,116,.16),transparent 35%),
-    radial-gradient(ellipse at 68% 48%,rgba(173,164,116,.12),transparent 28%);
-}
-.mc-dashboard-reference::after{
-  content:"";
-  position:absolute;
-  right:-90px;bottom:-100px;
-  width:260px;height:260px;
-  pointer-events:none;
-  opacity:.28;
-  background:radial-gradient(ellipse,rgba(173,164,116,.15),transparent 62%);
-}
-.mc-reference-content{
-  position:relative;
-  z-index:2;
-  max-width:1180px;
-  margin:0 auto;
-}
-
-/* Intro */
-.mc-reference-intro{margin-bottom:14px}
-.mc-reference-intro .mc-calendar-subtitle{
-  margin:0 0 10px!important;
-  color:#6f7b73;
-  font-size:14px;
-  line-height:1.5;
-}
-.mc-calendar-legend{margin-top:0!important;gap:10px!important}
-.mc-calendar-legend-item{
-  padding:7px 13px!important;
-  border-radius:999px!important;
-  font-size:11px!important;
-  box-shadow:none!important;
-}
-.mc-calendar-legend-item.mc-table{color:#225e2e;background:#e8f2e5}
-.mc-calendar-legend-item.mc-event{color:#8d6200;background:#fff0bd}
-
-/* Calendar main card */
-.mc-reference-calendar{
-  margin-top:0!important;
-  padding:9px 10px 14px!important;
-  border:1px solid rgba(31,107,45,.09)!important;
-  border-radius:24px!important;
-  background:rgba(255,254,250,.83)!important;
-  box-shadow:0 12px 34px rgba(18,63,29,.07)!important;
-  backdrop-filter:blur(7px);
-  animation:none!important;
-}
-
-/* Month navigation */
-.mc-reference-calendar .mc-calendar-controls{
-  width:100%!important;
-  height:66px;
-  margin:0 0 10px!important;
-  padding:7px 10px!important;
-  display:grid!important;
-  grid-template-columns:52px 1fr 52px;
-  align-items:center;
-  border:1px solid rgba(31,107,45,.10)!important;
-  border-radius:19px!important;
-  background:rgba(255,255,255,.91)!important;
-  box-shadow:0 7px 20px rgba(18,63,29,.04)!important;
-}
-.mc-calendar-nav{
-  width:44px!important;height:44px!important;
-  padding:0!important;
-  border:0!important;
-  border-radius:13px!important;
-  color:#143f21!important;
-  background:#eef5ec!important;
-  font-size:28px!important;
-  box-shadow:none!important;
-  transition:background .18s ease,transform .18s ease!important;
-}
-.mc-calendar-nav:hover{
-  color:#143f21!important;
-  background:#e3eee1!important;
-  transform:scale(1.03)!important;
-  box-shadow:none!important;
-}
-#mc-calendar-prev{justify-self:start}
-#mc-calendar-next{justify-self:end}
-.mc-calendar-month{
-  min-width:0!important;
-  color:#174623!important;
-  font-family:Georgia,"Times New Roman",serif!important;
-  font-size:29px!important;
-  font-weight:500!important;
-  text-align:center!important;
-  text-transform:capitalize;
-}
-
-/* Weekdays */
-.mc-calendar-weekdays{
-  margin:0 0 6px!important;
-  padding:0 4px!important;
-}
-.mc-calendar-weekday{
-  padding:8px 2px!important;
-  color:#536d5c!important;
-  font-size:9px!important;
-  font-weight:850!important;
-  letter-spacing:.13em!important;
-}
-
-/* Grid */
-.mc-calendar-weekdays,.mc-calendar-grid{
-  display:grid!important;
-  grid-template-columns:repeat(7,minmax(0,1fr))!important;
-  gap:8px!important;
-}
-.mc-calendar-grid{min-height:0!important}
-
-/* Day cards */
-.mc-calendar-day{
-  position:relative;
-  width:100%!important;
-  min-width:0!important;
-  min-height:79px!important;
-  height:79px!important;
-  padding:9px 10px!important;
-  overflow:hidden;
-  border:1px solid rgba(24,78,39,.10)!important;
-  border-radius:13px!important;
-  background:rgba(255,255,255,.82)!important;
-  box-shadow:none!important;
-  text-align:left!important;
-  transition:border .18s ease,background .18s ease!important;
-}
-.mc-calendar-day:hover:not(.mc-empty){
-  transform:none!important;
-  border-color:rgba(31,107,45,.20)!important;
-  box-shadow:none!important;
-}
-.mc-calendar-day.mc-empty{
-  border-color:transparent!important;
-  background:transparent!important;
-}
-
-/* Number: top-left */
-.mc-calendar-number{
-  position:absolute!important;
-  top:8px!important;
-  left:9px!important;
-  z-index:5!important;
-  width:auto!important;
-  height:auto!important;
-  display:block!important;
-  padding:0!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  box-shadow:none!important;
-  color:#143f21!important;
-  font-size:12px!important;
-  font-weight:850!important;
-  line-height:1!important;
-}
-
-/* Today */
-.mc-calendar-day.mc-today{
-  border-color:rgba(196,125,14,.33)!important;
-  background:linear-gradient(145deg,#fffefa,#fff8e3)!important;
-}
-.mc-calendar-day.mc-today .mc-calendar-number{color:#9c6900!important}
-
-/* Coloured days */
-.mc-calendar-day.mc-table-only{
-  background:linear-gradient(145deg,#ffffff 0%,#edf6ec 100%)!important;
-  border-color:rgba(31,107,45,.14)!important;
-}
-.mc-calendar-day.mc-event-only{
-  background:linear-gradient(145deg,#ffffff 0%,#fff4d5 100%)!important;
-  border-color:rgba(196,125,14,.18)!important;
-}
-.mc-calendar-day.mc-mixed{
-  background:linear-gradient(135deg,#edf6ec 0%,#edf6ec 49%,#fff3d2 51%,#fff3d2 100%)!important;
-  border-color:rgba(145,123,55,.15)!important;
-}
-.mc-calendar-day.mc-mixed .mc-calendar-number{
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-}
-
-/* Small count dots */
-.mc-calendar-badges{
-  position:absolute!important;
-  left:9px!important;
-  right:auto!important;
-  bottom:8px!important;
-  z-index:5!important;
-  display:flex!important;
-  align-items:center!important;
-  gap:5px!important;
-}
-.mc-calendar-type-badge{
-  width:20px!important;
-  min-width:20px!important;
-  height:20px!important;
-  padding:0!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  border-radius:50%!important;
-  color:white!important;
-  font-size:9px!important;
-  font-weight:850!important;
-  line-height:20px!important;
-  box-shadow:none!important;
-}
-.mc-calendar-type-badge.mc-table{background:#26823c!important}
-.mc-calendar-type-badge.mc-event{background:#d59a00!important}
-.mc-calendar-type-badge .mc-badge-icon{display:none!important}
-.mc-calendar-type-badge .mc-badge-count{
-  font-size:9px!important;
-  font-weight:850!important;
-}
-
-/* Footer */
-.mc-reference-footer{
-  min-height:46px;
-  margin:12px 40px 0!important;
-  padding:8px 14px!important;
-  display:flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  flex-direction:row!important;
-  gap:14px!important;
-  border:1px solid rgba(31,107,45,.06)!important;
-  border-radius:15px!important;
-  background:rgba(255,255,255,.72)!important;
-  color:#57665b!important;
-  font-size:10px!important;
-}
-.mc-reference-footer strong{font-size:11px!important}
-.mc-footer-calendar-icon{color:#3c7450;font-size:17px}
-.mc-footer-divider{width:1px;height:18px;background:rgba(52,84,59,.18)}
-.mc-footer-table-total,.mc-footer-table-total strong{
-  color:#28743a!important;font-weight:800!important;
-}
-.mc-footer-event-total,.mc-footer-event-total strong{
-  color:#c28700!important;font-weight:800!important;
-}
-
-/* Tablet */
-@media(max-width:991.98px){
-  .page-wrapper{margin-left:0!important}
-  .mc-dashboard-reference{padding:18px 15px 35px!important}
-  .mc-reference-content{max-width:900px}
-  .mc-calendar-day{min-height:70px!important;height:70px!important}
-}
-
-/* Mobile */
-@media(max-width:575.98px){
-  .mc-dashboard-reference{padding:13px 7px 30px!important}
-  .mc-reference-intro{padding:0 5px}
-  .mc-reference-intro .mc-calendar-subtitle{font-size:11px!important}
-  .mc-calendar-legend-item{padding:6px 9px!important;font-size:9px!important}
-  .mc-reference-calendar{
-    padding:6px 5px 10px!important;
-    border-radius:17px!important;
-  }
-  .mc-reference-calendar .mc-calendar-controls{
-    height:49px;
-    grid-template-columns:39px 1fr 39px;
-    padding:4px 6px!important;
-    border-radius:14px!important;
-  }
-  .mc-calendar-nav{
-    width:34px!important;height:34px!important;
-    border-radius:10px!important;
-    font-size:22px!important;
-  }
-  .mc-calendar-month{font-size:20px!important}
-  .mc-calendar-weekdays,.mc-calendar-grid{gap:4px!important}
-  .mc-calendar-weekday{
-    padding:5px 0!important;
-    font-size:7px!important;
-    letter-spacing:.05em!important;
-  }
-  .mc-calendar-day{
-    min-height:52px!important;
-    height:52px!important;
-    padding:5px!important;
-    border-radius:9px!important;
-  }
-  .mc-calendar-number{
-    top:6px!important;
-    left:6px!important;
-    font-size:9px!important;
-  }
-  .mc-calendar-badges{
-    left:6px!important;
-    bottom:5px!important;
-    gap:3px!important;
-  }
-  .mc-calendar-type-badge{
-    width:16px!important;
-    min-width:16px!important;
-    height:16px!important;
-    font-size:7px!important;
-    line-height:16px!important;
-  }
-  .mc-calendar-type-badge .mc-badge-count{font-size:7px!important}
-  .mc-reference-footer{
-    margin:9px 4px 0!important;
-    padding:7px 8px!important;
-    min-height:40px;
-    gap:7px!important;
-    flex-wrap:wrap!important;
-    font-size:8px!important;
-  }
-  .mc-reference-footer strong{font-size:9px!important}
-  .mc-footer-divider{height:13px}
-}
-
 </style>
 
 <script id="miss-chawarma-admin-script">
@@ -2055,68 +1693,11 @@ html,body,.page,.page-wrapper,.page-body{
   }
 
   function dashboardMarkup(){
-    return `
-    <main class="mc-dashboard mc-dashboard-reference">
-      <section class="mc-reference-content">
-        <div class="mc-reference-intro">
-          <div class="mc-calendar-subtitle">
-            Cliquez sur une journée pour afficher ses réservations de tables et ses événements.
-          </div>
-          <div class="mc-calendar-legend">
-            <span class="mc-calendar-legend-item mc-table">
-              <span class="mc-calendar-legend-dot"></span>Tables
-            </span>
-            <span class="mc-calendar-legend-item mc-event">
-              <span class="mc-calendar-legend-dot"></span>Événements
-            </span>
-          </div>
-        </div>
-
-        <section class="mc-calendar-panel mc-reference-calendar">
-          <div class="mc-calendar-controls">
-            <button class="mc-calendar-nav" id="mc-calendar-prev" type="button" aria-label="Mois précédent">‹</button>
-            <div class="mc-calendar-month" id="mc-calendar-month"></div>
-            <button class="mc-calendar-nav" id="mc-calendar-next" type="button" aria-label="Mois suivant">›</button>
-          </div>
-
-          <div class="mc-calendar-weekdays">
-            <div class="mc-calendar-weekday">Lun</div>
-            <div class="mc-calendar-weekday">Mar</div>
-            <div class="mc-calendar-weekday">Mer</div>
-            <div class="mc-calendar-weekday">Jeu</div>
-            <div class="mc-calendar-weekday">Ven</div>
-            <div class="mc-calendar-weekday">Sam</div>
-            <div class="mc-calendar-weekday">Dim</div>
-          </div>
-
-          <div class="mc-calendar-grid" id="mc-calendar-grid">
-            <div class="mc-calendar-loading">Chargement du calendrier…</div>
-          </div>
-
-          <div class="mc-calendar-footer mc-reference-footer">
-            <span class="mc-footer-calendar-icon">▣</span>
-            <span>Total du mois : <strong id="mc-calendar-days-total">—</strong> jours</span>
-            <span class="mc-footer-divider"></span>
-            <span class="mc-footer-table-total"><strong id="mc-calendar-table-total">0</strong> tables</span>
-            <span class="mc-footer-divider"></span>
-            <span class="mc-footer-event-total"><strong id="mc-calendar-event-total">0</strong> événements</span>
-          </div>
-        </section>
-      </section>
-
-      <div class="mc-day-modal" id="mc-day-modal" aria-hidden="true">
-        <div class="mc-day-dialog" role="dialog" aria-modal="true">
-          <div class="mc-day-dialog-header">
-            <div>
-              <div class="mc-day-dialog-eyebrow">Réservations de la journée</div>
-              <div class="mc-day-dialog-title" id="mc-day-dialog-title"></div>
-            </div>
-            <button class="mc-day-close" id="mc-day-close" type="button" aria-label="Fermer">×</button>
-          </div>
-          <div class="mc-day-dialog-body" id="mc-day-dialog-body"></div>
-        </div>
-      </div>
-    </main>`;
+    return '<main class="mc-dashboard"><section class="mc-dashboard-hero"><div class="mc-hero-content"><div class="mc-eyebrow">Bienvenue dans votre espace</div><h1>Bonjour, <span>Miss Chawarma</span></h1><p class="mc-hero-copy">Pilotez les commandes, les réservations et les messages depuis un espace pensé pour votre équipe. Les informations importantes sont accessibles en un seul regard.</p><div class="mc-hero-actions"><a class="mc-hero-button" href="/admin/order/list">🛍 Voir les commandes</a><a class="mc-hero-button mc-secondary" href="/admin/table-reservation/list">🍽 Toutes les réservations</a></div></div></section>'+
+    '<section class="mc-stats-grid"><article class="mc-stat-card"><div class="mc-stat-icon">🛍</div><div class="mc-stat-value" data-stat="orders">—</div><div class="mc-stat-label">Commandes enregistrées</div></article><article class="mc-stat-card"><div class="mc-stat-icon">🍽</div><div class="mc-stat-value" data-stat="tables">—</div><div class="mc-stat-label">Réservations de tables</div></article><article class="mc-stat-card"><div class="mc-stat-icon">🥂</div><div class="mc-stat-value" data-stat="events">—</div><div class="mc-stat-label">Événements privés</div></article><article class="mc-stat-card"><div class="mc-stat-icon">✉</div><div class="mc-stat-value" data-stat="messages">—</div><div class="mc-stat-label">Messages non lus</div></article></section>'+
+    '<section class="mc-calendar-panel"><div class="mc-calendar-header"><div><div class="mc-calendar-title">Calendrier des réservations</div><div class="mc-calendar-subtitle">Cliquez sur une journée pour afficher ses réservations de tables et ses événements.</div><div class="mc-calendar-legend"><span class="mc-calendar-legend-item mc-table"><span class="mc-calendar-legend-dot"></span>Tables</span><span class="mc-calendar-legend-item mc-event"><span class="mc-calendar-legend-dot"></span>Événements</span></div></div><div class="mc-calendar-controls"><button class="mc-calendar-nav" id="mc-calendar-prev" type="button" aria-label="Mois précédent">‹</button><div class="mc-calendar-month" id="mc-calendar-month"></div><button class="mc-calendar-nav" id="mc-calendar-next" type="button" aria-label="Mois suivant">›</button></div></div><div class="mc-calendar-weekdays"><div class="mc-calendar-weekday">Lun</div><div class="mc-calendar-weekday">Mar</div><div class="mc-calendar-weekday">Mer</div><div class="mc-calendar-weekday">Jeu</div><div class="mc-calendar-weekday">Ven</div><div class="mc-calendar-weekday">Sam</div><div class="mc-calendar-weekday">Dim</div></div><div class="mc-calendar-grid" id="mc-calendar-grid"><div class="mc-calendar-loading">Chargement du calendrier…</div></div><div class="mc-calendar-footer"><span>Cliquez sur un jour contenant un badge vert.</span><span class="mc-calendar-total">Tables : <strong id="mc-calendar-table-total">0</strong>&nbsp;&nbsp;·&nbsp;&nbsp;Événements : <strong id="mc-calendar-event-total">0</strong></span></div></section>'+
+    '<section class="mc-dashboard-bottom"><div class="mc-panel"><div class="mc-panel-title">Accès rapides</div><div class="mc-panel-copy">Les actions les plus utilisées par votre équipe.</div><div class="mc-quick-grid"><a class="mc-quick-link" href="/admin/order/list"><span>🛍</span><span>Gérer les commandes</span></a><a class="mc-quick-link" href="/admin/dish/list"><span>🍴</span><span>Modifier les plats</span></a><a class="mc-quick-link" href="/admin/table-reservation/list"><span>🪑</span><span>Voir les réservations</span></a><a class="mc-quick-link" href="/admin/contact-message/list"><span>✉</span><span>Lire les messages</span></a></div></div><div class="mc-panel"><div class="mc-panel-title">Aujourd’hui</div><div class="mc-panel-copy">Une belle journée commence avec une équipe bien organisée.</div><div class="mc-clock" id="mc-dashboard-clock">--:--</div><div class="mc-date" id="mc-dashboard-date"></div></div></section>'+
+    '<div class="mc-day-modal" id="mc-day-modal" aria-hidden="true"><div class="mc-day-dialog" role="dialog" aria-modal="true"><div class="mc-day-dialog-header"><div><div class="mc-day-dialog-eyebrow">Réservations de la journée</div><div class="mc-day-dialog-title" id="mc-day-dialog-title"></div></div><button class="mc-day-close" id="mc-day-close" type="button" aria-label="Fermer">×</button></div><div class="mc-day-dialog-body" id="mc-day-dialog-body"></div></div></div></main>';
   }
 
   var mcCalendarCursor = new Date();
@@ -2297,7 +1878,6 @@ html,body,.page,.page-wrapper,.page-body{
       var grid = document.getElementById("mc-calendar-grid");
       var tableTotal = document.getElementById("mc-calendar-table-total");
       var eventTotal = document.getElementById("mc-calendar-event-total");
-      var daysTotal = document.getElementById("mc-calendar-days-total");
       if (!monthLabel || !grid || !tableTotal || !eventTotal) return;
 
       var year = mcCalendarCursor.getFullYear();
@@ -2320,7 +1900,6 @@ html,body,.page,.page-wrapper,.page-body{
       .then(function (data) {
           var firstDay = new Date(year, month, 1);
           var lastDay = new Date(year, month + 1, 0);
-          if (daysTotal) daysTotal.textContent = lastDay.getDate();
           var mondayIndex = (firstDay.getDay() + 6) % 7;
           var today = new Date();
           var html = "";
@@ -2356,12 +1935,14 @@ html,body,.page,.page-wrapper,.page-body{
                                 (tableCount > 0
                                     ? '<span class="mc-calendar-type-badge mc-table" aria-label="' +
                                       tableCount + ' réservation(s) de table">' +
+                                        '<span class="mc-badge-icon">🍽</span>' +
                                         '<span class="mc-badge-count">' + tableCount + '</span>' +
                                       '</span>'
                                     : '') +
                                 (eventCount > 0
                                     ? '<span class="mc-calendar-type-badge mc-event" aria-label="' +
                                       eventCount + ' événement(s)">' +
+                                        '<span class="mc-badge-icon">🥂</span>' +
                                         '<span class="mc-badge-count">' + eventCount + '</span>' +
                                       '</span>'
                                     : '') +
@@ -2452,6 +2033,29 @@ html,body,.page,.page-wrapper,.page-body{
     }
 
     mcInitCalendar();
+
+    fetch('/admin-dashboard-data',{credentials:'same-origin'})
+      .then(function(r){if(!r.ok)throw new Error();return r.json()})
+      .then(function(data){
+        Object.keys(data).forEach(function(k){
+          var el=document.querySelector('[data-stat="'+k+'"]');
+          if(el)el.textContent=data[k];
+        });
+      })
+      .catch(function(){
+        document.querySelectorAll('[data-stat]').forEach(function(el){el.textContent='0'});
+      });
+
+    function clock(){
+      var n=new Date(),
+          c=document.getElementById('mc-dashboard-clock'),
+          d=document.getElementById('mc-dashboard-date');
+      var locale=mcCurrentLang()==='en'?'en-GB':'fr-FR';
+      if(c)c.textContent=n.toLocaleTimeString(locale,{hour:'2-digit',minute:'2-digit'});
+      if(d)d.textContent=n.toLocaleDateString(locale,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    }
+    clock();
+    setInterval(clock,30000);
   }
 
 
