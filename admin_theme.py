@@ -277,6 +277,218 @@ border-radius:16px;color:var(--mc-dark)!important;background:white;font-size:13p
 .form-control:focus,.form-select:focus,.ts-control.focus{border-color:var(--mc-green)!important;box-shadow:0 0 0 4px rgba(31,107,45,.10)!important}
 .table-responsive{background:var(--mc-paper)!important}.table{--tblr-table-border-color:rgba(31,107,45,.10)!important;color:var(--mc-text)!important}.table thead th{padding-top:17px!important;padding-bottom:17px!important;background:#f2eee4!important;color:var(--mc-dark)!important;font-size:11px!important;font-weight:850!important;letter-spacing:.075em!important;text-transform:uppercase!important}.table tbody td{padding-top:16px!important;padding-bottom:16px!important;vertical-align:middle!important}.table tbody tr:nth-child(even){background:rgba(247,240,228,.52)!important}.table tbody tr:hover{background:rgba(234,242,232,.92)!important;box-shadow:inset 4px 0 0 var(--mc-gold)!important}.table a{color:var(--mc-green)!important}.table td a[data-bs-target*="delete"],.table td a[href*="/delete"]{color:#c33d36!important}
 .pagination .page-item.active .page-link{border-color:var(--mc-green)!important;color:white!important;background:var(--mc-green)!important}
+
+
+/* =========================================================
+   SIDEBAR EXACTE — structure custom, proche de la référence
+========================================================= */
+.mc-sidebar-custom{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(180deg,#0f4b2b 0%,#0c4326 56%,#07351e 100%);
+  color:#fff;
+  overflow:hidden;
+}
+
+.mc-sidebar-head{
+  flex:0 0 auto;
+  padding:22px 18px 16px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  text-align:center;
+}
+
+.mc-sidebar-logo{
+  width:72px;
+  height:72px;
+  border-radius:20px;
+  object-fit:cover;
+  display:block;
+  box-shadow:0 8px 20px rgba(0,0,0,.16);
+}
+
+.mc-sidebar-name{
+  margin-top:12px;
+  color:#fffdf8;
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:18px;
+  font-weight:700;
+  line-height:1.1;
+}
+
+.mc-sidebar-role{
+  margin-top:7px;
+  color:#e4b83f;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.24em;
+}
+
+.mc-sidebar-menu{
+  flex:1 1 auto;
+  min-height:0;
+  padding:10px 13px 92px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  overflow-y:auto;
+  scrollbar-width:none;
+}
+.mc-sidebar-menu::-webkit-scrollbar{display:none}
+
+.mc-sidebar-link{
+  min-height:45px;
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border-radius:13px;
+  color:rgba(255,255,255,.92)!important;
+  text-decoration:none!important;
+  font-size:12px;
+  font-weight:750;
+  transition:background .18s ease, transform .18s ease;
+}
+
+.mc-sidebar-link:hover{
+  color:white!important;
+  background:rgba(255,255,255,.08);
+  transform:none;
+}
+
+.mc-sidebar-link.mc-active{
+  color:white!important;
+  background:linear-gradient(135deg,rgba(102,168,96,.38),rgba(255,255,255,.10));
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+.mc-sidebar-icon{
+  width:24px;
+  min-width:24px;
+  height:24px;
+  display:grid;
+  place-items:center;
+  color:white;
+}
+.mc-sidebar-icon svg{
+  width:21px!important;
+  height:21px!important;
+  stroke:currentColor!important;
+  fill:none!important;
+}
+
+.mc-sidebar-leaves{
+  position:absolute;
+  left:-18px;
+  bottom:58px;
+  width:150px;
+  height:190px;
+  pointer-events:none;
+  opacity:.34;
+  background:
+    radial-gradient(ellipse at 28% 78%,rgba(215,176,79,.95) 0 10px,transparent 11px),
+    radial-gradient(ellipse at 46% 66%,rgba(215,176,79,.80) 0 13px,transparent 14px),
+    radial-gradient(ellipse at 24% 53%,rgba(215,176,79,.66) 0 10px,transparent 11px),
+    radial-gradient(ellipse at 58% 43%,rgba(215,176,79,.55) 0 12px,transparent 13px);
+  transform:rotate(-22deg);
+}
+
+.mc-sidebar-account{
+  position:absolute;
+  left:13px;
+  right:13px;
+  bottom:13px;
+  height:49px;
+  padding:0 12px;
+  display:flex;
+  align-items:center;
+  gap:9px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  background:rgba(255,255,255,.035);
+  color:#fff;
+}
+
+.mc-sidebar-avatar{
+  width:29px;
+  height:29px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(103,171,105,.55);
+  font-size:9px;
+  font-weight:900;
+}
+
+.mc-sidebar-account-name{
+  flex:1;
+  font-size:10px;
+  font-weight:800;
+}
+
+.mc-sidebar-chevron{
+  font-size:14px;
+  opacity:.9;
+}
+
+/* Une fois la structure custom injectée, on neutralise entièrement
+   la structure Tabler/SQLAdmin native afin d'éviter le rail bleu,
+   le deuxième hamburger et le grand titre. */
+.navbar-vertical > .container-fluid{
+  padding:0!important;
+}
+.navbar-vertical .navbar-toggler,
+.navbar-vertical button.navbar-toggler,
+.navbar-vertical [data-bs-toggle="collapse"]{
+  display:none!important;
+}
+
+@media(min-width:992px){
+  .navbar-vertical{
+    width:228px!important;
+  }
+  .page-wrapper{margin-left:228px!important}
+  .mc-topbar{left:228px!important}
+}
+
+@media(max-width:991.98px){
+  .navbar-vertical{
+    width:235px!important;
+    max-width:235px!important;
+    border-radius:0 0 24px 0!important;
+  }
+  .mc-sidebar-head{
+    padding:18px 15px 13px;
+  }
+  .mc-sidebar-logo{
+    width:64px;
+    height:64px;
+    border-radius:18px;
+  }
+  .mc-sidebar-name{
+    margin-top:10px;
+    font-size:16px;
+  }
+  .mc-sidebar-role{
+    font-size:7px;
+  }
+  .mc-sidebar-menu{
+    padding:7px 11px 82px;
+    gap:5px;
+  }
+  .mc-sidebar-link{
+    min-height:42px;
+    padding:9px 10px;
+    gap:10px;
+    font-size:11px;
+  }
+  .mc-sidebar-icon{
+    width:22px;
+    min-width:22px;
+  }
+}
 </style>
 '''
 
@@ -1868,6 +2080,84 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     });
   }
 
+
+  /* =========================================================
+     SIDEBAR CUSTOM — reconstruit uniquement l'affichage,
+     en conservant les vraies URLs SQLAdmin existantes.
+  ========================================================= */
+  function mcBuildCustomSidebar(){
+    var nav = document.querySelector('.navbar-vertical');
+    if(!nav || nav.dataset.mcSidebarBuilt === '1') return;
+
+    var existingLinks = Array.prototype.slice.call(
+      nav.querySelectorAll('a.nav-link, .navbar-nav a[href]')
+    );
+
+    function findHref(tokens, fallback){
+      for(var i=0;i<existingLinks.length;i++){
+        var a=existingLinks[i];
+        var hay=((a.textContent||'')+' '+(a.getAttribute('href')||'')).toLowerCase();
+        for(var j=0;j<tokens.length;j++){
+          if(hay.indexOf(tokens[j])!==-1) return a.getAttribute('href')||fallback;
+        }
+      }
+      return fallback;
+    }
+
+    var items = [
+      {label:'Tableau de bord', href:'/admin', tokens:['tableau','dashboard'], icon:'⌂'},
+      {label:'Réservations', href:findHref(['table-reservation','réservations tables','table bookings'],'/admin/table-reservation/list'), icon:'▣'},
+      {label:'Événements', href:findHref(['event-reservation','réservations événements','event bookings'],'/admin/event-reservation/list'), icon:'☆'},
+      {label:'QR Codes', href:'#', tokens:['qr'], icon:'⌘'},
+      {label:'Analyses', href:'#', tokens:['analys'], icon:'↗'},
+      {label:'Messages', href:findHref(['contact-message','messages contact','contact messages'],'/admin/contact-message/list'), icon:'✉'},
+      {label:'Paramètres', href:'#', tokens:['param','setting'], icon:'⚙'}
+    ];
+
+    /* Si les entrées QR / Analyses / Paramètres existent vraiment dans SQLAdmin,
+       on réutilise leurs URL; sinon elles restent visuellement présentes sans
+       casser les pages existantes. */
+    items.forEach(function(item){
+      if(item.tokens){
+        var found=findHref(item.tokens,item.href);
+        if(found) item.href=found;
+      }
+    });
+
+    var path=location.pathname.replace(/\/+$/,'')||'/';
+    function isActive(item){
+      if(item.label==='Tableau de bord') return path==='/admin';
+      if(!item.href || item.href==='#') return false;
+      var clean=item.href.split('?')[0].replace(/\/+$/,'');
+      return clean && path.indexOf(clean.replace(/\/list$/,''))===0;
+    }
+
+    var menuHtml=items.map(function(item){
+      return '<a class="mc-sidebar-link'+(isActive(item)?' mc-active':'')+'" href="'+item.href+'">'+
+        '<span class="mc-sidebar-icon">'+item.icon+'</span>'+
+        '<span>'+item.label+'</span>'+
+      '</a>';
+    }).join('');
+
+    nav.innerHTML=
+      '<div class="mc-sidebar-custom">'+
+        '<div class="mc-sidebar-head">'+
+          '<img class="mc-sidebar-logo" src="/images/logoMissChawarma.png" alt="Miss Chawarma">'+
+          '<div class="mc-sidebar-name">Miss Chawarma</div>'+
+          '<div class="mc-sidebar-role">ADMINISTRATION</div>'+
+        '</div>'+
+        '<nav class="mc-sidebar-menu">'+menuHtml+'</nav>'+
+        '<div class="mc-sidebar-leaves"></div>'+
+        '<div class="mc-sidebar-account">'+
+          '<span class="mc-sidebar-avatar">MC</span>'+
+          '<span class="mc-sidebar-account-name">Miss Chawarma</span>'+
+          '<span class="mc-sidebar-chevron">⌄</span>'+
+        '</div>'+
+      '</div>';
+
+    nav.dataset.mcSidebarBuilt='1';
+  }
+
   /* =========================================================
      TOPBAR
   ========================================================= */
@@ -2482,6 +2772,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
 
   function init(){
+    mcBuildCustomSidebar();
     createTopbar();
     initMobileNav();
     renderDashboard();
