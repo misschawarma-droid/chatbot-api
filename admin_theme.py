@@ -664,8 +664,9 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 @keyframes mcPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 @keyframes mcBreathe{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.12);opacity:1}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important}}
-@media(max-width:991.98px){.navbar-vertical{position:static!important;width:auto!important;height:auto!important;box-shadow:none!important}.page-wrapper{margin-left:0!important}.mc-topbar{position:static;left:0;height:auto;padding:12px 16px}.page-body{padding-top:18px!important}.mc-topbar-brand{display:none}.mc-dashboard-hero{padding:30px 24px;border-radius:22px}.mc-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mc-dashboard-bottom{grid-template-columns:1fr}}
-@media(max-width:620px){.mc-stats-grid,.mc-quick-grid{grid-template-columns:1fr}.mc-topbar-link{display:none}}
+/* Les règles mobiles complètes (topbar, tiroir latéral, grilles, calendrier)
+   sont regroupées plus bas dans le bloc "VERSION MOBILE" pour éviter les
+   doublons/conflits avec les media queries ci-dessus. */
 
 /* =========================================================
    CALENDRIER BICOLORE : TABLES / ÉVÉNEMENTS
@@ -915,25 +916,31 @@ html.mc-nav-open .mc-nav-toggle span:nth-child(3){transform:translateY(-6px) rot
 html.mc-nav-open .mc-nav-backdrop{display:block;opacity:1}
 html.mc-nav-open{overflow:hidden!important}
 
+html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .page-wrapper{transform:none!important}
+
 @media(max-width:991.98px){
   .mc-nav-toggle{display:inline-flex!important}
   .page-wrapper{margin-left:0!important}
-  .mc-topbar{position:fixed!important;left:0!important;right:0!important;height:60px!important;padding:0 14px!important;z-index:1051!important;gap:10px}
-  .mc-topbar-brand{gap:9px!important}
-  .mc-topbar-orb{width:30px!important;height:30px!important}
-  .mc-topbar-title{font-size:13.5px!important}
-  .mc-topbar-subtitle{display:none!important}
+  .mc-topbar{position:fixed!important;top:0!important;left:0!important;right:0!important;min-height:58px!important;height:auto!important;
+    padding:9px 14px!important;z-index:2000!important;gap:8px!important;flex-wrap:nowrap!important}
+  .mc-topbar-brand{display:none!important}
+  .mc-topbar-actions{flex:1 1 auto!important;flex-wrap:nowrap!important;justify-content:flex-end!important;gap:8px!important;min-width:0!important}
   .mc-topbar-link{display:none!important}
-  .page-body{padding-top:76px!important}
+  .mc-lang-switch{flex-shrink:0!important;padding:2px!important}
+  .mc-lang-switch button{padding:6px 9px!important;font-size:10.5px!important}
+  .mc-topbar-logout{flex-shrink:0!important;padding:0 12px!important;font-size:11.5px!important}
+  .page-body{padding-top:74px!important}
 
   /* Le menu latéral devient un tiroir qui glisse par-dessus le contenu */
   .navbar-vertical{position:fixed!important;top:0!important;left:0!important;height:100vh!important;
     width:82vw!important;max-width:290px!important;transform:translateX(-100%)!important;
-    transition:transform .28s cubic-bezier(.2,.8,.2,1)!important;z-index:1040!important;box-shadow:24px 0 60px rgba(9,43,18,.35)!important}
+    transition:transform .28s cubic-bezier(.2,.8,.2,1)!important;z-index:1900!important;box-shadow:24px 0 60px rgba(9,43,18,.35)!important}
   html.mc-nav-open .navbar-vertical{transform:translateX(0)!important}
+  .mc-nav-backdrop{z-index:1890!important}
 
-  .mc-dashboard-hero{min-height:auto!important;padding:26px 22px!important;border-radius:22px!important}
-  .mc-dashboard h1{font-size:clamp(28px,8vw,40px)!important}
+  .mc-dashboard-bottom{grid-template-columns:1fr!important;gap:14px!important}
+  .mc-dashboard-hero{min-height:auto!important;padding:24px 20px!important;border-radius:22px!important}
+  .mc-dashboard h1{font-size:clamp(26px,8vw,38px)!important}
   .mc-hero-copy{font-size:13.5px!important}
   .mc-hero-actions{flex-direction:column!important;align-items:stretch!important}
   .mc-hero-actions .mc-hero-button{width:100%!important;justify-content:center!important}
@@ -945,6 +952,31 @@ html.mc-nav-open{overflow:hidden!important}
   .card-footer{flex-wrap:wrap!important;gap:10px!important}
   .card-footer .btn{flex:1 1 auto!important;min-width:130px!important}
 
+  /* KPI et accès rapides : on garde toujours au moins 2 colonnes, jamais empilés en 1 */
+  .mc-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .mc-stat-card{min-height:auto!important;padding:14px!important;border-radius:17px!important}
+  .mc-stat-icon{font-size:20px!important;margin-bottom:6px!important}
+  .mc-stat-value{font-size:24px!important}
+  .mc-stat-label{font-size:11px!important;line-height:1.3!important}
+  .mc-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  .mc-quick-link{min-height:auto!important;padding:12px 10px!important;flex-direction:column!important;
+    text-align:center!important;gap:6px!important;font-size:12px!important;line-height:1.25!important}
+  .mc-quick-link span:first-child{font-size:20px!important}
+
+  /* Calendrier : cellules plus lisibles, chiffre et badge bien séparés */
+  .mc-calendar-panel{padding:16px!important;border-radius:19px!important}
+  .mc-calendar-header{flex-direction:column!important;align-items:flex-start!important}
+  .mc-calendar-legend{margin-top:8px!important}
+  .mc-calendar-controls{width:100%!important;justify-content:space-between!important;margin-top:10px!important}
+  .mc-calendar-weekdays,.mc-calendar-grid{gap:6px!important}
+  .mc-calendar-weekday{font-size:9px!important;padding:6px 2px!important}
+  .mc-calendar-day{min-height:60px!important;padding:6px!important;border-radius:13px!important}
+  .mc-calendar-number{width:22px!important;height:22px!important;font-size:11.5px!important}
+  .mc-calendar-count{right:4px!important;bottom:4px!important;min-width:20px!important;height:20px!important;
+    padding:0 5px!important;font-size:10px!important}
+  .mc-calendar-dot{display:none!important}
+  .mc-calendar-footer{align-items:flex-start!important;flex-direction:column!important;gap:8px!important}
+
   /* Tableaux : on garde le scroll horizontal natif (fiable avec les filtres/actions
      SQLAdmin) mais on l'indique visuellement et on agrandit les zones tactiles */
   .table-responsive{-webkit-overflow-scrolling:touch!important;position:relative!important}
@@ -955,22 +987,24 @@ html.mc-nav-open{overflow:hidden!important}
 
   .modal-dialog{margin:10px!important;max-width:calc(100vw - 20px)!important}
   .order-ticket-modal{width:94vw!important;height:88vh!important}
-  .mc-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
-  .mc-quick-grid{grid-template-columns:1fr!important}
 
   /* Empêche le zoom automatique iOS sur les champs de formulaire */
   .form-control,.form-select,.ts-control{font-size:16px!important}
 }
 
 @media(max-width:575.98px){
-  .mc-topbar-brand>div:last-child{display:none!important}
-  .mc-stats-grid{grid-template-columns:1fr!important}
   .mc-dashboard{padding:2px 6px 40px!important}
   .card-header{padding:14px!important}
   .card-body{padding:12px!important}
-  .mc-dashboard h1{font-size:26px!important}
-  .mc-lang-switch{order:3;width:100%!important;justify-content:center!important;margin-top:4px}
-  .mc-topbar-actions{flex-wrap:wrap!important;justify-content:flex-end!important;gap:6px!important}
+  .mc-dashboard h1{font-size:25px!important}
+  .mc-stat-value{font-size:21px!important}
+  .mc-quick-link{font-size:11.5px!important}
+}
+
+@media(max-width:359.98px){
+  /* Écrans très étroits uniquement : on passe l'intitulé "Déconnexion" en icône seule */
+  .mc-logout-text{display:none!important}
+  .mc-topbar-logout{padding:0 11px!important}
 }
 
 </style>
@@ -1307,7 +1341,7 @@ html.mc-nav-open{overflow:hidden!important}
     var bar=document.createElement('header');bar.className='mc-topbar';
     bar.innerHTML='<button type="button" class="mc-nav-toggle" id="mcNavToggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>'+
     '<div class="mc-topbar-brand"><div class="mc-topbar-orb"><img src="/images/logoMissChawarma.png" alt="Logo"></div><div><div class="mc-topbar-title">Maison Miss Chawarma</div><div class="mc-topbar-subtitle">Espace de gestion du restaurant</div></div></div>'+ 
-    '<div class="mc-topbar-actions"><a class="mc-topbar-link" href="/admin/order/list">🛍 Commandes</a><div class="mc-lang-switch"><button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button></div><a class="mc-topbar-logout" href="'+logoutHref+'">↗ Déconnexion</a></div>';
+    '<div class="mc-topbar-actions"><a class="mc-topbar-link" href="/admin/order/list">🛍 Commandes</a><div class="mc-lang-switch"><button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button></div><a class="mc-topbar-logout" href="'+logoutHref+'">↗<span class="mc-logout-text"> Déconnexion</span></a></div>';
     document.body.insertBefore(bar,document.body.firstChild);
     if(!document.getElementById('mcNavBackdrop')){
       var backdrop=document.createElement('div');
