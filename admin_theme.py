@@ -895,6 +895,84 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
     white-space: nowrap !important;
 }
 
+/* =========================================================
+   VERSION MOBILE — menu hamburger + tiroir latéral + tactile
+   (la version desktop ci-dessus n'est pas modifiée ; tout ce
+   bloc ne s'active qu'en dessous des largeurs indiquées)
+========================================================= */
+
+/* Bouton hamburger : invisible sur desktop, affiché en media query */
+.mc-nav-toggle{display:none;width:40px;height:40px;flex-shrink:0;align-items:center;justify-content:center;
+  flex-direction:column;gap:4px;border:1px solid rgba(31,107,45,.18);border-radius:12px;background:white;cursor:pointer}
+.mc-nav-toggle span{display:block;width:18px;height:2px;border-radius:2px;background:var(--mc-dark);transition:transform .22s ease,opacity .22s ease}
+html.mc-nav-open .mc-nav-toggle span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+html.mc-nav-open .mc-nav-toggle span:nth-child(2){opacity:0}
+html.mc-nav-open .mc-nav-toggle span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+/* Fond sombre derrière le menu ouvert */
+.mc-nav-backdrop{display:none;position:fixed;inset:0;z-index:1039;background:rgba(9,43,18,.45);
+  backdrop-filter:blur(2px);opacity:0;transition:opacity .25s ease}
+html.mc-nav-open .mc-nav-backdrop{display:block;opacity:1}
+html.mc-nav-open{overflow:hidden!important}
+
+@media(max-width:991.98px){
+  .mc-nav-toggle{display:inline-flex!important}
+  .page-wrapper{margin-left:0!important}
+  .mc-topbar{position:fixed!important;left:0!important;right:0!important;height:60px!important;padding:0 14px!important;z-index:1051!important;gap:10px}
+  .mc-topbar-brand{gap:9px!important}
+  .mc-topbar-orb{width:30px!important;height:30px!important}
+  .mc-topbar-title{font-size:13.5px!important}
+  .mc-topbar-subtitle{display:none!important}
+  .mc-topbar-link{display:none!important}
+  .page-body{padding-top:76px!important}
+
+  /* Le menu latéral devient un tiroir qui glisse par-dessus le contenu */
+  .navbar-vertical{position:fixed!important;top:0!important;left:0!important;height:100vh!important;
+    width:82vw!important;max-width:290px!important;transform:translateX(-100%)!important;
+    transition:transform .28s cubic-bezier(.2,.8,.2,1)!important;z-index:1040!important;box-shadow:24px 0 60px rgba(9,43,18,.35)!important}
+  html.mc-nav-open .navbar-vertical{transform:translateX(0)!important}
+
+  .mc-dashboard-hero{min-height:auto!important;padding:26px 22px!important;border-radius:22px!important}
+  .mc-dashboard h1{font-size:clamp(28px,8vw,40px)!important}
+  .mc-hero-copy{font-size:13.5px!important}
+  .mc-hero-actions{flex-direction:column!important;align-items:stretch!important}
+  .mc-hero-actions .mc-hero-button{width:100%!important;justify-content:center!important}
+
+  .card-header{flex-wrap:wrap!important;gap:10px!important;padding:16px 18px!important;min-height:auto!important}
+  .card-header>*{width:100%!important}
+  .card-title{font-size:21px!important}
+  .card-body{padding:14px!important}
+  .card-footer{flex-wrap:wrap!important;gap:10px!important}
+  .card-footer .btn{flex:1 1 auto!important;min-width:130px!important}
+
+  /* Tableaux : on garde le scroll horizontal natif (fiable avec les filtres/actions
+     SQLAdmin) mais on l'indique visuellement et on agrandit les zones tactiles */
+  .table-responsive{-webkit-overflow-scrolling:touch!important;position:relative!important}
+  .table-responsive::after{content:"";position:absolute;top:0;right:0;bottom:0;width:20px;pointer-events:none;
+    background:linear-gradient(90deg,transparent,rgba(18,63,29,.08))}
+  .table thead th,.table tbody td{padding:12px 10px!important;font-size:12.5px!important}
+  .table a{min-height:38px!important;display:inline-flex!important;align-items:center!important}
+
+  .modal-dialog{margin:10px!important;max-width:calc(100vw - 20px)!important}
+  .order-ticket-modal{width:94vw!important;height:88vh!important}
+  .mc-stats-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+  .mc-quick-grid{grid-template-columns:1fr!important}
+
+  /* Empêche le zoom automatique iOS sur les champs de formulaire */
+  .form-control,.form-select,.ts-control{font-size:16px!important}
+}
+
+@media(max-width:575.98px){
+  .mc-topbar-brand>div:last-child{display:none!important}
+  .mc-stats-grid{grid-template-columns:1fr!important}
+  .mc-dashboard{padding:2px 6px 40px!important}
+  .card-header{padding:14px!important}
+  .card-body{padding:12px!important}
+  .mc-dashboard h1{font-size:26px!important}
+  .mc-lang-switch{order:3;width:100%!important;justify-content:center!important;margin-top:4px}
+  .mc-topbar-actions{flex-wrap:wrap!important;justify-content:flex-end!important;gap:6px!important}
+}
+
 </style>
 
 <script id="miss-chawarma-admin-script">
@@ -1227,9 +1305,15 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
     var oldLogout=document.querySelector('.navbar-vertical a[href*="logout"]');
     var logoutHref=oldLogout?oldLogout.getAttribute('href'):'/admin/logout';
     var bar=document.createElement('header');bar.className='mc-topbar';
-    bar.innerHTML='<div class="mc-topbar-brand"><div class="mc-topbar-orb"><img src="/images/logoMissChawarma.png" alt="Logo"></div><div><div class="mc-topbar-title">Maison Miss Chawarma</div><div class="mc-topbar-subtitle">Espace de gestion du restaurant</div></div></div>'+ 
+    bar.innerHTML='<button type="button" class="mc-nav-toggle" id="mcNavToggle" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>'+
+    '<div class="mc-topbar-brand"><div class="mc-topbar-orb"><img src="/images/logoMissChawarma.png" alt="Logo"></div><div><div class="mc-topbar-title">Maison Miss Chawarma</div><div class="mc-topbar-subtitle">Espace de gestion du restaurant</div></div></div>'+ 
     '<div class="mc-topbar-actions"><a class="mc-topbar-link" href="/admin/order/list">🛍 Commandes</a><div class="mc-lang-switch"><button type="button" data-lang="fr">FR</button><button type="button" data-lang="en">EN</button></div><a class="mc-topbar-logout" href="'+logoutHref+'">↗ Déconnexion</a></div>';
     document.body.insertBefore(bar,document.body.firstChild);
+    if(!document.getElementById('mcNavBackdrop')){
+      var backdrop=document.createElement('div');
+      backdrop.className='mc-nav-backdrop';backdrop.id='mcNavBackdrop';
+      document.body.appendChild(backdrop);
+    }
     var current=mcCurrentLang();
     bar.querySelectorAll('[data-lang]').forEach(function(b){
       b.classList.toggle('mc-active',b.dataset.lang===current);
@@ -1240,6 +1324,37 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
       });
     });
     mcApplyLanguage(bar);
+  }
+
+  /* =========================================================
+     MENU MOBILE — ouverture/fermeture du tiroir latéral
+  ========================================================= */
+  function initMobileNav(){
+    var toggle=document.getElementById('mcNavToggle');
+    var backdrop=document.getElementById('mcNavBackdrop');
+    var nav=document.querySelector('.navbar-vertical');
+    if(!toggle||!nav||toggle.dataset.mcBound)return;
+    toggle.dataset.mcBound='1';
+
+    function isOpen(){return document.documentElement.classList.contains('mc-nav-open');}
+    function closeNav(){
+      document.documentElement.classList.remove('mc-nav-open');
+      toggle.setAttribute('aria-expanded','false');
+    }
+    function openNav(){
+      document.documentElement.classList.add('mc-nav-open');
+      toggle.setAttribute('aria-expanded','true');
+    }
+    toggle.addEventListener('click',function(e){
+      e.stopPropagation();
+      isOpen()?closeNav():openNav();
+    });
+    if(backdrop)backdrop.addEventListener('click',closeNav);
+    nav.addEventListener('click',function(e){
+      if(e.target.closest('a.nav-link')&&window.innerWidth<=991.98)closeNav();
+    });
+    document.addEventListener('keydown',function(e){if(e.key==='Escape')closeNav();});
+    window.addEventListener('resize',function(){if(window.innerWidth>991.98)closeNav();});
   }
 
   function dashboardMarkup(){
@@ -1788,6 +1903,7 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
 
   function init(){
     createTopbar();
+    initMobileNav();
     renderDashboard();
     mcInitLiveSearch();
     // Traduit aussi les pages de liste SQLAdmin natives (Plats, Commandes, etc.)
