@@ -1759,6 +1759,221 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 }
 
+
+/* =========================================================
+   MOBILE SIDEBAR — collapsed icon rail + expanded full menu
+   Closed: a slim green rail stays visible.
+   Open: the full sidebar expands.
+========================================================= */
+@media(max-width:991.98px){
+
+  /* Sidebar starts BELOW the fixed topbar so the logo is no longer cut */
+  .navbar-vertical{
+    top:74px!important;
+    bottom:0!important;
+    left:0!important;
+    height:calc(100vh - 74px)!important;
+
+    width:66px!important;
+    max-width:none!important;
+
+    transform:none!important;
+    transition:width .26s cubic-bezier(.2,.8,.2,1)!important;
+
+    border-radius:0 0 22px 0!important;
+    overflow:hidden!important;
+    z-index:1900!important;
+  }
+
+  html.mc-nav-open .navbar-vertical{
+    width:235px!important;
+    transform:none!important;
+  }
+
+  /* Keep the page visible beside the small rail */
+  .page-wrapper{
+    margin-left:66px!important;
+    transition:margin-left .26s cubic-bezier(.2,.8,.2,1)!important;
+  }
+
+  html.mc-nav-open .page-wrapper{
+    margin-left:66px!important;
+  }
+
+  /* backdrop only when menu is really expanded */
+  .mc-nav-backdrop{
+    left:66px!important;
+  }
+
+  /* -------- CLOSED STATE -------- */
+
+  .mc-sidebar-head{
+    min-height:78px!important;
+    padding:10px 8px!important;
+  }
+
+  .mc-sidebar-logo{
+    width:44px!important;
+    height:44px!important;
+    margin:0 auto!important;
+    border-radius:14px!important;
+  }
+
+  .mc-sidebar-name,
+  .mc-sidebar-role{
+    display:none!important;
+  }
+
+  .mc-sidebar-menu{
+    padding:7px 7px 72px!important;
+    gap:5px!important;
+    align-items:stretch!important;
+  }
+
+  .mc-sidebar-link{
+    min-height:44px!important;
+    width:100%!important;
+    padding:0!important;
+    justify-content:center!important;
+    gap:0!important;
+    border-radius:12px!important;
+  }
+
+  .mc-sidebar-link > span:not(.mc-sidebar-icon){
+    display:none!important;
+  }
+
+  .mc-sidebar-icon{
+    width:24px!important;
+    min-width:24px!important;
+    height:24px!important;
+    font-size:18px!important;
+  }
+
+  .mc-sidebar-leaves{
+    display:none!important;
+  }
+
+  .mc-sidebar-account{
+    left:8px!important;
+    right:8px!important;
+    bottom:10px!important;
+    height:44px!important;
+    padding:0!important;
+    justify-content:center!important;
+    border-radius:13px!important;
+  }
+
+  .mc-sidebar-avatar{
+    width:29px!important;
+    height:29px!important;
+    flex:0 0 auto!important;
+  }
+
+  .mc-sidebar-account-name,
+  .mc-sidebar-chevron{
+    display:none!important;
+  }
+
+  /* -------- OPEN STATE -------- */
+
+  html.mc-nav-open .mc-sidebar-head{
+    min-height:148px!important;
+    padding:18px 15px 13px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-logo{
+    width:64px!important;
+    height:64px!important;
+    border-radius:18px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-name{
+    display:block!important;
+    margin-top:10px!important;
+    font-size:16px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-role{
+    display:block!important;
+    margin-top:7px!important;
+    font-size:7px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-menu{
+    padding:7px 11px 82px!important;
+    gap:5px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-link{
+    min-height:42px!important;
+    padding:9px 10px!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    font-size:11px!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-link > span:not(.mc-sidebar-icon){
+    display:inline!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-leaves{
+    display:block!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-account{
+    left:11px!important;
+    right:11px!important;
+    bottom:12px!important;
+    height:46px!important;
+    padding:0 12px!important;
+    justify-content:flex-start!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-account-name,
+  html.mc-nav-open .mc-sidebar-chevron{
+    display:inline!important;
+  }
+
+  html.mc-nav-open .mc-sidebar-account-name{
+    flex:1!important;
+  }
+
+  /* The topbar hamburger remains the controller */
+  .mc-nav-toggle{
+    display:inline-flex!important;
+  }
+}
+
+/* Very narrow screens: slightly slimmer rail */
+@media(max-width:420px){
+  .navbar-vertical{
+    width:58px!important;
+  }
+
+  .page-wrapper{
+    margin-left:58px!important;
+  }
+
+  .mc-nav-backdrop{
+    left:58px!important;
+  }
+
+  html.mc-nav-open .navbar-vertical{
+    width:min(82vw,235px)!important;
+  }
+
+  .mc-sidebar-menu{
+    padding-left:5px!important;
+    padding-right:5px!important;
+  }
+
+  .mc-sidebar-logo{
+    width:40px!important;
+    height:40px!important;
+  }
+}
+
 </style>
 
 <script id="miss-chawarma-admin-script">
