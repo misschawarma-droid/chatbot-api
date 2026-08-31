@@ -280,6 +280,66 @@ border-radius:16px;color:var(--mc-dark)!important;background:white;font-size:13p
 
 
 /* =========================================================
+   ORDER ITEM — PERSONNALISATION LISIBLE
+   Remplace visuellement le JSON brut par des lignes propres.
+========================================================= */
+.mc-empty-value{color:#9aa0aa!important}
+.mc-personalization-summary{
+  min-width:220px;
+  max-width:520px;
+  display:grid;
+  gap:8px;
+}
+.mc-personalization-row{
+  padding:9px 11px;
+  display:grid;
+  grid-template-columns:minmax(86px,.7fr) minmax(0,1.6fr);
+  gap:10px;
+  align-items:start;
+  border:1px solid rgba(31,107,45,.09);
+  border-radius:12px;
+  background:linear-gradient(145deg,#f7fbf5,#fffaf0);
+}
+.mc-personalization-label{
+  color:#56705c;
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.mc-personalization-content{min-width:0}
+.mc-personalization-value{
+  display:block;
+  color:#183f22;
+  font-size:12px;
+  font-weight:800;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+}
+.mc-personalization-extra{
+  margin-top:4px;
+  color:#7a817b;
+  font-size:10.5px;
+  font-weight:650;
+  line-height:1.4;
+}
+.mc-without-list{display:flex;flex-wrap:wrap;gap:6px}
+.mc-without-chip{
+  padding:5px 9px;
+  border:1px solid rgba(196,125,14,.18);
+  border-radius:999px;
+  background:#fff3cf;
+  color:#8c6200;
+  font-size:10.5px;
+  font-weight:800;
+}
+@media(max-width:575.98px){
+  .mc-personalization-summary{min-width:0!important;max-width:100%!important;width:100%!important}
+  .mc-personalization-row{grid-template-columns:1fr!important;gap:5px!important;padding:9px!important}
+}
+
+
+/* =========================================================
    SIDEBAR EXACTE — structure custom, proche de la référence
 ========================================================= */
 .mc-sidebar-custom{
@@ -489,85 +549,622 @@ border-radius:16px;color:var(--mc-dark)!important;background:white;font-size:13p
     min-width:22px;
   }
 }
+
+/* =========================================================
+   ARTICLES COMMANDÉS — cartes mobiles plus claires et plus
+   compactes, dans le même esprit que les tickets commandes.
+========================================================= */
+@media(max-width:575.98px){
+  .card.mc-order-item-card-mode .mc-mobile-cards{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:12px!important;
+    padding:10px 8px 18px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group{
+    margin:0!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    border-radius:24px!important;
+    background:linear-gradient(180deg,#fffefb 0%,#fcfaf4 100%)!important;
+    box-shadow:0 10px 22px rgba(18,63,29,.055)!important;
+    overflow:hidden!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-header{
+    padding:14px 16px!important;
+    background:linear-gradient(90deg,#f1f7ef 0%,#fff9ed 100%)!important;
+    border-bottom:1px solid rgba(31,107,45,.08)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-title{
+    color:#194627!important;
+    font-size:17px!important;
+    font-weight:900!important;
+    line-height:1.2!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-count{
+    padding:8px 12px!important;
+    border-radius:999px!important;
+    background:#fff!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    color:#68746b!important;
+    font-size:11px!important;
+    font-weight:850!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-items{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:12px!important;
+    padding:12px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card{
+    min-height:0!important;
+    height:auto!important;
+    border-radius:22px!important;
+    overflow:hidden!important;
+    background:#fffdf9!important;
+    border:1px solid rgba(31,107,45,.09)!important;
+    box-shadow:0 6px 18px rgba(18,63,29,.045)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card::before{
+    width:5px!important;
+    opacity:1!important;
+    background:linear-gradient(180deg,#2f7a25 0%,#d6a400 100%)!important;
+    border-radius:0 6px 6px 0!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-summary{
+    min-height:0!important;
+    height:auto!important;
+    padding:16px 16px 14px 18px!important;
+    display:block!important;
+    background:transparent!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-main{
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    display:block!important;
+    text-align:left!important;
+    padding:0 58px 0 0!important;
+    border:0!important;
+    background:transparent!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-title{
+    margin:0 0 12px!important;
+    color:#214b29!important;
+    font-size:17px!important;
+    font-weight:900!important;
+    line-height:1.28!important;
+    white-space:normal!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-subtitle,
+  .card.mc-order-item-card-mode .mc-mobile-card-quick{
+    display:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-chevron{
+    top:16px!important;
+    right:16px!important;
+    width:46px!important;
+    height:46px!important;
+    border-radius:14px!important;
+    border:1px solid rgba(212,177,72,.42)!important;
+    background:linear-gradient(180deg,#fff5db 0%,#f7e7b4 100%)!important;
+    color:#936200!important;
+    box-shadow:0 6px 16px rgba(212,177,72,.18)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-inline-metrics{
+    display:flex!important;
+    align-items:center!important;
+    gap:8px!important;
+    flex-wrap:wrap!important;
+    margin:0 0 8px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-chip{
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    padding:7px 11px!important;
+    border-radius:999px!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    background:#edf5eb!important;
+    color:#2f6938!important;
+    font-size:12px!important;
+    font-weight:850!important;
+    line-height:1!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-chip.mc-order-item-chip-price{
+    background:#fff5dc!important;
+    border-color:rgba(212,177,72,.45)!important;
+    color:#a67300!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-note{
+    margin-top:6px!important;
+    color:#6e766e!important;
+    font-size:11.5px!important;
+    font-weight:650!important;
+    line-height:1.42!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-note strong{
+    color:#58655c!important;
+    font-weight:900!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-details{
+    padding:0 12px 12px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-row{
+    min-height:84px!important;
+    padding:14px!important;
+    border-radius:18px!important;
+    border:1px solid rgba(31,107,45,.08)!important;
+    background:linear-gradient(180deg,#fffefc 0%,#fbfaf5 100%)!important;
+    box-shadow:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-label{
+    padding:0!important;
+    color:#7a847b!important;
+    font-size:10px!important;
+    font-weight:850!important;
+    letter-spacing:.10em!important;
+    line-height:1.2!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-value{
+    color:#26372b!important;
+    font-size:14px!important;
+    font-weight:750!important;
+    line-height:1.42!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-row.mc-order-item-detail-order,
+  .card.mc-order-item-card-mode .mc-mobile-detail-row.mc-order-item-detail-note,
+  .card.mc-order-item-card-mode .mc-mobile-detail-row.mc-order-item-detail-options{
+    grid-column:1 / -1!important;
+    min-height:0!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-row.mc-order-item-detail-qty .mc-mobile-detail-value,
+  .card.mc-order-item-card-mode .mc-mobile-detail-row.mc-order-item-detail-price .mc-mobile-detail-value{
+    font-size:23px!important;
+    font-weight:900!important;
+    line-height:1.05!important;
+    letter-spacing:-.02em!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-row.mc-order-item-detail-price .mc-mobile-detail-value{
+    color:#b07d00!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-actions{
+    display:flex!important;
+    justify-content:flex-start!important;
+    gap:10px!important;
+    padding-top:12px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-actions a,
+  .card.mc-order-item-card-mode .mc-mobile-card-actions button{
+    width:52px!important;
+    height:52px!important;
+    border-radius:16px!important;
+  }
+
+  .card.mc-dish-list-card-mode .mc-mobile-record-card{
+    min-height:0!important;
+  }
+
+  .card.mc-dish-list-card-mode .mc-mobile-card-summary{
+    min-height:172px!important;
+  }
+}
+
+@media(min-width:431px) and (max-width:575.98px){
+  .card.mc-order-item-card-mode .mc-order-group-items{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+
+@media(max-width:430px){
+  .card.mc-order-item-card-mode .mc-mobile-card-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
 </style>
 '''
 
 ORDER_TICKET_MODAL_HTML = """
-<style>
-  .order-ticket-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(20, 30, 20, 0.55);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
+<style id="mc-order-ticket-modal-style">
+  .order-ticket-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    padding:22px;
+    align-items:center;
+    justify-content:center;
+    background:rgba(13,29,18,.58);
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
   }
-  .order-ticket-overlay.open {
-    display: flex;
+
+  .order-ticket-overlay.open{
+    display:flex;
+    animation:mcTicketOverlayIn .18s ease both;
   }
-  .order-ticket-modal {
-    position: relative;
-    width: 460px;
-    max-width: 92vw;
-    height: 85vh;
-    background: #f7f0e4;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+
+  .order-ticket-modal{
+    position:relative;
+    width:min(650px,96vw);
+    height:min(900px,94vh);
+    min-height:520px;
+    padding:16px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow:visible;
+    border:1px solid rgba(255,255,255,.22);
+    border-radius:24px;
+    background:
+      radial-gradient(circle at 96% 0,rgba(228,184,63,.17),transparent 210px),
+      linear-gradient(145deg,#f5efe4,#ebe7df);
+    box-shadow:
+      0 36px 100px rgba(7,25,12,.42),
+      inset 0 1px 0 rgba(255,255,255,.72);
+    animation:mcTicketModalIn .26s cubic-bezier(.2,.8,.2,1) both;
   }
-  .order-ticket-modal iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
+
+  .order-ticket-frame{
+    position:relative;
+    flex:1 1 auto;
+    min-height:0;
+    overflow:hidden;
+    scrollbar-width:none;
+    border:1px solid rgba(31,107,45,.12);
+    border-radius:18px;
+    background:#efeae1;
+    box-shadow:0 10px 28px rgba(18,63,29,.10);
   }
-  .order-ticket-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #1f6b2d;
-    color: white;
-    border: none;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  .order-ticket-modal iframe{
+    width:100%;
+    height:100%;
+    display:block;
+    border:0;
+    background:#efeae1;
+  }
+
+  .order-ticket-loading{
+    position:absolute;
+    inset:0;
+    z-index:2;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(145deg,#f7f0e4,#efe9dd);
+    color:#647066;
+    font-size:11px;
+    font-weight:800;
+    letter-spacing:.04em;
+    transition:opacity .18s ease,visibility .18s ease;
+  }
+
+  .order-ticket-loading::before{
+    content:"";
+    width:28px;
+    height:28px;
+    margin-bottom:42px;
+    position:absolute;
+    border:3px solid rgba(31,107,45,.15);
+    border-top-color:#1f6b2d;
+    border-radius:50%;
+    animation:mcTicketSpin .7s linear infinite;
+  }
+
+  .order-ticket-modal.mc-loaded .order-ticket-loading{
+    opacity:0;
+    visibility:hidden;
+  }
+
+  .order-ticket-close{display:none!important;
+    position:absolute;
+    top:-14px;
+    right:-14px;
+    width:44px;
+    height:44px;
+    z-index:5;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(31,107,45,.12);
+    border-radius:50%;
+    background:#fffdf8;
+    color:#123f1d;
+    box-shadow:0 8px 22px rgba(9,43,18,.18);
+    font-size:21px;
+    font-weight:500;
+    line-height:1;
+    cursor:pointer;
+    transition:transform .18s ease,background .18s ease,color .18s ease;
+  }
+
+  .order-ticket-close:hover{
+    color:white;
+    background:#1f6b2d;
+    transform:rotate(8deg);
+  }
+
+  .order-ticket-toolbar{
+    flex:0 0 auto;
+    min-height:62px;
+    padding:8px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    border:1px solid rgba(31,107,45,.09);
+    border-radius:16px;
+    background:rgba(255,253,248,.82);
+    box-shadow:0 7px 20px rgba(18,63,29,.07);
+  }
+
+  .order-ticket-action{
+    min-height:46px;
+    padding:0 16px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    border:1px solid rgba(31,107,45,.13);
+    border-radius:12px;
+    background:#fffdf8;
+    color:#183f22;
+    font-size:11px;
+    font-weight:850;
+    cursor:pointer;
+    transition:transform .18s ease,box-shadow .18s ease,background .18s ease;
+  }
+
+  .order-ticket-action:hover{
+    transform:translateY(-1px);
+    box-shadow:0 7px 18px rgba(18,63,29,.09);
+  }
+
+  .order-ticket-action.mc-print{
+    border-color:#1f6b2d;
+    background:linear-gradient(135deg,#1f6b2d,#318b42);
+    color:white;
+  }
+
+  @keyframes mcTicketOverlayIn{
+    from{opacity:0}
+    to{opacity:1}
+  }
+
+  @keyframes mcTicketModalIn{
+    from{opacity:0;transform:translateY(14px) scale(.975)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+
+  @keyframes mcTicketSpin{
+    to{transform:rotate(360deg)}
+  }
+
+  @media(max-width:575.98px){
+    .order-ticket-overlay{
+      padding:8px;
+      align-items:stretch;
+    }
+
+    .order-ticket-modal{
+      width:100%;
+      height:calc(100dvh - 16px);
+      min-height:0;
+      padding:10px;
+      gap:8px;
+      border-radius:19px;
+    }
+
+    .order-ticket-frame{
+      border-radius:14px;
+    }
+
+    .order-ticket-close{display:none!important;
+      top:8px;
+      right:8px;
+      width:38px;
+      height:38px;
+      font-size:19px;
+    }
+
+    .order-ticket-toolbar{
+      min-height:56px;
+      padding:6px;
+      gap:7px;
+      border-radius:13px;
+    }
+
+    .order-ticket-action{
+      min-height:43px;
+      padding:0 10px;
+      border-radius:10px;
+      font-size:10px;
+    }
   }
 </style>
-<div id="order-ticket-overlay" class="order-ticket-overlay">
-  <div class="order-ticket-modal">
-    <button class="order-ticket-close" onclick="closeOrderTicket()">&#10005;</button>
-    <iframe id="order-ticket-iframe" src=""></iframe>
+
+<div id="order-ticket-overlay"
+     class="order-ticket-overlay"
+     aria-hidden="true">
+  <div id="order-ticket-modal"
+       class="order-ticket-modal"
+       role="dialog"
+       aria-modal="true"
+       aria-label="Reçu de commande">
+
+
+    <div class="order-ticket-frame">
+      <div class="order-ticket-loading" id="order-ticket-loading">
+        Chargement du reçu…
+      </div>
+      <iframe id="order-ticket-iframe"
+              title="Reçu de commande"
+              scrolling="no"
+              src=""></iframe>
+    </div>
+
+    <div class="order-ticket-toolbar">
+      <button class="order-ticket-action"
+              type="button"
+              onclick="closeOrderTicket()"
+              data-ticket-fr="Fermer"
+              data-ticket-en="Close">
+        ✕ <span>Fermer</span>
+      </button>
+
+      <button class="order-ticket-action mc-print"
+              type="button"
+              onclick="printOrderTicket()"
+              data-ticket-fr="Imprimer"
+              data-ticket-en="Print">
+        ⎙ <span>Imprimer</span>
+      </button>
+    </div>
   </div>
 </div>
+
 <script>
-  function openOrderTicket(orderId) {
-    document.getElementById('order-ticket-iframe').src = '/order-ticket/' + orderId;
-    document.getElementById('order-ticket-overlay').classList.add('open');
+(function(){
+  var previousOverflow = "";
+
+  function ticketLang(){
+    return localStorage.getItem('mc_admin_lang') || 'fr';
   }
-  function closeOrderTicket() {
-    document.getElementById('order-ticket-overlay').classList.remove('open');
-    document.getElementById('order-ticket-iframe').src = '';
+
+  function translateTicketModal(){
+    var lang = ticketLang();
+
+    document.querySelectorAll('[data-ticket-fr][data-ticket-en]').forEach(function(el){
+      var text = el.getAttribute(lang === 'en' ? 'data-ticket-en' : 'data-ticket-fr');
+      var span = el.querySelector('span');
+      if (span) span.textContent = text;
+    });
+
+    var loading = document.getElementById('order-ticket-loading');
+    if (loading) {
+      loading.childNodes.forEach(function(node){
+        if (node.nodeType === Node.TEXT_NODE) node.nodeValue = '';
+      });
+      loading.appendChild(
+        document.createTextNode(lang === 'en' ? 'Loading receipt…' : 'Chargement du reçu…')
+      );
+    }
   }
-  document.addEventListener('click', function (e) {
-    var trigger = e.target.closest('.ticket-trigger');
+
+  window.openOrderTicket = function(orderId){
+    var overlay = document.getElementById('order-ticket-overlay');
+    var modal = document.getElementById('order-ticket-modal');
+    var iframe = document.getElementById('order-ticket-iframe');
+    if (!overlay || !modal || !iframe || !orderId) return;
+
+    previousOverflow = document.body.style.overflow || "";
+    document.body.style.overflow = "hidden";
+
+    modal.classList.remove('mc-loaded');
+    iframe.src = '/order-ticket/' + encodeURIComponent(orderId);
+
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    translateTicketModal();
+  };
+
+  window.closeOrderTicket = function(){
+    var overlay = document.getElementById('order-ticket-overlay');
+    var modal = document.getElementById('order-ticket-modal');
+    var iframe = document.getElementById('order-ticket-iframe');
+    if (!overlay || !iframe) return;
+
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+
+    document.body.style.overflow = previousOverflow;
+    previousOverflow = "";
+
+    setTimeout(function(){
+      if (!overlay.classList.contains('open')) {
+        iframe.src = '';
+        if (modal) modal.classList.remove('mc-loaded');
+      }
+    }, 180);
+  };
+
+  window.printOrderTicket = function(){
+    var iframe = document.getElementById('order-ticket-iframe');
+    if (!iframe || !iframe.contentWindow) return;
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+  };
+
+  var iframe = document.getElementById('order-ticket-iframe');
+  if (iframe) {
+    iframe.addEventListener('load', function(){
+      var modal = document.getElementById('order-ticket-modal');
+      if (iframe.getAttribute('src') && modal) {
+        modal.classList.add('mc-loaded');
+      }
+    });
+  }
+
+  /* Capture le clic AVANT le bouton générique des cartes mobiles :
+     cliquer sur le ticket ouvre uniquement le reçu et n'ouvre pas
+     l'accordéon de détails de la carte. */
+  document.addEventListener('click', function(e){
+    var trigger = e.target.closest && e.target.closest('.ticket-trigger');
     if (trigger) {
       e.preventDefault();
-      openOrderTicket(trigger.dataset.orderId);
+      e.stopPropagation();
+      window.openOrderTicket(trigger.dataset.orderId);
+      return;
     }
-    if (e.target.id === 'order-ticket-overlay') {
-      closeOrderTicket();
+
+    if (e.target && e.target.id === 'order-ticket-overlay') {
+      window.closeOrderTicket();
     }
+  }, true);
+
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape') window.closeOrderTicket();
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeOrderTicket();
-  });
+})();
 </script>
 """
 
@@ -2477,7 +3074,6 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
   .mc-mobile-record-card.mc-open .mc-mobile-card-chevron{
-    transform:rotate(180deg);
     background:#fff0c7;
   }
 
@@ -3430,6 +4026,287 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
 
 /* =========================================================
+   MOBILE CARDS — 2 COLONNES RECTANGULAIRES
+   Même organisation visuelle que la version desktop :
+   nom + catégorie + prix + disponibilité directement visibles.
+========================================================= */
+@media(max-width:575.98px){
+  .card.mc-mobile-card-mode .mc-mobile-cards{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+    padding:12px 10px 18px!important;
+    align-items:start!important;
+  }
+
+  .mc-mobile-selectbar,.mc-event-filters,.mc-dish-filters,
+  .mc-event-no-results,.mc-dish-no-results{
+    grid-column:1 / -1!important;
+  }
+
+  /* La sélection multiple ne sert qu'à une seule action ("Supprimer"),
+     déjà accessible individuellement sur chaque carte (bouton ⌄ puis
+     icône corbeille) : on masque la barre "Tout sélectionner" et les
+     cases à cocher sur mobile pour simplifier l'interface. */
+  .mc-mobile-selectbar,
+  .mc-mobile-card-select-wrap{
+    display:none!important;
+  }
+
+  .mc-mobile-record-card{
+    min-width:0!important;
+    overflow:hidden!important;
+    border:1px solid rgba(31,107,45,.11)!important;
+    border-radius:15px!important;
+    background:linear-gradient(145deg,#fffefb,#fbf9f2)!important;
+    box-shadow:0 7px 18px rgba(18,63,29,.055)!important;
+  }
+
+  .mc-mobile-record-card::before{
+    width:3px!important;
+    opacity:0!important;
+    background:linear-gradient(180deg,var(--mc-green),var(--mc-gold))!important;
+  }
+  .mc-mobile-record-card.mc-selected::before,
+  .mc-mobile-record-card.mc-open::before{opacity:1!important}
+
+  /* Vraie vignette photo du plat (colonne "Photo" détectée dans le tableau
+     natif), affichée en cercle centré au sommet de la carte. */
+  .mc-mobile-card-photo-wrap{
+    width:64px!important;
+    height:64px!important;
+    margin:14px auto 0!important;
+    overflow:hidden!important;
+    border-radius:50%!important;
+    background:#eef4ec!important;
+    border:2px solid #fffdf8!important;
+    box-shadow:0 3px 10px rgba(18,63,29,.14)!important;
+  }
+  .mc-mobile-card-photo{
+    width:100%!important;
+    height:100%!important;
+    object-fit:cover!important;
+    display:block!important;
+  }
+  .mc-mobile-card-photo-placeholder{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:22px!important;
+    color:#a9b6ad!important;
+  }
+  .mc-mobile-record-card.mc-open .mc-mobile-card-photo-wrap{
+    width:72px!important;
+    height:72px!important;
+  }
+
+  .mc-mobile-card-summary{
+    position:relative!important;
+    min-height:154px!important;
+    padding:13px 12px 12px!important;
+    display:block!important;
+    background:transparent!important;
+  }
+
+
+  .mc-mobile-card-select-wrap{
+    display:none!important;
+  }
+  .mc-mobile-select{width:14px!important;height:14px!important;min-height:14px!important}
+
+  .mc-mobile-card-main{
+    width:100%!important;
+    min-width:0!important;
+    padding:28px 0 34px!important;
+    display:block!important;
+    border:0!important;
+    background:transparent!important;
+    text-align:left!important;
+  }
+
+  .mc-mobile-card-title{
+    color:#174623!important;
+    font-size:12.5px!important;
+    font-weight:900!important;
+    line-height:1.22!important;
+    white-space:normal!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+  }
+
+  .mc-mobile-card-subtitle{
+    margin-top:5px!important;
+    color:#7b8490!important;
+    font-size:9px!important;
+    font-weight:650!important;
+    line-height:1.25!important;
+    white-space:normal!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+  }
+
+  .mc-mobile-card-quick{
+    margin-top:10px!important;
+    display:grid!important;
+    gap:6px!important;
+  }
+  .mc-mobile-card-category{
+    width:max-content!important;
+    max-width:100%!important;
+    padding:4px 7px!important;
+    overflow:hidden!important;
+    border:1px solid rgba(31,107,45,.09)!important;
+    border-radius:999px!important;
+    background:#edf4eb!important;
+    color:#2c6b36!important;
+    font-size:8px!important;
+    font-weight:850!important;
+    line-height:1!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+  .mc-mobile-card-price{
+    color:#174623!important;
+    font-size:13px!important;
+    font-weight:900!important;
+    line-height:1!important;
+  }
+  .mc-mobile-card-availability{
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:5px!important;
+    color:#667269!important;
+    font-size:8.5px!important;
+    font-weight:800!important;
+    line-height:1.2!important;
+  }
+  .mc-mobile-card-availability-dot{
+    width:8px!important;
+    height:8px!important;
+    min-width:8px!important;
+    display:block!important;
+    border-radius:50%!important;
+  }
+  .mc-mobile-card-availability-dot.mc-state-green{background:#43b96b!important}
+  .mc-mobile-card-availability-dot.mc-state-red{background:#d94b45!important}
+  .mc-mobile-card-availability-dot.mc-state-yellow{background:#e2b635!important}
+  .mc-mobile-card-availability-dot.mc-state-neutral{background:#a9b0aa!important}
+
+  .mc-mobile-state-dot{
+    position:absolute!important;
+    top:9px!important;
+    right:9px!important;
+    width:16px!important;
+    height:16px!important;
+    display:block!important;
+    border:2px solid #fffdf8!important;
+    border-radius:50%!important;
+    box-shadow:0 0 0 1px rgba(18,63,29,.10),0 2px 7px rgba(18,63,29,.22)!important;
+    z-index:8!important;
+    cursor:pointer!important;
+  }
+  .mc-mobile-state-dot.mc-state-green{background:#43b96b!important}
+  .mc-mobile-state-dot.mc-state-red{background:#d94b45!important}
+  .mc-mobile-state-dot.mc-state-yellow{background:#e2b635!important}
+  .mc-mobile-state-dot.mc-state-neutral{background:#a9b0aa!important}
+
+  /* Bulle d'info au survol/appui, affiche le statut en toutes lettres
+     (ex: "Disponible") au lieu de compter uniquement sur la couleur. */
+  .mc-mobile-state-dot::after{
+    content:attr(data-tooltip)!important;
+    position:absolute!important;
+    top:calc(100% + 8px)!important;
+    right:0!important;
+    padding:5px 9px!important;
+    border-radius:8px!important;
+    background:#123f1d!important;
+    color:#fffdf8!important;
+    font-size:10px!important;
+    font-weight:800!important;
+    white-space:nowrap!important;
+    opacity:0!important;
+    pointer-events:none!important;
+    transform:translateY(-4px)!important;
+    transition:opacity .15s ease,transform .15s ease!important;
+    box-shadow:0 8px 18px rgba(9,43,18,.28)!important;
+    z-index:20!important;
+  }
+  .mc-mobile-state-dot:hover::after,
+  .mc-mobile-state-dot:focus-visible::after{
+    opacity:1!important;
+    transform:translateY(0)!important;
+  }
+
+  .mc-mobile-card-chevron{
+    position:absolute!important;
+    right:9px!important;
+    bottom:9px!important;
+    width:27px!important;
+    min-width:27px!important;
+    height:27px!important;
+    min-height:27px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:9px!important;
+    background:#edf4eb!important;
+    color:#174623!important;
+    font-size:13px!important;
+  }
+
+  /* Bulle d'info au survol : le bouton est en bas de carte, donc la
+     bulle s'ouvre vers le haut pour rester visible. */
+  .mc-mobile-card-chevron::after{
+    content:attr(data-tooltip)!important;
+    position:absolute!important;
+    bottom:calc(100% + 8px)!important;
+    right:0!important;
+    padding:5px 9px!important;
+    border-radius:8px!important;
+    background:#123f1d!important;
+    color:#fffdf8!important;
+    font-size:10px!important;
+    font-weight:800!important;
+    white-space:nowrap!important;
+    opacity:0!important;
+    pointer-events:none!important;
+    transform:translateY(4px)!important;
+    transition:opacity .15s ease,transform .15s ease!important;
+    box-shadow:0 8px 18px rgba(9,43,18,.28)!important;
+    z-index:20!important;
+  }
+  .mc-mobile-card-chevron:hover::after,
+  .mc-mobile-card-chevron:focus-visible::after{
+    opacity:1!important;
+    transform:translateY(0)!important;
+  }
+
+  .mc-mobile-record-card.mc-open{grid-column:1 / -1!important}
+  .mc-mobile-record-card.mc-open .mc-mobile-card-summary{min-height:120px!important}
+  .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+  }
+  .mc-mobile-record-card.mc-open .mc-mobile-detail-row{
+    grid-template-columns:76px minmax(0,1fr)!important;
+    min-height:52px!important;
+    padding:8px!important;
+  }
+}
+@media(max-width:380px){
+  .card.mc-mobile-card-mode .mc-mobile-cards{gap:7px!important;padding-left:7px!important;padding-right:7px!important}
+  .mc-mobile-card-summary{min-height:148px!important;padding-left:9px!important;padding-right:9px!important}
+  .mc-mobile-card-title{font-size:11.5px!important}
+  .mc-mobile-card-subtitle{font-size:8.4px!important}
+  .mc-mobile-card-price{font-size:12px!important}
+  .mc-mobile-card-availability{font-size:8px!important}
+}
+
+/* =========================================================
    DESKTOP SIDEBAR ACCOUNT — remove duplicated bottom-left text
    Keep only the MC avatar and chevron on desktop.
 ========================================================= */
@@ -3465,6 +4342,824 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   .navbar-vertical::after{
     display:none!important;
     content:none!important;
+  }
+}
+
+
+/* =========================================================
+   REGROUPEMENT DES ARTICLES COMMANDÉS PAR COMMANDE — MOBILE
+   Évite d'afficher N cartes identiques "Commande #X" séparées
+   pour une même commande : on les regroupe visuellement sous
+   un seul en-tête, tout en gardant 2 colonnes par groupe.
+========================================================= */
+@media(max-width:575.98px){
+  .mc-order-group{
+    grid-column:1 / -1!important;
+    margin-bottom:2px;
+    overflow:hidden;
+    border:1px solid rgba(31,107,45,.11);
+    border-radius:16px;
+    background:rgba(255,253,248,.92);
+    box-shadow:0 7px 18px rgba(18,63,29,.05);
+  }
+
+  .mc-order-group-header{
+    padding:10px 13px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:linear-gradient(90deg,#eef6ec,#fff9ec);
+    border-bottom:1px solid rgba(31,107,45,.08);
+  }
+
+  .mc-order-group-title{
+    color:#174623;
+    font-size:13px;
+    font-weight:900;
+  }
+
+  .mc-order-group-count{
+    padding:3px 9px;
+    border-radius:999px;
+    background:#fff;
+    border:1px solid rgba(31,107,45,.12);
+    color:#5f6b62;
+    font-size:9px;
+    font-weight:850;
+    white-space:nowrap;
+  }
+
+  .mc-order-group-items{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:8px;
+    padding:10px;
+  }
+
+  .mc-order-group-items .mc-mobile-record-card.mc-open{
+    grid-column:1 / -1!important;
+  }
+}
+
+
+/* =========================================================
+   COMMANDES — FIX TOTAL + CRÉNEAU
+   - garde les deux blocs côte à côte
+   - empêche le montant de dépasser
+   - laisse plus de largeur au total sur petits écrans
+========================================================= */
+@media(max-width:991.98px){
+  .mc-mobile-record-card .mc-order-metric-card{
+    min-height:108px!important;
+    padding:14px 15px!important;
+    align-items:flex-start!important;
+    border:1px solid rgba(31,107,45,.08)!important;
+    border-radius:18px!important;
+    background:linear-gradient(180deg,#fffefb,#fcfaf4)!important;
+    box-shadow:0 4px 14px rgba(18,63,29,.04)!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total{
+    min-width:132px!important;
+    grid-template-columns:1fr!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total .mc-mobile-detail-label{
+    padding:0!important;
+    font-size:10px!important;
+    letter-spacing:.10em!important;
+    line-height:1.1!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total .mc-mobile-detail-value{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    text-overflow:clip!important;
+    color:#b47d00!important;
+    font-size:clamp(17px,2.8vw,22px)!important;
+    font-weight:900!important;
+    line-height:1.02!important;
+    letter-spacing:-.03em!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total .mc-mobile-detail-value *{
+    display:inline!important;
+    font-size:inherit!important;
+    font-weight:inherit!important;
+    line-height:inherit!important;
+    letter-spacing:inherit!important;
+    white-space:inherit!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-slot{
+    min-width:0!important;
+    grid-template-columns:1fr!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-slot .mc-mobile-detail-label{
+    padding:0!important;
+    line-height:1.1!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-slot .mc-mobile-detail-value{
+    min-width:0!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    line-height:1.28!important;
+  }
+}
+
+@media(max-width:575.98px){
+  /* Sur les commandes ouvertes : Total + Créneau restent alignés. */
+  .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    grid-template-columns:minmax(126px,.82fr) minmax(0,1.18fr)!important;
+    gap:10px!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total{
+    min-width:126px!important;
+    padding:13px 12px!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total .mc-mobile-detail-value{
+    font-size:clamp(15px,4.2vw,19px)!important;
+  }
+}
+
+@media(max-width:380px){
+  .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    grid-template-columns:minmax(116px,.82fr) minmax(0,1.18fr)!important;
+    gap:8px!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total{
+    min-width:116px!important;
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+
+  .mc-mobile-record-card .mc-order-metric-total .mc-mobile-detail-value{
+    font-size:15px!important;
+  }
+}
+
+
+/* =========================================================
+   ARTICLES COMMANDÉS — FINAL OVERRIDE
+   Placé en dernier pour gagner sur toutes les anciennes règles
+   génériques de cartes mobiles.
+========================================================= */
+@media(max-width:575.98px){
+  .card.mc-order-item-card-mode .mc-mobile-cards{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:16px!important;
+    padding:14px 10px 20px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group{
+    width:100%!important;
+    margin:0!important;
+    overflow:hidden!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    border-radius:22px!important;
+    background:linear-gradient(180deg,#fffefb 0%,#fbfaf5 100%)!important;
+    box-shadow:0 10px 26px rgba(18,63,29,.055)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-header{
+    min-height:72px!important;
+    padding:14px 16px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+    border-bottom:1px solid rgba(31,107,45,.08)!important;
+    background:
+      radial-gradient(circle at 94% 0,rgba(228,184,63,.12),transparent 90px),
+      linear-gradient(90deg,#eef6ec,#fffaf0)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-heading{
+    display:flex!important;
+    align-items:baseline!important;
+    gap:8px!important;
+    min-width:0!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-kicker{
+    color:#8b690d!important;
+    font-size:8px!important;
+    font-weight:900!important;
+    letter-spacing:.16em!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-title{
+    color:#174623!important;
+    font-family:Georgia,"Times New Roman",serif!important;
+    font-size:25px!important;
+    font-weight:700!important;
+    line-height:1!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-count{
+    flex:0 0 auto!important;
+    padding:7px 11px!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    border-radius:999px!important;
+    background:#fff!important;
+    color:#677269!important;
+    font-size:10px!important;
+    font-weight:900!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-items{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    padding:11px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card{
+    position:relative!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    overflow:hidden!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    border-radius:18px!important;
+    background:#fffdf9!important;
+    box-shadow:0 5px 14px rgba(18,63,29,.045)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card::before{
+    content:""!important;
+    position:absolute!important;
+    left:0!important;
+    top:0!important;
+    bottom:0!important;
+    width:4px!important;
+    opacity:1!important;
+    background:linear-gradient(180deg,#2d742d 0%,#d1a112 100%)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-summary{
+    position:relative!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:15px 58px 15px 17px!important;
+    display:block!important;
+    background:transparent!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-main{
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:0!important;
+    display:block!important;
+    border:0!important;
+    background:transparent!important;
+    text-align:left!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-title{
+    margin:0!important;
+    color:#174623!important;
+    font-size:16px!important;
+    font-weight:900!important;
+    line-height:1.25!important;
+    white-space:normal!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-subtitle,
+  .card.mc-order-item-card-mode .mc-mobile-card-quick,
+  .card.mc-order-item-card-mode .mc-mobile-state-dot{
+    display:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview{
+    margin-top:11px!important;
+    display:grid!important;
+    gap:7px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-chips{
+    display:flex!important;
+    align-items:center!important;
+    flex-wrap:wrap!important;
+    gap:7px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-chip{
+    min-height:29px!important;
+    padding:0 10px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border-radius:999px!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    background:#edf5eb!important;
+    color:#2d6a36!important;
+    font-size:11px!important;
+    font-weight:900!important;
+    line-height:1!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-chip.mc-price{
+    border-color:rgba(204,155,11,.25)!important;
+    background:#fff3cf!important;
+    color:#9c6d00!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-note{
+    color:#717a73!important;
+    font-size:10.5px!important;
+    font-weight:650!important;
+    line-height:1.38!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-note strong{
+    color:#4d5e51!important;
+    font-weight:900!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-chevron{
+    position:absolute!important;
+    top:50%!important;
+    right:14px!important;
+    bottom:auto!important;
+    transform:translateY(-50%)!important;
+    width:37px!important;
+    min-width:37px!important;
+    height:37px!important;
+    min-height:37px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    border-radius:50%!important;
+    background:#f1f7ef!important;
+    color:#23672e!important;
+    font-family:Georgia,serif!important;
+    font-size:27px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    box-shadow:0 4px 11px rgba(18,63,29,.06)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-chevron::after{
+    display:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-card-chevron{
+    transform:translateY(-50%) rotate(90deg)!important;
+    background:#fff1c9!important;
+    color:#8d6200!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-details{
+    padding:0 12px 12px!important;
+    border-top:1px dashed rgba(177,143,53,.30)!important;
+    background:linear-gradient(180deg,rgba(247,240,228,.30),rgba(255,255,255,0))!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-grid,
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    padding-top:11px!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:9px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-row,
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-detail-row{
+    min-width:0!important;
+    min-height:76px!important;
+    padding:11px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    gap:7px!important;
+    border:1px solid rgba(31,107,45,.075)!important;
+    border-radius:14px!important;
+    background:rgba(255,255,255,.82)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-label{
+    width:100%!important;
+    padding:0!important;
+    color:#7b847d!important;
+    font-size:8px!important;
+    font-weight:900!important;
+    letter-spacing:.10em!important;
+    line-height:1.2!important;
+    white-space:normal!important;
+    word-break:normal!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-value{
+    width:100%!important;
+    min-width:0!important;
+    color:#26352a!important;
+    font-size:12px!important;
+    font-weight:700!important;
+    line-height:1.38!important;
+    white-space:normal!important;
+    word-break:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  /* Redondants : le groupe et le titre donnent déjà commande + plat. */
+  .card.mc-order-item-card-mode .mc-order-item-detail-order,
+  .card.mc-order-item-card-mode .mc-order-item-detail-dish{
+    display:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-detail-qty .mc-mobile-detail-value,
+  .card.mc-order-item-card-mode .mc-order-item-detail-price .mc-mobile-detail-value{
+    font-size:19px!important;
+    font-weight:900!important;
+    line-height:1.05!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-detail-price .mc-mobile-detail-value{
+    color:#ad7900!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-detail-note,
+  .card.mc-order-item-card-mode .mc-order-item-detail-options{
+    grid-column:1 / -1!important;
+    min-height:0!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-actions{
+    margin-top:10px!important;
+    padding-top:0!important;
+    display:flex!important;
+    gap:8px!important;
+    border-top:0!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-actions a,
+  .card.mc-order-item-card-mode .mc-mobile-card-actions button{
+    width:40px!important;
+    min-width:40px!important;
+    height:40px!important;
+    min-height:40px!important;
+    border-radius:12px!important;
+  }
+}
+
+@media(min-width:470px) and (max-width:575.98px){
+  .card.mc-order-item-card-mode .mc-order-group-items{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open{
+    grid-column:1 / -1!important;
+  }
+}
+
+@media(max-width:390px){
+  .card.mc-order-item-card-mode .mc-mobile-card-grid,
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+
+
+/* =========================================================
+   ARTICLES COMMANDÉS — CLEAN UX FINAL
+   This block intentionally comes LAST and affects only
+   /admin/order-item/list via .mc-order-item-card-mode.
+========================================================= */
+@media(max-width:575.98px){
+  .card.mc-order-item-card-mode .mc-mobile-cards{
+    display:flex!important;
+    flex-direction:column!important;
+    gap:18px!important;
+    padding:14px 10px 22px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group{
+    width:100%!important;
+    margin:0!important;
+    overflow:hidden!important;
+    border:1px solid rgba(31,107,45,.11)!important;
+    border-radius:22px!important;
+    background:#fffdf9!important;
+    box-shadow:0 10px 28px rgba(18,63,29,.065)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-header{
+    min-height:68px!important;
+    padding:13px 16px!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+    border-bottom:1px solid rgba(31,107,45,.085)!important;
+    background:
+      radial-gradient(circle at 100% 0,rgba(228,184,63,.14),transparent 110px),
+      linear-gradient(100deg,#eef6ec 0%,#fffaf0 100%)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-heading{
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:9px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-kicker{
+    color:#917006!important;
+    font-size:8px!important;
+    font-weight:950!important;
+    letter-spacing:.17em!important;
+    text-transform:uppercase!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-title{
+    color:#174623!important;
+    font-family:Georgia,"Times New Roman",serif!important;
+    font-size:25px!important;
+    font-weight:700!important;
+    line-height:1!important;
+    letter-spacing:-.02em!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-group-count{
+    flex:0 0 auto!important;
+    min-width:68px!important;
+    padding:7px 10px!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    border-radius:999px!important;
+    background:rgba(255,255,255,.9)!important;
+    color:#68736b!important;
+    font-size:9.5px!important;
+    font-weight:900!important;
+    text-align:center!important;
+  }
+
+  /* One article = full width. Multiple articles = tidy 2-col grid. */
+  .card.mc-order-item-card-mode .mc-order-group-items{
+    width:100%!important;
+    padding:12px!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:10px!important;
+    align-items:start!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card{
+    width:100%!important;
+    min-width:0!important;
+    min-height:0!important;
+    height:auto!important;
+    align-self:start!important;
+    overflow:hidden!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    border-radius:17px!important;
+    background:linear-gradient(145deg,#fffefb,#fbfaf5)!important;
+    box-shadow:0 5px 14px rgba(18,63,29,.045)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card::before{
+    width:4px!important;
+    opacity:1!important;
+    background:linear-gradient(180deg,#2f7b32 0%,#d6a50e 100%)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-summary{
+    min-height:0!important;
+    height:auto!important;
+    padding:15px 54px 15px 18px!important;
+    display:block!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-main{
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    padding:0!important;
+    display:block!important;
+    text-align:left!important;
+    background:transparent!important;
+    border:0!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-title{
+    margin:0!important;
+    color:#174623!important;
+    font-size:16px!important;
+    font-weight:900!important;
+    line-height:1.25!important;
+    white-space:normal!important;
+    display:block!important;
+    overflow:visible!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-subtitle,
+  .card.mc-order-item-card-mode .mc-mobile-card-quick,
+  .card.mc-order-item-card-mode .mc-mobile-state-dot,
+  .card.mc-order-item-card-mode .mc-order-item-inline-metrics,
+  .card.mc-order-item-card-mode .mc-order-item-note{
+    display:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview{
+    margin-top:11px!important;
+    display:grid!important;
+    gap:7px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-chips{
+    display:flex!important;
+    align-items:center!important;
+    flex-wrap:wrap!important;
+    gap:7px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-chip{
+    min-height:29px!important;
+    padding:0 10px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid rgba(31,107,45,.13)!important;
+    border-radius:999px!important;
+    background:#edf5eb!important;
+    color:#2f6b38!important;
+    font-size:10.5px!important;
+    font-weight:900!important;
+    line-height:1!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-chip.mc-price{
+    border-color:rgba(204,155,11,.27)!important;
+    background:#fff3cf!important;
+    color:#9b6c00!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-note{
+    max-width:100%!important;
+    color:#6f7971!important;
+    font-size:10.5px!important;
+    font-weight:650!important;
+    line-height:1.38!important;
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+    display:-webkit-box!important;
+    -webkit-box-orient:vertical!important;
+    -webkit-line-clamp:2!important;
+    overflow:hidden!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-preview-note strong{
+    color:#4b5e50!important;
+    font-weight:900!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-chevron{
+    position:absolute!important;
+    top:50%!important;
+    right:13px!important;
+    bottom:auto!important;
+    transform:translateY(-50%)!important;
+    width:36px!important;
+    min-width:36px!important;
+    height:36px!important;
+    min-height:36px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    border-radius:50%!important;
+    background:#f0f6ee!important;
+    color:#287034!important;
+    font-family:Georgia,serif!important;
+    font-size:25px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    box-shadow:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open{
+    grid-column:1 / -1!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-card-chevron{
+    transform:translateY(-50%) rotate(90deg)!important;
+    background:#fff0c8!important;
+    color:#8d6200!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-details{
+    padding:0 12px 12px!important;
+    border-top:1px dashed rgba(177,143,53,.28)!important;
+    background:linear-gradient(180deg,rgba(247,240,228,.26),rgba(255,255,255,0))!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-card-grid,
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    padding-top:10px!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-row,
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-detail-row{
+    min-width:0!important;
+    min-height:68px!important;
+    padding:10px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:flex-start!important;
+    justify-content:center!important;
+    gap:6px!important;
+    border:1px solid rgba(31,107,45,.075)!important;
+    border-radius:12px!important;
+    background:rgba(255,255,255,.82)!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-detail-order,
+  .card.mc-order-item-card-mode .mc-order-item-detail-dish{
+    display:none!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-detail-note,
+  .card.mc-order-item-card-mode .mc-order-item-detail-options{
+    grid-column:1 / -1!important;
+    min-height:0!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-label{
+    color:#7b847d!important;
+    font-size:7.5px!important;
+    font-weight:900!important;
+    letter-spacing:.09em!important;
+    line-height:1.2!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-detail-value{
+    width:100%!important;
+    min-width:0!important;
+    color:#26352a!important;
+    font-size:11.5px!important;
+    font-weight:700!important;
+    line-height:1.35!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-detail-qty .mc-mobile-detail-value,
+  .card.mc-order-item-card-mode .mc-order-item-detail-price .mc-mobile-detail-value{
+    font-size:17px!important;
+    font-weight:900!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-order-item-detail-price .mc-mobile-detail-value{
+    color:#a87300!important;
+  }
+}
+
+@media(min-width:470px) and (max-width:575.98px){
+  .card.mc-order-item-card-mode .mc-order-group-items{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+
+  /* A single article uses the whole row. */
+  .card.mc-order-item-card-mode .mc-order-group-items > .mc-mobile-record-card:only-child{
+    grid-column:1 / -1!important;
+  }
+
+  /* With an odd number of articles, the last one fills the empty row. */
+  .card.mc-order-item-card-mode .mc-order-group-items > .mc-mobile-record-card:last-child:nth-child(odd){
+    grid-column:1 / -1!important;
+  }
+
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open{
+    grid-column:1 / -1!important;
+  }
+}
+
+@media(max-width:390px){
+  .card.mc-order-item-card-mode .mc-mobile-card-grid,
+  .card.mc-order-item-card-mode .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    grid-template-columns:1fr!important;
   }
 }
 
@@ -4317,6 +6012,12 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       document.querySelectorAll('.mc-dish-filters,.mc-dish-no-results').forEach(function(el){
         el.remove();
       });
+      /* Repasse en desktop : réaffiche le bouton "Actions" natif s'il
+         avait été masqué côté mobile. */
+      document.querySelectorAll('[data-mc-actions-hidden="1"]').forEach(function(el){
+        el.style.display = '';
+        el.removeAttribute('data-mc-actions-hidden');
+      });
       return;
     }
     if (!/^\/admin\/[^/]+\/list\/?$/.test(window.location.pathname)) return;
@@ -4325,6 +6026,20 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     var tables = scope.querySelectorAll
       ? scope.querySelectorAll('.card .table-responsive table')
       : [];
+
+    /* La sélection multiple étant masquée sur mobile (voir CSS), le bouton
+       natif "Actions" (qui n'agit que sur les lignes cochées) ne peut plus
+       rien faire : on le cache pour ne pas laisser un bouton mort. */
+    document.querySelectorAll('.card .card-body').forEach(function(body){
+      Array.prototype.slice.call(body.querySelectorAll('button,a')).forEach(function(btn){
+        var text = (btn.textContent || '').trim().toLowerCase();
+        if (text === 'actions' || text === 'action') {
+          var group = btn.closest('.dropdown') || btn.closest('.btn-group') || btn;
+          group.style.display = 'none';
+          group.setAttribute('data-mc-actions-hidden', '1');
+        }
+      });
+    });
 
     tables.forEach(function(table){
       var card = table.closest('.card');
@@ -4340,6 +6055,17 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         table.querySelectorAll('thead th')
       ).map(function(th){
         return (th.textContent || '').replace(/\s+/g,' ').trim();
+      });
+
+      /* Colonne photo (ex: liste des Plats) : si elle existe, on l'affiche
+         comme une vraie vignette en haut de chaque carte mobile plutôt que
+         comme une ligne de détail parmi d'autres. */
+      var photoColumnIndex = -1;
+      headers.forEach(function(h, i){
+        var n = (h || '').toLowerCase();
+        if (photoColumnIndex === -1 && (n === 'photo' || n === 'image')) {
+          photoColumnIndex = i;
+        }
       });
 
       var rows = Array.prototype.slice.call(
@@ -4401,6 +6127,23 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         }
       }
 
+      function mcNormalizeStateText(value){
+        return (value || '').toString().replace(/\s+/g,' ').trim().toLowerCase();
+      }
+
+      function mcStateColor(kind, value){
+        var v = mcNormalizeStateText(value);
+        if (kind === 'availability') {
+          if (v.indexOf('indisponible') !== -1 || v.indexOf('unavailable') !== -1 || v === 'false' || v === 'non' || v === 'no') return 'red';
+          if (v.indexOf('disponible') !== -1 || v.indexOf('available') !== -1 || v === 'true' || v === 'oui' || v === 'yes') return 'green';
+          return 'yellow';
+        }
+        if (v.indexOf('annul') !== -1 || v.indexOf('cancel') !== -1 || v.indexOf('échou') !== -1 || v.indexOf('failed') !== -1 || v.indexOf('probl') !== -1 || v.indexOf('issue') !== -1 || v.indexOf('refus') !== -1 || v.indexOf('reject') !== -1) return 'red';
+        if (v.indexOf('confirm') !== -1 || v.indexOf('livr') !== -1 || v.indexOf('delivered') !== -1 || v.indexOf('payé') !== -1 || v.indexOf('paid') !== -1 || v.indexOf('prête') !== -1 || v.indexOf('ready') !== -1 || v === 'lu' || v === 'read' || v.indexOf('répondu') !== -1 || v.indexOf('replied') !== -1) return 'green';
+        if (v.indexOf('nouvel') !== -1 || v === 'new' || v.indexOf('attente') !== -1 || v.indexOf('pending') !== -1 || v.indexOf('préparation') !== -1 || v.indexOf('progress') !== -1) return 'yellow';
+        return 'neutral';
+      }
+
       rows.forEach(function(row, rowIndex){
         var cells = Array.prototype.slice.call(row.children);
         if (!cells.length) return;
@@ -4411,6 +6154,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
         var useful = [];
         var actionCell = null;
+        var photoSrc = '';
 
         cells.forEach(function(cell, index){
           var label = headers[index] || '';
@@ -4427,6 +6171,12 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
             hasActions;
 
           if (isCheckbox) return;
+
+          if (index === photoColumnIndex) {
+            var imgEl = cell.querySelector('img');
+            photoSrc = imgEl ? (imgEl.getAttribute('src') || '') : '';
+            return;
+          }
 
           if (isActions) {
             if (!actionCell && cell.querySelector('a,button')) {
@@ -4447,6 +6197,44 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         var titleItem = useful[0] || {text:'Détails', html:'Détails', label:''};
         var subtitleItem = useful[1] || null;
 
+        var stateKind = '';
+        var stateValue = '';
+        useful.forEach(function(item){
+          var label = mcNormalizeStateText(item.label);
+          if (!stateKind && (label.indexOf('disponibilité') !== -1 || label.indexOf('disponibilite') !== -1 || label.indexOf('availability') !== -1)) {
+            stateKind = 'availability';
+            stateValue = item.text;
+          }
+        });
+        if (!stateKind) {
+          useful.forEach(function(item){
+            var label = mcNormalizeStateText(item.label);
+            if (!stateKind && (label === 'statut' || label === 'status' || label === 'état' || label === 'etat')) {
+              stateKind = 'status';
+              stateValue = item.text;
+            }
+          });
+        }
+        var stateColor = stateKind ? mcStateColor(stateKind, stateValue) : '';
+        if (stateKind) {
+          record.dataset.mcStateKind = stateKind;
+          record.dataset.mcStateValue = mcNormalizeStateText(stateValue);
+          record.dataset.mcStateColor = stateColor;
+        }
+
+        /* Informations principales directement visibles dans les cartes mobiles. */
+        var quickCategory = '';
+        var quickPrice = '';
+        useful.forEach(function(item){
+          var label = mcNormalizeStateText(item.label);
+          if (!quickCategory && (label === 'catégorie' || label === 'categorie' || label === 'category')) {
+            quickCategory = item.text;
+          }
+          if (!quickPrice && (label === 'prix' || label === 'price')) {
+            quickPrice = item.text;
+          }
+        });
+
         var summary = document.createElement('div');
         summary.className = 'mc-mobile-card-summary';
 
@@ -4458,16 +6246,38 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
             '</label>';
         }
 
+        /* Le statut (ex: Disponible/Indisponible) est représenté par un
+           point coloré flottant en coin de carte plutôt que par un badge
+           texte dans le bloc infos, pour rester compact. */
+
+        var quickInfoHtml = '';
+        if (quickCategory || quickPrice) {
+          quickInfoHtml += '<div class="mc-mobile-card-quick">';
+          if (quickCategory) {
+            quickInfoHtml += '<span class="mc-mobile-card-category">' + mcEscape(quickCategory) + '</span>';
+          }
+          if (quickPrice) {
+            quickInfoHtml += '<div class="mc-mobile-card-price">' + mcEscape(quickPrice) + '</div>';
+          }
+          quickInfoHtml += '</div>';
+        }
+
+        /* Bulle d'info du bouton "détails" : traduite selon la langue
+           actuellement sélectionnée (FR/EN), pas figée en français. */
+        var moreDetailsLabel = mcCurrentLang() === 'en'
+          ? 'View more details'
+          : 'Voir plus de détails';
+
         summary.innerHTML =
           selectHtml +
-          '<button type="button" class="mc-mobile-card-main" aria-expanded="false" ' +
-            'style="border:0;background:transparent;padding:0;text-align:left;min-width:0;">' +
+          '<button type="button" class="mc-mobile-card-main" aria-expanded="false">' +
             '<div class="mc-mobile-card-title">' + titleItem.html + '</div>' +
-            (subtitleItem
-              ? '<div class="mc-mobile-card-subtitle">' + subtitleItem.text + '</div>'
+            (subtitleItem && (!quickCategory || mcNormalizeStateText(subtitleItem.text) !== mcNormalizeStateText(quickCategory))
+              ? '<div class="mc-mobile-card-subtitle">' + mcEscape(subtitleItem.text) + '</div>'
               : '') +
+            quickInfoHtml +
           '</button>' +
-          '<button type="button" class="mc-mobile-card-chevron" aria-label="Afficher les détails">⌄</button>';
+          '<button type="button" class="mc-mobile-card-chevron" aria-label="' + mcEscape(moreDetailsLabel) + '" data-tooltip="' + mcEscape(moreDetailsLabel) + '">⋮</button>';
 
         var mainButton = summary.querySelector('.mc-mobile-card-main');
         var chevronButton = summary.querySelector('.mc-mobile-card-chevron');
@@ -4481,7 +6291,26 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
         useful.forEach(function(item){
           var detailRow = document.createElement('div');
-          detailRow.className = 'mc-mobile-detail-row';
+          var normalizedLabel = mcNormalizeStateText(item.label);
+          var rowClasses = ['mc-mobile-detail-row'];
+
+          /* Commandes : identifie précisément les deux blocs métriques
+             pour pouvoir leur donner un layout responsive dédié. */
+          if (window.location.pathname.replace(/\/+$/,'') === '/admin/order/list') {
+            if (normalizedLabel === 'total' || normalizedLabel === 'prix total') {
+              rowClasses.push('mc-order-metric-card', 'mc-order-metric-total');
+            }
+
+            if (
+              normalizedLabel === 'créneau' ||
+              normalizedLabel === 'creneau' ||
+              normalizedLabel === 'time slot'
+            ) {
+              rowClasses.push('mc-order-metric-card', 'mc-order-metric-slot');
+            }
+          }
+
+          detailRow.className = rowClasses.join(' ');
           detailRow.innerHTML =
             '<div class="mc-mobile-detail-label">' + mcEscape(item.label) + '</div>' +
             '<div class="mc-mobile-detail-value">' + item.html + '</div>';
@@ -4548,6 +6377,43 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           }
         });
 
+        if (photoColumnIndex !== -1) {
+          var photoWrap = document.createElement('div');
+          photoWrap.className = 'mc-mobile-card-photo-wrap';
+          if (photoSrc) {
+            var photoImg = document.createElement('img');
+            photoImg.className = 'mc-mobile-card-photo';
+            photoImg.src = photoSrc;
+            photoImg.alt = '';
+            photoImg.loading = 'lazy';
+            /* Si l'URL ne charge pas (chemin relatif pensé pour un autre
+               domaine, image supprimée, etc.), on bascule sur le
+               placeholder plutôt que de montrer l'icône "image cassée"
+               du navigateur. */
+            photoImg.addEventListener('error', function(){
+              photoWrap.innerHTML = '';
+              photoWrap.classList.add('mc-mobile-card-photo-placeholder');
+              photoWrap.textContent = '🍽️';
+            });
+            photoWrap.appendChild(photoImg);
+          } else {
+            photoWrap.classList.add('mc-mobile-card-photo-placeholder');
+            photoWrap.textContent = '🍽️';
+          }
+          record.appendChild(photoWrap);
+        }
+
+        /* Statut (disponibilité, statut de commande...) : un point coloré
+           flottant, ancré au vrai coin haut-droit de la carte entière
+           (et non de la zone de texte), pas de doublon avec un badge texte. */
+        if (stateKind) {
+          var stateDot = document.createElement('span');
+          stateDot.className = 'mc-mobile-state-dot mc-state-' + stateColor;
+          stateDot.setAttribute('data-tooltip', mcTranslateText(stateValue));
+          stateDot.setAttribute('aria-label', mcTranslateText(stateValue));
+          record.appendChild(stateDot);
+        }
+
         record.appendChild(summary);
         record.appendChild(details);
         cardsWrap.appendChild(record);
@@ -4571,12 +6437,313 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
       responsive.insertAdjacentElement('afterend', cardsWrap);
       card.classList.add('mc-mobile-card-mode');
+
+      var currentMobileListPath = window.location.pathname.replace(/\/+$/,'');
+      card.classList.toggle('mc-order-item-card-mode', currentMobileListPath === '/admin/order-item/list');
+      card.classList.toggle('mc-dish-list-card-mode', currentMobileListPath === '/admin/dish/list');
+
       mcApplyLanguage(cardsWrap);
       updateSelectionUI();
       mcInitEventMobileFilters(card, cardsWrap);
       mcInitDishMobileFilters(card, cardsWrap);
+      mcGroupOrderItemCards(card, cardsWrap);
+      /* mcGroupOrderItemCards already builds the complete compact preview.
+         Do not run mcEnhanceOrderItemCards here: it duplicates quantity, price
+         and customization information inside the same card. */
+      mcEnhanceDishCards(card, cardsWrap);
     });
   }
+
+
+  /* =========================================================
+     REGROUPEMENT DES ARTICLES COMMANDÉS PAR COMMANDE — MOBILE
+     Sur /admin/order-item/list, chaque plat d'une même commande
+     apparaissait comme une carte "Commande #X" séparée, ce qui
+     prêtait à confusion. On les regroupe ici sous un seul en-tête
+     par commande, en gardant chaque plat visible en dessous.
+  ========================================================= */
+  function mcGroupOrderItemCards(card, cardsWrap){
+    var path = window.location.pathname.replace(/\/+$/,'');
+    if (path !== '/admin/order-item/list') return;
+    if (!cardsWrap) return;
+
+    var records = Array.prototype.slice.call(
+      cardsWrap.querySelectorAll('.mc-mobile-record-card')
+    );
+    if (!records.length) return;
+
+    function norm(value){
+      return (value || '').toString().replace(/\s+/g,' ').trim().toLowerCase();
+    }
+
+    function valueFromRows(recordCard, acceptedLabels){
+      var found = '';
+      Array.prototype.slice.call(
+        recordCard.querySelectorAll('.mc-mobile-detail-row')
+      ).some(function(row){
+        var labelEl = row.querySelector('.mc-mobile-detail-label');
+        var valueEl = row.querySelector('.mc-mobile-detail-value');
+        if (!labelEl || !valueEl) return false;
+        var label = norm(labelEl.textContent);
+        if (acceptedLabels.indexOf(label) === -1) return false;
+        found = (valueEl.textContent || '').replace(/\s+/g,' ').trim();
+        return true;
+      });
+      return found;
+    }
+
+    var groups = [];
+    var groupByKey = {};
+
+    records.forEach(function(recordCard){
+      var titleEl = recordCard.querySelector('.mc-mobile-card-title');
+      var subtitleEl = recordCard.querySelector('.mc-mobile-card-subtitle');
+      var mainEl = recordCard.querySelector('.mc-mobile-card-main');
+      var chevronEl = recordCard.querySelector('.mc-mobile-card-chevron');
+
+      var orderLabel = titleEl ? titleEl.textContent.trim() : 'Commande';
+      var dishLabel = subtitleEl ? subtitleEl.textContent.trim() : '';
+
+      /* Le groupe porte le numéro de commande ; la carte porte uniquement le plat. */
+      if (titleEl && dishLabel) titleEl.textContent = dishLabel;
+      if (subtitleEl) subtitleEl.remove();
+
+      var quantity = valueFromRows(recordCard, ['quantité','quantite','quantity']);
+      var unitPrice = valueFromRows(recordCard, ['prix unitaire','unit price']);
+      var removed = valueFromRows(recordCard, ['sans','without']);
+      var customization = valueFromRows(recordCard, ['personnalisation','customization','customisation']);
+
+      /* Classes ciblées pour le détail ouvert : évite le mot Commande coupé lettre par lettre. */
+      Array.prototype.slice.call(
+        recordCard.querySelectorAll('.mc-mobile-detail-row')
+      ).forEach(function(row){
+        var labelEl = row.querySelector('.mc-mobile-detail-label');
+        if (!labelEl) return;
+        var label = norm(labelEl.textContent);
+        if (label === 'commande' || label === 'order') row.classList.add('mc-order-item-detail-order');
+        if (label === 'plat' || label === 'dish') row.classList.add('mc-order-item-detail-dish');
+        if (label === 'quantité' || label === 'quantite' || label === 'quantity') row.classList.add('mc-order-item-detail-qty');
+        if (label === 'prix unitaire' || label === 'unit price') row.classList.add('mc-order-item-detail-price');
+        if (label === 'sans' || label === 'without') row.classList.add('mc-order-item-detail-note');
+        if (label.indexOf('personnalisation') !== -1 || label.indexOf('custom') !== -1) row.classList.add('mc-order-item-detail-options');
+      });
+
+      /* Résumé visible SANS ouvrir la carte. */
+      if (mainEl && !mainEl.querySelector('.mc-order-item-preview')) {
+        var preview = document.createElement('div');
+        preview.className = 'mc-order-item-preview';
+
+        var chips = document.createElement('div');
+        chips.className = 'mc-order-item-preview-chips';
+
+        if (quantity && quantity !== '—') {
+          var qty = document.createElement('span');
+          qty.className = 'mc-order-item-preview-chip mc-qty';
+          qty.textContent = quantity;
+          chips.appendChild(qty);
+        }
+
+        if (unitPrice && unitPrice !== '—') {
+          var price = document.createElement('span');
+          price.className = 'mc-order-item-preview-chip mc-price';
+          price.textContent = unitPrice;
+          chips.appendChild(price);
+        }
+
+        if (chips.childNodes.length) preview.appendChild(chips);
+
+        if (removed && removed !== '—') {
+          var withoutLine = document.createElement('div');
+          withoutLine.className = 'mc-order-item-preview-note';
+          withoutLine.innerHTML = '<strong>' +
+            (mcCurrentLang()==='en' ? 'Without' : 'Sans') +
+            ' :</strong> ' + mcEscape(removed);
+          preview.appendChild(withoutLine);
+        }
+
+        if (customization && customization !== '—') {
+          var customLine = document.createElement('div');
+          customLine.className = 'mc-order-item-preview-note';
+          customLine.innerHTML = '<strong>' +
+            (mcCurrentLang()==='en' ? 'Custom' : 'Personnalisation') +
+            ' :</strong> ' + mcEscape(customization);
+          preview.appendChild(customLine);
+        }
+
+        mainEl.appendChild(preview);
+      }
+
+      if (chevronEl) {
+        chevronEl.textContent = '›';
+        chevronEl.setAttribute(
+          'aria-label',
+          mcCurrentLang()==='en' ? 'View item details' : 'Voir les détails de l’article'
+        );
+        chevronEl.setAttribute(
+          'data-tooltip',
+          mcCurrentLang()==='en' ? 'View details' : 'Voir les détails'
+        );
+      }
+
+      if (!groupByKey[orderLabel]) {
+        var group = {label: orderLabel, items: []};
+        groupByKey[orderLabel] = group;
+        groups.push(group);
+      }
+      groupByKey[orderLabel].items.push(recordCard);
+    });
+
+    var fragment = document.createDocumentFragment();
+
+    groups.forEach(function(group){
+      var wrap = document.createElement('section');
+      wrap.className = 'mc-order-group';
+
+      var header = document.createElement('div');
+      header.className = 'mc-order-group-header';
+      var cleanOrderNumber = (group.label || '')
+        .replace(/^(Commande|Order)\s*/i, '')
+        .trim()
+        .replace(/^#+/, '');
+      if (cleanOrderNumber) cleanOrderNumber = '#' + cleanOrderNumber;
+
+      header.innerHTML =
+        '<div class="mc-order-group-heading">' +
+          '<span class="mc-order-group-kicker">' +
+            (mcCurrentLang()==='en' ? 'ORDER' : 'COMMANDE') +
+          '</span>' +
+          '<span class="mc-order-group-title">' + mcEscape(cleanOrderNumber || group.label) + '</span>' +
+        '</div>' +
+        '<span class="mc-order-group-count">' +
+          group.items.length + (group.items.length > 1 ? ' articles' : ' article') +
+        '</span>';
+
+      var itemsWrap = document.createElement('div');
+      itemsWrap.className = 'mc-order-group-items';
+      group.items.forEach(function(item){ itemsWrap.appendChild(item); });
+
+      wrap.appendChild(header);
+      wrap.appendChild(itemsWrap);
+      fragment.appendChild(wrap);
+    });
+
+    cardsWrap.appendChild(fragment);
+    mcApplyLanguage(cardsWrap);
+  }
+
+
+  /* =========================================================
+     ARTICLES COMMANDÉS — enrichit les cartes avec les infos
+     essentielles visibles immédiatement : quantité, prix,
+     sans / personnalisation, et meilleures proportions.
+  ========================================================= */
+  function mcEnhanceOrderItemCards(card, cardsWrap){
+    var path = window.location.pathname.replace(/\/+$/,'');
+    if (path !== '/admin/order-item/list') return;
+    if (!card || !cardsWrap) return;
+
+    var records = Array.prototype.slice.call(
+      cardsWrap.querySelectorAll('.mc-mobile-record-card')
+    );
+    if (!records.length) return;
+
+    function norm(value){
+      return (value || '').toString().trim().replace(/\s+/g,' ').toLowerCase();
+    }
+
+    records.forEach(function(record){
+      var main = record.querySelector('.mc-mobile-card-main');
+      var grid = record.querySelector('.mc-mobile-card-grid');
+      if (!main || !grid) return;
+
+      var quantity = '';
+      var unitPrice = '';
+      var removed = '';
+      var options = '';
+
+      Array.prototype.slice.call(grid.querySelectorAll('.mc-mobile-detail-row')).forEach(function(row){
+        var labelEl = row.querySelector('.mc-mobile-detail-label');
+        var valueEl = row.querySelector('.mc-mobile-detail-value');
+        if (!labelEl || !valueEl) return;
+
+        var label = norm(labelEl.textContent);
+        var value = (valueEl.textContent || '').replace(/\s+/g,' ').trim();
+
+        if (label === 'commande' || label === 'order') {
+          row.classList.add('mc-order-item-detail-order');
+        }
+        if (label === 'quantité' || label === 'quantite' || label === 'quantity') {
+          quantity = value;
+          row.classList.add('mc-order-item-detail-qty');
+        }
+        if (label === 'prix unitaire' || label === 'unit price') {
+          unitPrice = value;
+          row.classList.add('mc-order-item-detail-price');
+        }
+        if (label === 'sans' || label === 'without') {
+          removed = value;
+          row.classList.add('mc-order-item-detail-note');
+        }
+        if (label.indexOf('personnalisation') !== -1 || label.indexOf('custom') !== -1) {
+          options = value;
+          row.classList.add('mc-order-item-detail-options');
+        }
+      });
+
+      var existingMetrics = main.querySelector('.mc-order-item-inline-metrics');
+      if (!existingMetrics) {
+        var summaryBits = [];
+        if (quantity && quantity !== '—') {
+          summaryBits.push('<span class="mc-order-item-chip">' + mcEscape(quantity) + '</span>');
+        }
+        if (unitPrice && unitPrice !== '—') {
+          summaryBits.push('<span class="mc-order-item-chip mc-order-item-chip-price">' + mcEscape(unitPrice) + '</span>');
+        }
+        if (summaryBits.length) {
+          main.insertAdjacentHTML('beforeend', '<div class="mc-order-item-inline-metrics">' + summaryBits.join('') + '</div>');
+        }
+      }
+
+      if (!main.querySelector('.mc-order-item-note[data-role="removed"]') && removed && removed !== '—') {
+        main.insertAdjacentHTML(
+          'beforeend',
+          '<div class="mc-order-item-note" data-role="removed"><strong>' +
+            mcEscape(mcCurrentLang() === 'en' ? 'Without:' : 'Sans :') +
+          '</strong> ' + mcEscape(removed) + '</div>'
+        );
+      }
+
+      if (!main.querySelector('.mc-order-item-note[data-role="options"]') && options && options !== '—') {
+        main.insertAdjacentHTML(
+          'beforeend',
+          '<div class="mc-order-item-note" data-role="options"><strong>' +
+            mcEscape(mcCurrentLang() === 'en' ? 'Custom:' : 'Personnalisation :') +
+          '</strong> ' + mcEscape(options) + '</div>'
+        );
+      }
+    });
+  }
+
+
+  /* =========================================================
+     PLATS — petit polissage de proportions en mobile pour que
+     les cartes restent proches du nouveau style commandes.
+  ========================================================= */
+  function mcEnhanceDishCards(card, cardsWrap){
+    var path = window.location.pathname.replace(/\/+$/,'');
+    if (path !== '/admin/dish/list') return;
+    if (!card || !cardsWrap) return;
+
+    Array.prototype.slice.call(cardsWrap.querySelectorAll('.mc-mobile-record-card')).forEach(function(record){
+      var title = record.querySelector('.mc-mobile-card-title');
+      var quick = record.querySelector('.mc-mobile-card-quick');
+      var main = record.querySelector('.mc-mobile-card-main');
+      if (title) title.classList.add('mc-dish-card-title-ready');
+      if (quick) quick.classList.add('mc-dish-card-quick-ready');
+      if (main) main.classList.add('mc-dish-card-main-ready');
+    });
+  }
+
 
 
   /* =========================================================
