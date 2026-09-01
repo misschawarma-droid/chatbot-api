@@ -235,7 +235,6 @@ class ContactIn(BaseModel):
     name: str
     email: EmailStr
     phone: Optional[str] = ""
-    subject: Optional[str] = ""
     message: str
     language: Optional[str] = "fr"
 

@@ -195,7 +195,6 @@ class ContactMessage(Base):
     name = Column(String(150), nullable=False)
     email = Column(String(150), nullable=False)
     phone = Column(String(30), default="")
-    subject = Column(String(200), default="")
     message = Column(Text, nullable=False)
     is_read = Column(Boolean, default=False)
     status = Column(String(30), default="nouveau")  # nouveau / répondu
@@ -203,7 +202,7 @@ class ContactMessage(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
     def __str__(self):
-        return f"{self.name} — {self.subject or self.message[:40]}"
+        return f"{self.name} — { self.message[:40]}"
 
 
 # ─────────────── AVIS (saisis à la main dans l'admin — 100% gratuit) ───────────────
