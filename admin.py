@@ -953,7 +953,6 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
 
     column_list = [
         ContactMessage.name,
-        ContactMessage.subject,
         ContactMessage.message,
         ContactMessage.status,
         ContactMessage.is_read,
@@ -962,7 +961,6 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
 
     column_labels = {
         ContactMessage.name: "Contact",
-        ContactMessage.subject: "Sujet",
         ContactMessage.message: "Message",
         ContactMessage.status: "Statut",
         ContactMessage.is_read: "Lecture",
@@ -972,7 +970,6 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
     column_searchable_list = [
         ContactMessage.name,
         ContactMessage.email,
-        ContactMessage.subject,
         ContactMessage.message,
     ]
 
@@ -990,7 +987,6 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
         ContactMessage.name,
         ContactMessage.email,
         ContactMessage.phone,
-        ContactMessage.subject,
         ContactMessage.message,
         ContactMessage.status,
         ContactMessage.is_read,
@@ -1009,11 +1005,6 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
             f'<span style="color:#7a8190;font-size:12px">{email}</span>'
             f'</div>'
         )
-
-    @staticmethod
-    def _subject_formatter(model, attribute, request):
-        subject = escape(model.subject or "Sans objet")
-        return Markup(f'<strong style="color:#2d3748">{subject}</strong>')
 
     @staticmethod
     def _message_formatter(model, attribute, request):
@@ -1079,7 +1070,6 @@ class ContactMessageAdmin(ModelView, model=ContactMessage):
 
     column_formatters = {
         ContactMessage.name: _contact_formatter,
-        ContactMessage.subject: _subject_formatter,
         ContactMessage.message: _message_formatter,
         ContactMessage.status: _status_formatter,
         ContactMessage.is_read: _read_formatter,

@@ -494,79 +494,1094 @@ border-radius:16px;color:var(--mc-dark)!important;background:white;font-size:13p
 
 ORDER_TICKET_MODAL_HTML = """
 <style>
-  .order-ticket-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(20, 30, 20, 0.55);
-    z-index: 9999;
-    align-items: center;
-    justify-content: center;
+  .order-ticket-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    padding:16px;
+    background:
+      radial-gradient(circle at 10% 90%,rgba(31,107,45,.34),transparent 32rem),
+      radial-gradient(circle at 90% 8%,rgba(196,125,14,.18),transparent 28rem),
+      rgba(8,34,16,.76);
+    backdrop-filter:blur(13px);
+    -webkit-backdrop-filter:blur(13px);
   }
-  .order-ticket-overlay.open {
-    display: flex;
+
+  .order-ticket-overlay.open{
+    display:flex;
+    animation:mcReceiptOverlayIn .18s ease both;
   }
-  .order-ticket-modal {
-    position: relative;
-    width: 460px;
-    max-width: 92vw;
-    height: 85vh;
-    background: #f7f0e4;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+
+  .order-ticket-modal{
+    position:relative;
+    width:min(620px,96vw);
+    height:min(94vh,920px);
+    overflow-x:hidden;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-gutter:stable;
+    -webkit-overflow-scrolling:touch;
+    border:1px solid rgba(229,199,126,.52);
+    border-radius:30px;
+    background:
+      linear-gradient(180deg,rgba(249,244,230,.99),rgba(242,235,216,.99));
+    box-shadow:
+      0 35px 95px rgba(0,0,0,.38),
+      0 0 0 8px rgba(255,255,255,.055);
+    animation:mcReceiptModalIn .26s cubic-bezier(.2,.8,.2,1) both;
   }
-  .order-ticket-modal iframe {
-    width: 100%;
-    height: 100%;
-    border: 0;
+
+  .order-ticket-modal::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    z-index:0;
+    background:
+      radial-gradient(circle at 100% 0,rgba(229,199,126,.15),transparent 180px),
+      radial-gradient(circle at 0 100%,rgba(31,107,45,.10),transparent 240px);
   }
-  .order-ticket-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #1f6b2d;
-    color: white;
-    border: none;
-    font-size: 18px;
-    font-weight: 700;
-    cursor: pointer;
-    z-index: 2;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+
+  .order-ticket-modal iframe{
+    position:relative;
+    z-index:1;
+    display:block;
+    width:100%;
+    height:100%;
+    min-height:100%;
+    border:0;
+    overflow:hidden;
+    background:#f4eedf;
+    pointer-events:auto;
+  }
+
+  .order-ticket-close{
+    position:sticky;
+    top:14px;
+    float:right;
+    margin:14px 14px -54px 0;
+    z-index:4;
+    width:40px;
+    height:40px;
+    display:grid;
+    place-items:center;
+    border:1px solid rgba(255,255,255,.72);
+    border-radius:50%;
+    background:rgba(18,63,29,.94);
+    color:#fff;
+    font-size:18px;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 9px 22px rgba(9,43,18,.28);
+    transition:transform .18s ease,background .18s ease;
+  }
+
+  .order-ticket-close:hover{
+    transform:rotate(7deg) scale(1.04);
+    background:#1f6b2d;
+  }
+
+  @keyframes mcReceiptOverlayIn{
+    from{opacity:0}
+    to{opacity:1}
+  }
+
+  @keyframes mcReceiptModalIn{
+    from{opacity:0;transform:translateY(14px) scale(.975)}
+    to{opacity:1;transform:translateY(0) scale(1)}
+  }
+
+  @media(max-width:575.98px){
+    .order-ticket-overlay{padding:7px}
+    .order-ticket-modal{
+      width:100%;
+      height:calc(100dvh - 14px);
+      max-height:none;
+      border-radius:22px;
+    }
+    .order-ticket-close{
+      top:10px;
+      margin:10px 10px -46px 0;
+      width:36px;
+      height:36px;
+      font-size:16px;
+    }
   }
 </style>
+
 <div id="order-ticket-overlay" class="order-ticket-overlay">
   <div class="order-ticket-modal">
-    <button class="order-ticket-close" onclick="closeOrderTicket()">&#10005;</button>
-    <iframe id="order-ticket-iframe" src=""></iframe>
+    <button class="order-ticket-close" onclick="closeOrderTicket()" aria-label="Fermer">&#10005;</button>
+    <iframe id="order-ticket-iframe" src="" title="Reçu de commande"></iframe>
   </div>
 </div>
+
 <script>
-  function openOrderTicket(orderId) {
-    document.getElementById('order-ticket-iframe').src = '/order-ticket/' + orderId;
+  window.MC_ORDER_RECEIPT_DATA = window.MC_ORDER_RECEIPT_DATA || {};
+
+  function mcReceiptEscape(value){
+    return String(value == null ? '' : value)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+  }
+
+  function mcReceiptExtractItems(doc){
+    var items=[];
+    var seen={};
+
+    function clean(v){
+      return (v||'').toString().replace(/\s+/g,' ').trim();
+    }
+
+    function addItem(name,qty,price){
+      name=clean(name);
+      qty=(String(qty||'1').match(/\d+/)||['1'])[0];
+      price=clean(price);
+
+      /* Safety: a valid product name must never contain several quantities. */
+      var qtyTokens=name.match(/[×x]\s*\d+/gi)||[];
+      if(qtyTokens.length>1) return;
+
+      name=name
+        .replace(/^[×x]\s*\d+\s*/i,'')
+        .replace(/\s+/g,' ')
+        .trim();
+
+      if(!name || !/^\d+[.,]\d{1,2}\s*€$/.test(price)) return;
+      if(/total|imprimer|commande|ticket/i.test(name)) return;
+
+      var key=name.toLowerCase()+'|'+qty+'|'+price;
+      if(seen[key]) return;
+      seen[key]=1;
+
+      items.push({
+        name:name,
+        qty:qty,
+        price:price
+      });
+    }
+
+    /* ---------------------------------------------------------
+       A. Preferred source: a real receipt table.
+       --------------------------------------------------------- */
+    Array.prototype.slice.call(doc.querySelectorAll('table tbody tr')).forEach(function(tr){
+      var cells=Array.prototype.slice.call(tr.querySelectorAll('td'));
+      if(cells.length<2) return;
+
+      var raw=cells.map(function(td){
+        return clean(td.innerText||td.textContent);
+      });
+
+      var price='';
+      for(var p=raw.length-1;p>=0;p--){
+        if(/^\d+[.,]\d{1,2}\s*€$/.test(raw[p])){
+          price=raw[p];
+          break;
+        }
+      }
+      if(!price) return;
+
+      var first=raw[0]||'';
+      var qty='1';
+
+      var inline=first.match(/^[×x]\s*(\d+)\s+(.+)$/i);
+      if(inline){
+        qty=inline[1];
+        first=inline[2];
+      }else if(raw.length>=3){
+        var q=(raw[1]||'').match(/\d+/);
+        if(q) qty=q[0];
+      }
+
+      addItem(first,qty,price);
+    });
+
+    if(items.length) return items;
+
+    /* ---------------------------------------------------------
+       B. Compact receipt fallback.
+       IMPORTANT:
+       We start ONLY from a leaf element whose OWN text is exactly
+       "×1 Product name". We do not read a large parent text block.
+       --------------------------------------------------------- */
+    var leaves=Array.prototype.slice.call(doc.body.querySelectorAll('*')).filter(function(el){
+      return el.children.length===0;
+    });
+
+    leaves.forEach(function(nameEl){
+      var own=clean(nameEl.textContent);
+      var m=own.match(/^[×x]\s*(\d+)\s+(.+)$/i);
+      if(!m) return;
+
+      var qty=m[1];
+      var name=m[2];
+
+      /* Find the smallest nearby container containing exactly one price. */
+      var box=nameEl.parentElement;
+      var price='';
+
+      for(var hop=0;hop<5 && box;hop++,box=box.parentElement){
+        var priceNodes=Array.prototype.slice.call(box.querySelectorAll('*')).filter(function(el){
+          return el.children.length===0 &&
+                 /^\d+[.,]\d{1,2}\s*€$/.test(clean(el.textContent));
+        });
+
+        var itemNodes=Array.prototype.slice.call(box.querySelectorAll('*')).filter(function(el){
+          return el.children.length===0 &&
+                 /^[×x]\s*\d+\s+.+/i.test(clean(el.textContent));
+        });
+
+        /* Smallest container representing ONE order item. */
+        if(priceNodes.length===1 && itemNodes.length===1){
+          price=clean(priceNodes[0].textContent);
+          break;
+        }
+      }
+
+      if(price) addItem(name,qty,price);
+    });
+
+    return items;
+  }
+
+  async function mcReceiptFetchOrderItemExtras(orderId){
+    var wanted=String(orderId||'').replace(/\D/g,'');
+    if(!wanted) return [];
+
+    function clean(v){
+      return (v||'').toString().replace(/\s+/g,' ').trim();
+    }
+    function norm(v){
+      return clean(v).toLowerCase();
+    }
+
+    var collected=[];
+    var seenKeys={};
+
+    /* Same-origin admin page: authenticated browser session is reused.
+       We scan pages until the requested order is found and pagination ends. */
+    for(var page=1;page<=20;page++){
+      var url='/admin/order-item/list?pageSize=100&page='+page;
+
+      try{
+        var response=await fetch(url,{
+          credentials:'same-origin',
+          headers:{'X-Requested-With':'XMLHttpRequest'}
+        });
+
+        if(!response.ok) break;
+
+        var html=await response.text();
+        var parsed=new DOMParser().parseFromString(html,'text/html');
+        var table=parsed.querySelector('.table-responsive table, table');
+        if(!table) break;
+
+        var headers=Array.prototype.slice.call(
+          table.querySelectorAll('thead th')
+        ).map(function(th){return norm(th.textContent);});
+
+        function colIndex(names){
+          for(var i=0;i<headers.length;i++){
+            if(names.indexOf(headers[i])!==-1) return i;
+          }
+          return -1;
+        }
+
+        var idxOrder=colIndex(['commande','order']);
+        var idxDish=colIndex(['plat','dish']);
+        var idxQty=colIndex(['quantité','quantity']);
+        var idxPrice=colIndex(['prix unitaire','unit price']);
+        var idxRemoved=colIndex(['sans','removed','without']);
+        var idxChoices=colIndex(['personnalisation','customization']);
+
+        if(idxOrder===-1||idxDish===-1) break;
+
+        var rows=Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+        if(!rows.length) break;
+
+        var foundOnPage=0;
+
+        rows.forEach(function(row){
+          var cells=Array.prototype.slice.call(row.children);
+
+          function cellText(idx){
+            if(idx<0||!cells[idx]) return '';
+            var value=clean(cells[idx].textContent);
+            return (value==='—'||value==='-')?'':value;
+          }
+
+          var rawOrder=cellText(idxOrder);
+          var orderMatch=rawOrder.match(/(\d+)/);
+          var rowOrder=orderMatch?orderMatch[1]:'';
+
+          if(rowOrder!==wanted) return;
+
+          foundOnPage++;
+
+          var item={
+            dish:cellText(idxDish),
+            qty:cellText(idxQty)||'1',
+            price:cellText(idxPrice),
+            removed:cellText(idxRemoved),
+            customization:cellText(idxChoices)
+          };
+
+          var key=norm(item.dish)+'|'+norm(item.qty)+'|'+norm(item.removed)+'|'+norm(item.customization);
+          if(!seenKeys[key]){
+            seenKeys[key]=1;
+            collected.push(item);
+          }
+        });
+
+        /* With 100/page, fewer than 100 rows means there is no next page.
+           If we already found the order, no need to continue after that page. */
+        if(foundOnPage>0 || rows.length<100) break;
+
+      }catch(err){
+        break;
+      }
+    }
+
+    return collected;
+  }
+
+
+  async function mcUpgradeOrderTicketFrame(orderId){
+    var iframe = document.getElementById('order-ticket-iframe');
+    if(!iframe) return;
+
+    var doc;
+    try{
+      doc = iframe.contentDocument || iframe.contentWindow.document;
+    }catch(err){
+      return;
+    }
+    if(!doc || !doc.body) return;
+
+    var data = (window.MC_ORDER_RECEIPT_DATA || {})[String(orderId)] || {};
+
+    /* Source fiable : les vraies colonnes de la table Articles commandés
+       (plat, quantité, prix, personnalisation, sans) plutôt que de deviner
+       en analysant le HTML du ticket affiché — cette seconde méthode était
+       fragile et provoquait des "×1" répétés et du texte dupliqué dès que
+       la structure ne correspondait pas exactement à ce qu'elle attendait. */
+    var itemExtras=await mcReceiptFetchOrderItemExtras(orderId);
+
+    var items = itemExtras.map(function(extra){
+      return {
+        name: extra.dish,
+        qty: extra.qty || '1',
+        price: extra.price || '',
+        removed: extra.removed || '',
+        customization: extra.customization || ''
+      };
+    });
+
+    /* Filet de sécurité : si la récupération fiable échoue entièrement
+       (coupure réseau, session expirée...), on retombe sur l'ancienne
+       méthode plutôt que de n'afficher aucun article. */
+    if(!items.length){
+      items = mcReceiptExtractItems(doc);
+    }
+
+    var oldText = (doc.body.innerText || doc.body.textContent || '').replace(/\s+/g,' ').trim();
+
+    /* Fallbacks from the original ticket page if a value was not
+       available in the admin order row. */
+    if(!data.number){
+      var noMatch = oldText.match(/(?:Commande|Ticket)\s*#\s*(\d+)/i);
+      data.number = noMatch ? '#'+noMatch[1] : '#'+orderId;
+    }
+
+    var paymentDisplay = [data.paymentStatus, data.paymentMethod]
+      .filter(Boolean)
+      .join(' · ');
+
+    var rowsHtml = items.length
+      ? items.map(function(item){
+          function cleanExtra(v){
+            return (v||'').toString().replace(/\s+/g,' ').trim();
+          }
+
+          var removed=cleanExtra(item.removed)
+            .replace(/^Sans\s*:?\s*/i,'')
+            .replace(/^Without\s*:?\s*/i,'');
+
+          var customization=cleanExtra(item.customization)
+            .replace(/^Personnalisation\s*:?\s*/i,'')
+            .replace(/^Customization\s*:?\s*/i,'')
+            .replace(/^Sauce\s*:?\s*/i,'');
+
+          var extras='';
+
+          if(removed){
+            extras +=
+              '<div class="mc-r-extra-line mc-r-removed-line">'+
+                '<span class="mc-r-extra-key">Sans :</span>'+
+                '<span class="mc-r-extra-text">'+mcReceiptEscape(removed)+'</span>'+
+              '</div>';
+          }
+
+          if(customization){
+            extras +=
+              '<div class="mc-r-extra-line mc-r-custom-line">'+
+                '<span class="mc-r-extra-key">Sauce:</span>'+
+                '<span class="mc-r-extra-text">'+mcReceiptEscape(customization)+'</span>'+
+              '</div>';
+          }
+
+          /* Même précaution que pour les cartes : la colonne Quantité
+             préfixe déjà la valeur d'un "×". */
+          var receiptQty=(item.qty||'1').toString().replace(/^[×x]\s*/i,'').trim()||'1';
+
+          return '<tr class="mc-r-item-row">'+
+            '<td class="mc-r-item-name">'+
+              '<div class="mc-r-dish-head">'+
+                '<span class="mc-r-inline-qty">×'+mcReceiptEscape(receiptQty)+'</span>'+
+                '<span class="mc-r-dish-title">'+mcReceiptEscape(item.name)+'</span>'+
+              '</div>'+
+              extras+
+            '</td>'+
+            '<td class="mc-r-price">'+mcReceiptEscape(item.price)+'</td>'+
+          '</tr>';
+        }).join('')
+      : '<tr><td colspan="2" class="mc-r-empty">Les détails des articles sont indisponibles.</td></tr>';
+
+    var logo = '/images/logoMissChawarma.png';
+
+    doc.open();
+    doc.write(`<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reçu ${mcReceiptEscape(data.number || '#'+orderId)} · Miss Chawarma</title>
+<style>
+  :root{
+    --green:#174623;
+    --green2:#2f7138;
+    --gold:#c47d0e;
+    --cream:#f7f0e4;
+    --paper:#fffefa;
+    --muted:#6f786f;
+    --line:#d8d2c4;
+  }
+
+  *{box-sizing:border-box}
+
+  html{
+    width:100%;
+    min-height:100%;
+    overflow-y:auto;
+    scrollbar-gutter:stable;
+    background:#e8e5da;
+  }
+
+  body{
+    width:100%;
+    min-height:100%;
+    margin:0;
+    padding:26px 18px 30px;
+    overflow-y:auto;
+    color:#273329;
+    background:
+      radial-gradient(circle at 0 100%,rgba(31,107,45,.16),transparent 280px),
+      radial-gradient(circle at 100% 0,rgba(196,125,14,.12),transparent 240px),
+      linear-gradient(180deg,#e5e6dc,#d9ddd3);
+    font-family:Inter,Arial,sans-serif;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .mc-receipt-frame{
+    width:min(100%,560px);
+    margin:0 auto;
+    padding:16px;
+    border:1px solid rgba(255,255,255,.78);
+    border-radius:34px;
+    background:rgba(248,243,228,.90);
+    box-shadow:
+      0 24px 54px rgba(23,70,35,.18),
+      inset 0 0 0 1px rgba(196,125,14,.10);
+  }
+
+  .mc-receipt{
+    position:relative;
+    overflow:hidden;
+    padding:44px 30px 28px;
+    border:1px solid rgba(196,125,14,.18);
+    border-radius:24px 24px 10px 10px;
+    background:var(--paper);
+    box-shadow:0 12px 26px rgba(23,70,35,.075);
+  }
+
+  .mc-receipt::before{
+    content:"";
+    position:absolute;
+    left:18px;
+    right:18px;
+    top:-1px;
+    height:18px;
+    background:
+      radial-gradient(circle at 9px 0,#ece8dc 9px,transparent 10px) 0 0/28px 18px repeat-x;
+  }
+
+  .mc-brand-line{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    margin-top:4px;
+  }
+
+  .mc-brand-line::before,
+  .mc-brand-line::after{
+    content:"";
+    width:54px;
+    height:2px;
+    border-radius:999px;
+    background:linear-gradient(90deg,transparent,var(--gold));
+  }
+
+  .mc-brand-line::after{
+    background:linear-gradient(90deg,var(--gold),transparent);
+  }
+
+  .mc-logo{
+    width:90px;
+    height:90px;
+    object-fit:cover;
+    border-radius:50%;
+    box-shadow:0 8px 20px rgba(23,70,35,.14);
+  }
+
+  .mc-title{
+    margin:18px 0 0;
+    color:var(--gold);
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:.18em;
+    text-align:center;
+  }
+
+  .mc-order-number{
+    width:max-content;
+    margin:24px auto 30px;
+    padding:11px 22px 12px;
+    border:1px solid rgba(196,125,14,.30);
+    border-radius:14px;
+    color:var(--green);
+    background:#fffdf8;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:38px;
+    font-weight:700;
+    line-height:1;
+    box-shadow:0 8px 18px rgba(196,125,14,.06);
+  }
+
+  .mc-dash{
+    margin:0 0 22px;
+    border-top:1px dashed #bdb7a9;
+  }
+
+  .mc-info{
+    display:grid;
+    gap:9px;
+  }
+
+  .mc-info-row{
+    min-height:48px;
+    display:grid;
+    grid-template-columns:42px 145px minmax(0,1fr);
+    align-items:center;
+    gap:10px;
+  }
+
+  .mc-info-icon{
+    width:38px;
+    height:38px;
+    display:grid;
+    place-items:center;
+    border-radius:11px;
+    background:#eef5eb;
+    color:var(--green2);
+    font-size:16px;
+    font-weight:900;
+  }
+
+  .mc-info-label{
+    color:#6d766e;
+    font-size:13px;
+    font-weight:800;
+  }
+
+  .mc-info-value{
+    min-width:0;
+    color:#2e342f;
+    font-size:13px;
+    font-weight:850;
+    text-align:right;
+    overflow-wrap:anywhere;
+  }
+
+  .mc-info-value.mc-gold{color:#a86e00}
+  .mc-info-value .mc-date{color:#687284}
+  .mc-info-value .mc-time{margin-left:8px;color:var(--green2)}
+
+  .mc-section-title{
+    margin:26px 0 15px;
+    padding-top:22px;
+    border-top:1px dashed #bdb7a9;
+    color:var(--gold);
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:19px;
+    font-weight:700;
+    letter-spacing:.14em;
+    text-align:center;
+  }
+
+  .mc-items{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+
+  .mc-items th{
+    padding:8px 4px;
+    border-bottom:1px solid #b9c8b9;
+    color:#5f695f;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:11px;
+    text-align:left;
+  }
+
+  .mc-items th:nth-child(2),
+  .mc-items td:nth-child(2){
+    width:82px;
+    text-align:right;
+  }
+
+  .mc-items td{
+    padding:11px 4px;
+    border-bottom:1px dashed #ddd8cd;
+    color:#323932;
+    font-size:12px;
+    vertical-align:top;
+  }
+
+  .mc-r-item-name{
+    min-width:0;
+    font-weight:800;
+  }
+
+  .mc-r-dish-head{
+    display:flex;
+    align-items:baseline;
+    gap:6px;
+    min-width:0;
+  }
+
+  .mc-r-inline-qty{
+    flex:0 0 auto;
+    color:#2f7138;
+    font-size:12px;
+    font-weight:950;
+    line-height:1.25;
+  }
+
+  .mc-r-dish-title{
+    min-width:0;
+    color:#202d23;
+    font-size:12px;
+    font-weight:900;
+    line-height:1.3;
+    overflow-wrap:anywhere;
+  }
+
+  .mc-r-extra-line{
+    margin-top:4px;
+    display:flex;
+    align-items:baseline;
+    gap:4px;
+    min-width:0;
+    font-size:9.5px;
+    line-height:1.3;
+  }
+
+  .mc-r-extra-key{
+    flex:0 0 auto;
+    font-weight:850;
+  }
+
+  .mc-r-extra-text{
+    min-width:0;
+    font-weight:500;
+    overflow-wrap:anywhere;
+    word-break:break-word;
+  }
+
+  /* "Sans" exactly like your reference: red */
+  .mc-r-removed-line,
+  .mc-r-removed-line .mc-r-extra-key,
+  .mc-r-removed-line .mc-r-extra-text{
+    color:#c32f22;
+  }
+
+  /* Sauce: dark neutral text */
+  .mc-r-custom-line,
+  .mc-r-custom-line .mc-r-extra-key,
+  .mc-r-custom-line .mc-r-extra-text{
+    color:#313532;
+  }
+
+  .mc-r-custom-line .mc-r-extra-key{
+    font-weight:900;
+  }
+
+  .mc-r-price{
+    color:#b87900!important;
+    font-size:12px!important;
+    font-weight:950!important;
+    white-space:nowrap!important;
+    text-align:right!important;
+  }
+
+  .mc-r-empty{padding:18px!important;color:#8a918b!important;text-align:center!important}
+
+  .mc-total{
+    margin-top:18px;
+    padding-top:17px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    border-top:1px solid #bfd0bf;
+  }
+
+  .mc-total-label{
+    color:#183f22;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:18px;
+    font-weight:800;
+  }
+
+  .mc-total-value{
+    color:#2f7138;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:28px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .mc-thanks{
+    margin:26px 0 2px;
+    color:#bd7a00;
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:14px;
+    font-style:italic;
+    text-align:center;
+  }
+
+  .mc-receipt-actions{
+    margin-top:14px;
+    padding:13px;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    border:1px solid rgba(31,107,45,.09);
+    border-radius:20px;
+    background:rgba(255,254,250,.92);
+    box-shadow:0 8px 22px rgba(23,70,35,.07);
+  }
+
+  .mc-receipt-btn{
+    min-height:52px;
+    padding:0 12px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:9px;
+    border:1px solid rgba(31,107,45,.12);
+    border-radius:14px;
+    background:#fffefa;
+    color:#24452a;
+    font-size:13px;
+    font-weight:900;
+    cursor:pointer;
+  }
+
+  .mc-receipt-btn.mc-print{
+    border-color:#2f7138;
+    background:#3e8536;
+    color:#fff;
+  }
+
+  .mc-scroll-hint{
+    margin:12px 0 0;
+    color:#7a837c;
+    font-size:10px;
+    text-align:center;
+  }
+
+  @media(max-width:560px){
+    body{padding:12px 8px 18px}
+    .mc-receipt-frame{padding:9px;border-radius:24px}
+    .mc-receipt{padding:38px 18px 22px;border-radius:19px 19px 9px 9px}
+    .mc-logo{width:74px;height:74px}
+    .mc-title{font-size:17px;letter-spacing:.13em}
+    .mc-order-number{font-size:32px;margin:20px auto 24px}
+    .mc-info-row{grid-template-columns:36px 118px minmax(0,1fr);gap:7px}
+    .mc-info-icon{width:34px;height:34px;font-size:14px}
+    .mc-info-label,.mc-info-value{font-size:11px}
+    .mc-section-title{font-size:15px;letter-spacing:.11em}
+    .mc-items th,.mc-items td{font-size:10px}
+    .mc-r-inline-qty{font-size:11px}
+    .mc-r-dish-title{font-size:11px}
+    .mc-r-extra-line{margin-top:3px;font-size:8.8px;gap:3px}
+        .mc-r-extra{
+      margin-top:2px;
+      padding:0;
+      display:block;
+      font-size:7.8px;
+      line-height:1.25;
+    }
+    .mc-r-extra-label{
+      display:inline;
+      margin:0 3px 0 0;
+      padding:0;
+      font-size:7.8px;
+    }
+    .mc-r-extra-value{
+      display:inline;
+      padding:0;
+      font-size:7.8px;
+      line-height:1.25;
+    }
+    .mc-items th:nth-child(2),.mc-items td:nth-child(2){width:66px}
+    .mc-total-label{font-size:16px}
+    .mc-total-value{font-size:23px}
+    .mc-receipt-actions{grid-template-columns:1fr 1fr;gap:8px}
+  }
+
+  @media(max-width:420px){
+    .mc-receipt-actions{
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      padding:10px;
+    }
+    .mc-receipt-btn{
+      min-width:0;
+      min-height:48px;
+      padding:0 8px;
+      font-size:11px;
+      white-space:nowrap;
+    }
+  }
+
+  @media(max-width:380px){
+    .mc-info-row{grid-template-columns:32px 96px minmax(0,1fr)}
+    .mc-info-icon{width:31px;height:31px}
+    .mc-info-label,.mc-info-value{font-size:10px}
+    .mc-order-number{font-size:29px}
+  }
+
+  @media print{
+    html,body{
+      overflow:visible!important;
+      background:#fff!important;
+    }
+    body{padding:0}
+    .mc-receipt-frame{
+      width:100%;
+      max-width:none;
+      padding:0;
+      border:0;
+      box-shadow:none;
+      background:#fff;
+    }
+    .mc-receipt{
+      border:0;
+      box-shadow:none;
+      padding:20px 24px;
+    }
+    .mc-receipt-actions,.mc-scroll-hint{display:none!important}
+  }
+</style>
+</head>
+<body>
+  <main class="mc-receipt-frame">
+    <section class="mc-receipt">
+      <div class="mc-brand-line">
+        <img class="mc-logo" src="${logo}" alt="Miss Chawarma">
+      </div>
+
+      <h1 class="mc-title">REÇU DE COMMANDE</h1>
+      <div class="mc-order-number">${mcReceiptEscape(data.number || '#'+orderId)}</div>
+
+      <div class="mc-dash"></div>
+
+      <div class="mc-info">
+        <div class="mc-info-row">
+          <div class="mc-info-icon">♙</div>
+          <div class="mc-info-label">Client</div>
+          <div class="mc-info-value">${mcReceiptEscape(data.clientName || '—')}</div>
+        </div>
+
+        <div class="mc-info-row">
+          <div class="mc-info-icon">☎</div>
+          <div class="mc-info-label">Téléphone</div>
+          <div class="mc-info-value">${mcReceiptEscape(data.clientPhone || '—')}</div>
+        </div>
+
+        <div class="mc-info-row">
+          <div class="mc-info-icon">▣</div>
+          <div class="mc-info-label">Mode de réception</div>
+          <div class="mc-info-value">${mcReceiptEscape(data.reception || '—')}</div>
+        </div>
+
+        <div class="mc-info-row">
+          <div class="mc-info-icon">▤</div>
+          <div class="mc-info-label">Paiement</div>
+          <div class="mc-info-value mc-gold">${mcReceiptEscape(paymentDisplay || '—')}</div>
+        </div>
+
+        <div class="mc-info-row">
+          <div class="mc-info-icon">▦</div>
+          <div class="mc-info-label">Date & heure</div>
+          <div class="mc-info-value">
+            <span class="mc-date">${mcReceiptEscape(data.date || '—')}</span>
+            <span class="mc-time">${mcReceiptEscape(data.time || '—')}</span>
+          </div>
+        </div>
+
+        <div class="mc-info-row">
+          <div class="mc-info-icon">⌂</div>
+          <div class="mc-info-label">Destination</div>
+          <div class="mc-info-value">${mcReceiptEscape(data.destination || '—')}</div>
+        </div>
+      </div>
+
+      <h2 class="mc-section-title">DÉTAILS DE LA COMMANDE</h2>
+
+      <table class="mc-items">
+        <thead>
+          <tr>
+            <th>Article</th>
+            <th>Prix</th>
+          </tr>
+        </thead>
+        <tbody>${rowsHtml}</tbody>
+      </table>
+
+      <div class="mc-total">
+        <div class="mc-total-label">TOTAL</div>
+        <div class="mc-total-value">${mcReceiptEscape(data.total || '—')}</div>
+      </div>
+
+      <div class="mc-thanks">Merci pour votre commande ! ♡</div>
+    </section>
+
+    <div class="mc-receipt-actions">
+      <button class="mc-receipt-btn" type="button" onclick="parent.closeOrderTicket()">✕&nbsp; Fermer</button>
+      <button class="mc-receipt-btn mc-print" type="button" onclick="window.print()">♧&nbsp; Imprimer</button>
+    </div>
+
+    <div class="mc-scroll-hint">Faites défiler avec la molette ou le pavé tactile pour voir tout le reçu.</div>
+  </main>
+</body>
+</html>`);
+    doc.close();
+
+    /* Parent modal owns scrolling. Keep iframe document itself at top
+       and synchronize its full height with the parent scroll container. */
+    try{
+      iframe.contentWindow.scrollTo(0,0);
+    }catch(err){}
+
+    setTimeout(mcResizeReceiptFrame,0);
+    setTimeout(mcResizeReceiptFrame,120);
+  }
+
+  function mcResizeReceiptFrame(){
+    var iframe=document.getElementById('order-ticket-iframe');
+    var modal=document.querySelector('.order-ticket-modal');
+    if(!iframe||!modal) return;
+
+    try{
+      var doc=iframe.contentDocument||iframe.contentWindow.document;
+      if(!doc||!doc.documentElement||!doc.body) return;
+
+      /* Disable nested scrolling: the parent modal owns the scroll. */
+      doc.documentElement.style.overflow='visible';
+      doc.body.style.overflow='visible';
+
+      var h=Math.max(
+        doc.documentElement.scrollHeight||0,
+        doc.body.scrollHeight||0,
+        doc.documentElement.offsetHeight||0,
+        doc.body.offsetHeight||0
+      );
+
+      if(h>0){
+        iframe.style.height=h+'px';
+        iframe.style.minHeight='0';
+      }
+    }catch(err){}
+  }
+
+  function openOrderTicket(orderId){
+    var iframe = document.getElementById('order-ticket-iframe');
+    var modal = document.querySelector('.order-ticket-modal');
+    if(!iframe) return;
+
+    if(modal) modal.scrollTop=0;
+
+    iframe.onload = function(){
+      /* Load current ticket data first, then rebuild it with
+         the premium design and resize the iframe to its full content. */
+      setTimeout(function(){
+        Promise.resolve(mcUpgradeOrderTicketFrame(String(orderId))).then(function(){
+          /* doc.write() can finish one frame later. Resize several times
+             to handle fonts/images + personalization blocks. */
+          requestAnimationFrame(function(){
+            mcResizeReceiptFrame();
+            setTimeout(mcResizeReceiptFrame,80);
+            setTimeout(mcResizeReceiptFrame,250);
+            setTimeout(mcResizeReceiptFrame,500);
+          });
+        });
+      },0);
+    };
+
+    iframe.style.height='100%';
+    iframe.style.minHeight='100%';
+    iframe.src='/order-ticket/'+orderId;
     document.getElementById('order-ticket-overlay').classList.add('open');
+    document.documentElement.style.overflow='hidden';
   }
-  function closeOrderTicket() {
+
+  function closeOrderTicket(){
+    var iframe = document.getElementById('order-ticket-iframe');
     document.getElementById('order-ticket-overlay').classList.remove('open');
-    document.getElementById('order-ticket-iframe').src = '';
+    if(iframe){
+      iframe.onload=null;
+      iframe.src='';
+    }
+    document.documentElement.style.overflow='';
   }
-  document.addEventListener('click', function (e) {
-    var trigger = e.target.closest('.ticket-trigger');
-    if (trigger) {
-      e.preventDefault();
-      openOrderTicket(trigger.dataset.orderId);
-    }
-    if (e.target.id === 'order-ticket-overlay') {
-      closeOrderTicket();
-    }
+
+  document.addEventListener('click',function(e){
+    if(e.target.id==='order-ticket-overlay') closeOrderTicket();
   });
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') closeOrderTicket();
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeOrderTicket();
   });
 </script>
 """
@@ -3601,12 +4616,11 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     color:#7b8490!important;
     font-size:9px!important;
     font-weight:650!important;
-    line-height:1.25!important;
+    line-height:1.3!important;
     white-space:normal!important;
-    display:-webkit-box!important;
-    -webkit-box-orient:vertical!important;
-    -webkit-line-clamp:2!important;
-    overflow:hidden!important;
+    overflow-wrap:anywhere!important;
+    display:block!important;
+    overflow:visible!important;
   }
 
   .mc-mobile-card-quick{
@@ -3746,25 +4760,38 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
   .mc-mobile-record-card.mc-open{grid-column:1 / -1!important}
-  .mc-mobile-record-card.mc-open .mc-mobile-card-summary{min-height:120px!important}
+  .mc-mobile-record-card.mc-open:has(.mc-mobile-card-photo-wrap) .mc-mobile-card-summary{min-height:120px!important}
 
   .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
-    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    grid-template-columns:1fr!important;
     gap:7px!important;
   }
   .mc-mobile-record-card.mc-open .mc-mobile-detail-row{
     grid-template-columns:76px minmax(0,1fr)!important;
-    min-height:52px!important;
+    min-height:auto!important;
     padding:8px!important;
   }
 }
 @media(max-width:380px){
-  .card.mc-mobile-card-mode .mc-mobile-cards{gap:7px!important;padding-left:7px!important;padding-right:7px!important}
-  .mc-mobile-card-summary{min-height:148px!important;padding-left:9px!important;padding-right:9px!important}
-  .mc-mobile-card-title{font-size:11.5px!important}
-  .mc-mobile-card-subtitle{font-size:8.4px!important}
-  .mc-mobile-card-price{font-size:12px!important}
-  .mc-mobile-card-availability{font-size:8px!important}
+  .mc-mobile-record-card.mc-open .mc-mobile-card-grid{
+    grid-template-columns:1fr!important;
+  }
+  .mc-mobile-record-card.mc-open .mc-mobile-detail-row{
+    grid-template-columns:72px minmax(0,1fr)!important;
+    min-height:auto!important;
+  }
+  .card.mc-mobile-card-mode .mc-mobile-cards{gap:6px!important;padding-left:6px!important;padding-right:6px!important}
+  .mc-mobile-record-card:has(.mc-mobile-card-photo-wrap) .mc-mobile-card-summary{min-height:138px!important}
+  .mc-mobile-card-summary{padding-left:8px!important;padding-right:8px!important;padding-top:11px!important}
+  .mc-mobile-card-photo-wrap{width:52px!important;height:52px!important;margin-top:10px!important}
+  .mc-mobile-record-card.mc-open .mc-mobile-card-photo-wrap{width:60px!important;height:60px!important}
+  .mc-mobile-card-title{font-size:11px!important;line-height:1.18!important}
+  .mc-mobile-card-subtitle{font-size:8px!important}
+  .mc-mobile-card-category{padding:3px 6px!important;font-size:7.5px!important}
+  .mc-mobile-card-price{font-size:11.5px!important}
+  .mc-mobile-card-availability{font-size:7.5px!important}
+  .mc-mobile-card-chevron{width:24px!important;min-width:24px!important;height:24px!important;min-height:24px!important;right:7px!important;bottom:7px!important}
+  .mc-mobile-state-dot{width:14px!important;height:14px!important;top:7px!important;right:7px!important}
 }
 
 /* =========================================================
@@ -3819,7 +4846,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 @media(max-width:991.98px){
   .card.mc-mobile-card-mode .mc-mobile-cards.mc-order-groups-wrap{
     display:grid!important;
-    grid-template-columns:repeat(auto-fill,minmax(300px,1fr))!important;
+    grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr))!important;
     align-items:start!important;
     gap:12px!important;
     padding:12px 10px 18px!important;
@@ -3834,28 +4861,28 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
   .mc-order-group-header{
-    padding:11px 14px;
+    padding:9px 12px;
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:10px;
+    gap:8px;
     background:linear-gradient(90deg,#eef6ec,#fff9ec);
     border-bottom:1px solid rgba(31,107,45,.08);
   }
 
   .mc-order-group-title{
     color:#174623;
-    font-size:14px;
+    font-size:12px;
     font-weight:900;
   }
 
   .mc-order-group-count{
-    padding:4px 10px;
+    padding:3px 8px;
     border-radius:999px;
     background:#fff;
     border:1px solid rgba(31,107,45,.12);
     color:#5f6b62;
-    font-size:9.5px;
+    font-size:8.5px;
     font-weight:850;
     white-space:nowrap;
   }
@@ -3868,8 +4895,8 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   .mc-order-item-line{
     display:flex;
     align-items:flex-start;
-    gap:10px;
-    padding:12px 14px;
+    gap:8px;
+    padding:9px 11px;
     border-top:1px solid rgba(31,107,45,.07);
   }
   .mc-order-item-line:first-child{
@@ -3883,43 +4910,43 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
   .mc-order-item-name{
     color:#1c3a24;
-    font-size:12.5px;
+    font-size:11px;
     font-weight:850;
-    line-height:1.3;
+    line-height:1.25;
   }
 
   .mc-order-item-meta{
-    margin-top:5px;
+    margin-top:4px;
     display:flex;
     align-items:center;
-    gap:7px;
+    gap:6px;
   }
 
   .mc-order-item-qty{
-    padding:3px 8px;
+    padding:2px 7px;
     border-radius:999px;
     background:#edf4eb;
     color:#2c6b36;
-    font-size:10px;
+    font-size:9px;
     font-weight:800;
     white-space:nowrap;
   }
 
   .mc-order-item-price{
-    padding:3px 9px;
+    padding:2px 8px;
     border-radius:999px;
     background:#fff3d6;
     color:#8c5d00;
-    font-size:10.5px;
+    font-size:9.5px;
     font-weight:900;
     white-space:nowrap;
   }
 
   .mc-order-item-extra{
-    margin-top:6px;
+    margin-top:5px;
     color:#78847b;
-    font-size:10px;
-    line-height:1.45;
+    font-size:8.5px;
+    line-height:1.4;
   }
   .mc-order-item-extra strong{
     color:#5b665e;
@@ -3936,22 +4963,26 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   .mc-order-item-actions{
     flex:0 0 auto;
     display:flex;
-    gap:6px;
+    gap:5px;
   }
   .mc-order-item-actions a,
   .mc-order-item-actions button{
-    width:30px!important;
-    min-width:30px!important;
-    height:30px!important;
-    min-height:30px!important;
+    width:26px!important;
+    min-width:26px!important;
+    height:26px!important;
+    min-height:26px!important;
     display:inline-flex!important;
     align-items:center!important;
     justify-content:center!important;
     padding:0!important;
     border:1px solid rgba(31,107,45,.10)!important;
-    border-radius:9px!important;
+    border-radius:8px!important;
     background:#fff!important;
     text-decoration:none!important;
+  }
+  .mc-order-item-actions svg{
+    width:13px!important;
+    height:13px!important;
   }
   .mc-order-item-actions a[href*="/delete"],
   .mc-order-item-actions a[data-bs-target*="delete"],
@@ -3960,6 +4991,778 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     background:#fff3f1!important;
     border-color:rgba(198,63,53,.14)!important;
   }
+}
+
+/* Écrans de téléphone plus étroits : encore un cran plus compact. */
+@media(max-width:420px){
+  .mc-order-groups-wrap{
+    gap:9px!important;
+  }
+  .mc-order-group-header{
+    padding:8px 10px!important;
+  }
+  .mc-order-group-title{
+    font-size:11px!important;
+  }
+  .mc-order-item-line{
+    padding:8px 9px!important;
+    gap:6px!important;
+  }
+  .mc-order-item-name{
+    font-size:10px!important;
+  }
+  .mc-order-item-qty,
+  .mc-order-item-price{
+    font-size:8.5px!important;
+  }
+  .mc-order-item-extra{
+    font-size:8px!important;
+  }
+  .mc-order-item-actions a,
+  .mc-order-item-actions button{
+    width:24px!important;
+    min-width:24px!important;
+    height:24px!important;
+    min-height:24px!important;
+  }
+}
+
+
+
+/* =========================================================
+   COMMANDES — VERSION MOBILE PREMIUM
+   Inspirée du reçu de commande :
+   ivoire + vert profond + or, cartes ticket détaillées.
+========================================================= */
+@media(max-width:991.98px){
+
+  /* Page shell */
+  body:has(.mc-order-filters) .card.mc-mobile-card-mode{
+    border-radius:24px!important;
+    background:
+      radial-gradient(circle at 100% 0,rgba(228,184,63,.13),transparent 170px),
+      linear-gradient(180deg,#fffdf8,#f9f3e8)!important;
+    box-shadow:0 18px 45px rgba(18,63,29,.10)!important;
+  }
+
+  /* Filter block spans the complete card grid */
+  .mc-order-filters,
+  .mc-order-no-results{
+    grid-column:1/-1!important;
+  }
+
+  .mc-order-filters{
+    position:relative!important;
+    overflow:hidden!important;
+    margin:0 0 6px!important;
+    padding:16px 15px 15px!important;
+    display:grid!important;
+    gap:11px!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    border-radius:22px!important;
+    background:
+      radial-gradient(circle at 100% 0,rgba(228,184,63,.16),transparent 135px),
+      linear-gradient(145deg,#fffef9,#fbf7ed)!important;
+    box-shadow:
+      0 10px 28px rgba(18,63,29,.07),
+      inset 0 0 0 1px rgba(255,255,255,.7)!important;
+  }
+
+  .mc-order-filter-head{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    gap:12px!important;
+  }
+
+  .mc-order-filter-title{
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    color:#173f21!important;
+    font-size:15px!important;
+    font-weight:900!important;
+    line-height:1.15!important;
+  }
+
+  .mc-order-filter-icon{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid rgba(31,107,45,.07)!important;
+    border-radius:12px!important;
+    background:#edf5eb!important;
+    color:#327c3d!important;
+    font-size:18px!important;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)!important;
+  }
+
+  .mc-order-filter-reset{
+    min-height:39px!important;
+    padding:0 13px!important;
+    border:1px solid rgba(196,125,14,.20)!important;
+    border-radius:12px!important;
+    background:#fff9ea!important;
+    color:#8a5c00!important;
+    font-size:9.5px!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+    box-shadow:0 5px 14px rgba(196,125,14,.07)!important;
+  }
+
+  .mc-order-filter-copy{
+    margin:-2px 0 2px!important;
+    max-width:520px!important;
+    color:#7d877f!important;
+    font-size:10px!important;
+    line-height:1.5!important;
+  }
+
+  .mc-order-filter-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:10px!important;
+  }
+
+  .mc-order-filter-field{
+    min-width:0!important;
+    display:grid!important;
+    gap:6px!important;
+  }
+
+  .mc-order-filter-field-wide{
+    grid-column:1/-1!important;
+  }
+
+  .mc-order-filter-label{
+    color:#7b867e!important;
+    font-size:8px!important;
+    font-weight:950!important;
+    letter-spacing:.11em!important;
+    text-transform:uppercase!important;
+  }
+
+  .mc-order-filter-select{
+    width:100%!important;
+    min-width:0!important;
+    min-height:46px!important;
+    padding:0 39px 0 13px!important;
+    border:1px solid rgba(31,107,45,.15)!important;
+    border-radius:14px!important;
+    background:#fff!important;
+    color:#263e2a!important;
+    font-size:11px!important;
+    font-weight:850!important;
+    text-overflow:ellipsis!important;
+    box-shadow:0 6px 15px rgba(18,63,29,.035)!important;
+  }
+
+  .mc-order-filter-select:focus{
+    border-color:rgba(31,107,45,.42)!important;
+    box-shadow:0 0 0 4px rgba(31,107,45,.08)!important;
+  }
+
+  .mc-order-filter-result{
+    color:#748078!important;
+    font-size:9px!important;
+    font-weight:800!important;
+  }
+
+  /* ---------- ORDER CARD ---------- */
+  .mc-mobile-record-card.mc-order-ticket-card{
+    position:relative!important;
+    min-width:0!important;
+    overflow:hidden!important;
+    border:1px solid rgba(31,107,45,.12)!important;
+    border-radius:22px!important;
+    background:
+      radial-gradient(circle at 100% 0,rgba(228,184,63,.09),transparent 115px),
+      linear-gradient(155deg,#fffefb 0%,#fbf7ee 100%)!important;
+    box-shadow:
+      0 9px 24px rgba(18,63,29,.07),
+      inset 0 0 0 1px rgba(255,255,255,.7)!important;
+    transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease!important;
+  }
+
+  .mc-mobile-record-card.mc-order-ticket-card:hover{
+    transform:translateY(-1px)!important;
+    border-color:rgba(196,125,14,.24)!important;
+    box-shadow:0 14px 30px rgba(18,63,29,.10)!important;
+  }
+
+  /* hide generic summary but preserve generic detail block/actions */
+  .mc-order-ticket-card > .mc-mobile-card-summary{
+    display:none!important;
+  }
+
+  .mc-order-ticket-surface{
+    position:relative!important;
+    min-height:270px!important;
+    padding:14px 13px 13px!important;
+    display:flex!important;
+    flex-direction:column!important;
+    cursor:pointer!important;
+  }
+
+  .mc-order-ticket-surface::before{
+    content:""!important;
+    position:absolute!important;
+    left:13px!important;
+    right:13px!important;
+    top:125px!important;
+    border-top:1px dashed rgba(196,125,14,.30)!important;
+  }
+
+  /* circular state indicator */
+  .mc-order-ticket-card > .mc-mobile-state-dot{
+    top:12px!important;
+    right:12px!important;
+    width:15px!important;
+    height:15px!important;
+    border:2px solid #fffdf8!important;
+    box-shadow:
+      0 0 0 1px rgba(18,63,29,.10),
+      0 4px 10px rgba(18,63,29,.20)!important;
+    z-index:15!important;
+  }
+
+  .mc-order-ticket-top{
+    min-height:112px!important;
+    padding:9px 8px 10px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:10px!important;
+    border:1px solid rgba(196,125,14,.26)!important;
+    border-radius:18px!important;
+    background:
+      linear-gradient(145deg,rgba(255,255,255,.90),rgba(255,249,232,.92))!important;
+    box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)!important;
+  }
+
+  .mc-order-ticket-symbol{
+    width:43px!important;
+    height:43px!important;
+    flex:0 0 43px!important;
+    display:grid!important;
+    place-items:center!important;
+    color:#b97c00!important;
+    font-size:26px!important;
+    line-height:1!important;
+  }
+
+  .mc-order-ticket-rule{
+    width:1px!important;
+    height:55px!important;
+    flex:0 0 1px!important;
+    background:rgba(196,125,14,.34)!important;
+  }
+
+  .mc-order-ticket-copy{
+    min-width:0!important;
+    flex:1 1 auto!important;
+  }
+
+  .mc-order-ticket-kicker{
+    color:#9a6a12!important;
+    font-size:7.5px!important;
+    font-weight:950!important;
+    letter-spacing:.16em!important;
+    text-transform:uppercase!important;
+  }
+
+  .mc-order-ticket-number{
+    margin-top:3px!important;
+    overflow:hidden!important;
+    color:#173f21!important;
+    font-family:Georgia,"Times New Roman",serif!important;
+    font-size:24px!important;
+    font-weight:700!important;
+    line-height:1!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-order-ticket-receipt{
+    width:36px!important;
+    height:36px!important;
+    min-width:36px!important;
+    min-height:36px!important;
+    flex:0 0 36px!important;
+    display:grid!important;
+    place-items:center!important;
+    border:1px solid rgba(196,125,14,.22)!important;
+    border-radius:50%!important;
+    background:linear-gradient(145deg,#fff8df,#fff0b9)!important;
+    color:#966300!important;
+    font-size:20px!important;
+    font-weight:950!important;
+    line-height:1!important;
+    cursor:pointer!important;
+    box-shadow:
+      0 6px 15px rgba(196,125,14,.13),
+      inset 0 0 0 1px rgba(255,255,255,.72)!important;
+    transition:transform .18s ease,box-shadow .18s ease,background .18s ease!important;
+  }
+
+  .mc-order-ticket-receipt:hover{
+    transform:translateY(-1px) scale(1.04)!important;
+    background:linear-gradient(145deg,#fff3cc,#ffe7a0)!important;
+    box-shadow:0 9px 18px rgba(196,125,14,.18)!important;
+  }
+
+  .mc-order-ticket-receipt:active{
+    transform:scale(.97)!important;
+  }
+
+  .mc-order-client-block{
+    padding:24px 2px 0!important;
+    min-width:0!important;
+  }
+
+  .mc-order-client-name{
+    overflow:hidden!important;
+    color:#6d7686!important;
+    font-size:10.5px!important;
+    font-weight:900!important;
+    line-height:1.25!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-order-client-phone{
+    margin-top:3px!important;
+    overflow:hidden!important;
+    color:#707989!important;
+    font-size:9px!important;
+    font-weight:750!important;
+    line-height:1.25!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-order-ticket-badges{
+    margin-top:12px!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    gap:6px!important;
+  }
+
+  .mc-order-ticket-badge{
+    max-width:100%!important;
+    min-height:29px!important;
+    padding:6px 9px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    overflow:hidden!important;
+    border-radius:999px!important;
+    font-size:8px!important;
+    font-weight:900!important;
+    line-height:1!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-order-ticket-badge.mc-reception{
+    color:#34723d!important;
+    background:#eef7eb!important;
+    border:1px solid rgba(31,107,45,.13)!important;
+  }
+
+  .mc-order-ticket-badge.mc-payment{
+    color:#8b5d00!important;
+    background:#fff1c8!important;
+    border:1px solid rgba(196,125,14,.18)!important;
+  }
+
+  .mc-order-ticket-footer{
+    margin-top:auto!important;
+    padding-top:13px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,.78fr) minmax(0,1.22fr) 32px!important;
+    align-items:end!important;
+    gap:8px!important;
+    border-top:1px solid rgba(31,107,45,.10)!important;
+  }
+
+  .mc-order-ticket-metric{
+    min-width:0!important;
+  }
+
+  .mc-order-ticket-metric + .mc-order-ticket-metric{
+    padding-left:9px!important;
+    border-left:1px solid rgba(31,107,45,.12)!important;
+  }
+
+  .mc-order-ticket-label{
+    color:#7f8a82!important;
+    font-size:7px!important;
+    font-weight:950!important;
+    letter-spacing:.09em!important;
+    text-transform:uppercase!important;
+  }
+
+  .mc-order-ticket-total{
+    margin-top:5px!important;
+    color:#b17700!important;
+    font-size:16px!important;
+    font-weight:950!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-order-ticket-date{
+    margin-top:4px!important;
+    overflow:hidden!important;
+    color:#737d8d!important;
+    font-size:8px!important;
+    font-weight:750!important;
+    line-height:1.15!important;
+    text-overflow:ellipsis!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-order-ticket-time{
+    margin-top:3px!important;
+    color:#2f6f39!important;
+    font-size:14px!important;
+    font-weight:950!important;
+    line-height:1!important;
+  }
+
+  .mc-order-ticket-more{
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    min-height:32px!important;
+    padding:0!important;
+    display:grid!important;
+    place-items:center!important;
+    align-self:end!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    border-radius:11px!important;
+    background:#edf5eb!important;
+    color:#1e5c2b!important;
+    font-size:17px!important;
+    font-weight:900!important;
+    line-height:1!important;
+  }
+
+  .mc-order-ticket-card.mc-open{
+    grid-column:1/-1!important;
+  }
+
+  .mc-order-ticket-card.mc-open .mc-order-ticket-surface{
+    min-height:auto!important;
+  }
+
+  .mc-order-ticket-card.mc-open .mc-order-ticket-more{
+    color:#8b5d00!important;
+    background:#fff1c8!important;
+  }
+
+  /* Expanded details remain elegant */
+  .mc-order-ticket-card .mc-mobile-card-details{
+    padding:0 13px 14px!important;
+    border-top:0!important;
+    background:linear-gradient(180deg,rgba(247,240,228,.25),rgba(255,255,255,0))!important;
+  }
+
+  .mc-order-ticket-card .mc-mobile-card-grid{
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    padding-top:8px!important;
+  }
+
+  .mc-order-ticket-card .mc-mobile-detail-row{
+    min-width:0!important;
+    min-height:58px!important;
+    padding:9px!important;
+    display:block!important;
+    border:1px solid rgba(31,107,45,.07)!important;
+    border-radius:12px!important;
+    background:rgba(255,255,255,.80)!important;
+  }
+
+  .mc-order-ticket-card .mc-mobile-detail-label{
+    margin-bottom:5px!important;
+    color:#7d887f!important;
+    font-size:7px!important;
+    font-weight:950!important;
+  }
+
+  .mc-order-ticket-card .mc-mobile-detail-value{
+    min-width:0!important;
+    color:#29382d!important;
+    font-size:10.5px!important;
+    line-height:1.35!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .mc-order-ticket-card .mc-mobile-card-actions{
+    margin-top:9px!important;
+    padding-top:4px!important;
+  }
+}
+
+/* phones under ~430px: one column, never squeeze text */
+@media(max-width:429.98px){
+  .card.mc-mobile-card-mode .mc-mobile-cards{
+    grid-template-columns:1fr!important;
+    padding-left:8px!important;
+    padding-right:8px!important;
+  }
+
+  .mc-order-filter-grid{
+    grid-template-columns:1fr!important;
+  }
+
+  .mc-order-filter-field-wide{
+    grid-column:auto!important;
+  }
+
+  .mc-order-filters{
+    padding:13px!important;
+    border-radius:18px!important;
+  }
+
+  .mc-order-ticket-surface{
+    min-height:255px!important;
+    padding:13px!important;
+  }
+
+  .mc-order-ticket-card .mc-mobile-card-grid{
+    grid-template-columns:1fr!important;
+  }
+}
+
+/* Tiny screens */
+@media(max-width:359.98px){
+  .mc-order-filter-head{
+    align-items:flex-start!important;
+  }
+
+  .mc-order-filter-title{
+    font-size:13px!important;
+  }
+
+  .mc-order-filter-reset{
+    min-height:34px!important;
+    padding:0 9px!important;
+    font-size:8.5px!important;
+  }
+
+  .mc-order-filter-select{
+    min-height:43px!important;
+    font-size:10px!important;
+  }
+
+  .mc-order-ticket-surface{
+    padding:12px 11px!important;
+  }
+
+  .mc-order-ticket-number{
+    font-size:22px!important;
+  }
+
+  .mc-order-ticket-symbol{
+    width:38px!important;
+    height:38px!important;
+    flex-basis:38px!important;
+    font-size:23px!important;
+  }
+
+  .mc-order-ticket-footer{
+    grid-template-columns:minmax(0,.75fr) minmax(0,1.25fr) 30px!important;
+    gap:6px!important;
+  }
+
+  .mc-order-ticket-total{
+    font-size:14px!important;
+  }
+
+  .mc-order-ticket-time{
+    font-size:13px!important;
+  }
+}
+
+
+
+/* =========================================================
+   COMMANDES — FINAL FIX
+   - aucun doublon dans les détails ouverts
+   - date / heure séparées, espacées et de couleurs différentes
+========================================================= */
+@media(max-width:991.98px){
+
+  .mc-order-ticket-slot{
+    min-width:0!important;
+  }
+
+  .mc-order-ticket-slot-lines{
+    margin-top:6px!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:7px!important;
+  }
+
+  .mc-order-ticket-date,
+  .mc-order-ticket-time{
+    margin:0!important;
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:6px!important;
+    line-height:1.15!important;
+    white-space:nowrap!important;
+  }
+
+  .mc-order-ticket-date{
+    color:#737d8d!important;
+    font-size:8.5px!important;
+    font-weight:800!important;
+  }
+
+  .mc-order-ticket-time{
+    color:#2f6f39!important;
+    font-size:14px!important;
+    font-weight:950!important;
+  }
+
+  .mc-order-ticket-date-icon{
+    width:15px!important;
+    height:15px!important;
+    min-width:15px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:5px!important;
+    background:#eef1fb!important;
+    color:#6576ad!important;
+    font-size:8px!important;
+  }
+
+  .mc-order-ticket-time-icon{
+    width:15px!important;
+    height:15px!important;
+    min-width:15px!important;
+    display:grid!important;
+    place-items:center!important;
+    border-radius:50%!important;
+    background:#edf5eb!important;
+    color:#2f6f39!important;
+    font-size:10px!important;
+  }
+
+  /* Open details should feel like a small "extra info" section,
+     not a second copy of the whole ticket. */
+  .mc-order-ticket-card.mc-open .mc-mobile-card-details{
+    padding-top:10px!important;
+  }
+
+  .mc-order-ticket-card.mc-open .mc-mobile-card-grid:empty{
+    display:none!important;
+  }
+
+  .mc-order-ticket-card.mc-open .mc-mobile-card-actions{
+    margin-top:0!important;
+    padding-top:8px!important;
+    border-top:1px dashed rgba(196,125,14,.22)!important;
+  }
+}
+
+/* On one-column phones, give date and time a little more breathing room */
+@media(max-width:429.98px){
+  .mc-order-ticket-slot-lines{
+    gap:8px!important;
+  }
+
+  .mc-order-ticket-date{
+    font-size:9.5px!important;
+  }
+
+  .mc-order-ticket-time{
+    font-size:15px!important;
+  }
+}
+
+/* Very small phones: still no overflow */
+@media(max-width:359.98px){
+  .mc-order-ticket-date,
+  .mc-order-ticket-time{
+    white-space:normal!important;
+    overflow-wrap:anywhere!important;
+  }
+
+  .mc-order-ticket-footer{
+    grid-template-columns:minmax(0,.70fr) minmax(0,1.30fr) 30px!important;
+  }
+}
+
+
+
+/* =========================================================
+   COMMANDES — BOUTON REÇU
+   La flèche est supprimée. Le bouton téléchargement ouvre
+   directement le reçu de commande.
+========================================================= */
+@media(max-width:991.98px){
+  .mc-order-ticket-top{
+    padding-right:10px!important;
+  }
+
+  .mc-order-ticket-receipt span{
+    display:block!important;
+    transform:translateY(-1px)!important;
+  }
+}
+
+@media(max-width:429.98px){
+  .mc-order-ticket-receipt{
+    width:34px!important;
+    height:34px!important;
+    min-width:34px!important;
+    min-height:34px!important;
+    flex-basis:34px!important;
+    font-size:18px!important;
+  }
+}
+
+@media(max-width:359.98px){
+  .mc-order-ticket-receipt{
+    width:32px!important;
+    height:32px!important;
+    min-width:32px!important;
+    min-height:32px!important;
+    flex-basis:32px!important;
+    font-size:17px!important;
+  }
+}
+
+
+
+/* =========================================================
+   REÇU — SCROLL STABLE MOBILE + SOURIS PC
+   Un seul conteneur scrollable = .order-ticket-modal
+========================================================= */
+.order-ticket-overlay.open{
+  overscroll-behavior:contain!important;
+}
+
+.order-ticket-modal{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+.order-ticket-modal iframe{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:auto!important;
 }
 
 </style>
@@ -5222,8 +7025,450 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       mcInitEventMobileFilters(card, cardsWrap);
       mcInitDishMobileFilters(card, cardsWrap);
       mcInitContactMessageMobileFilters(card, cardsWrap);
+      mcInitOrderMobileExperience(card, cardsWrap);
       mcGroupOrderItemCards(card, cardsWrap);
     });
+  }
+
+
+
+  /* =========================================================
+     COMMANDES — CARTES TICKET PREMIUM + FILTRES RAPIDES
+  ========================================================= */
+  function mcInitOrderMobileExperience(card, cardsWrap){
+    var path=window.location.pathname.replace(/\/+$/,'');
+    if(path!=='/admin/order/list') return;
+    if(!card||!cardsWrap) return;
+
+    var table=card.querySelector('.table-responsive table');
+    if(!table) return;
+
+    function clean(v){return (v||'').toString().replace(/\s+/g,' ').trim();}
+    function norm(v){return clean(v).toLowerCase();}
+
+    var headers=Array.prototype.slice.call(table.querySelectorAll('thead th'))
+      .map(function(th){return norm(th.textContent);});
+
+    function colIndex(names){
+      for(var i=0;i<headers.length;i++){
+        if(names.indexOf(headers[i])!==-1) return i;
+      }
+      return -1;
+    }
+
+    var idxNumber=colIndex(['n°','no.','no','numéro','numero','id']);
+    var idxClient=colIndex(['client','customer']);
+    var idxReception=colIndex(['réception','reception','method']);
+    var idxDestination=colIndex(['destination']);
+    var idxTotal=colIndex(['total']);
+    var idxPayment=colIndex(['paiement','payment']);
+    var idxStatus=colIndex(['état','etat','statut','status']);
+    var idxSlot=colIndex(['créneau','creneau','time slot']);
+
+    var rows=Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
+    var records=Array.prototype.slice.call(
+      cardsWrap.querySelectorAll('.mc-mobile-record-card')
+    );
+
+    function cell(cells,idx){
+      if(idx<0||!cells[idx]) return '';
+      return clean(cells[idx].textContent);
+    }
+
+    function linesOf(el){
+      if(!el) return [];
+      return (el.innerText||el.textContent||'')
+        .split(/\n+/)
+        .map(clean)
+        .filter(Boolean);
+    }
+
+    function splitSlot(raw){
+      raw=clean(raw);
+      if(!raw) return {date:'—',time:'—'};
+
+      /* SQLAdmin can render "2026-09-0311:30" without a space.
+         Match the time anywhere, then keep the date separately. */
+      var timeMatch=raw.match(/([01]?\d|2[0-3]):[0-5]\d/);
+      var time=timeMatch?timeMatch[0]:'';
+      var date=time?clean(raw.replace(time,'')).replace(/[·|,;-]+$/,'').trim():raw;
+
+      /* If date and time were glued together, this leaves a clean YYYY-MM-DD. */
+      var isoDate=date.match(/\d{4}-\d{2}-\d{2}/);
+      if(isoDate) date=isoDate[0];
+
+      return {date:date||'—',time:time||'—'};
+    }
+
+    var filterData=[];
+
+    records.forEach(function(record,index){
+      var row=rows[index];
+      if(!row) return;
+      var cells=Array.prototype.slice.call(row.children);
+
+      var number=cell(cells,idxNumber);
+      if(!number){
+        var m=clean(row.textContent).match(/#?\s*(\d+)/);
+        number=m?m[1]:String(index+1);
+      }
+      number=number.replace(/^(ticket|commande|order)\s*/i,'').trim();
+      if(number.charAt(0)!=='#') number='#'+number;
+
+      var clientCell=idxClient>=0?cells[idxClient]:null;
+      var clientRaw=clientCell?clean(clientCell.innerText||clientCell.textContent||''):'';
+      var clientLines=linesOf(clientCell);
+
+      /* The client cell can render name + phone on the same line.
+         Extract the phone with a regex, then remove it from the name
+         so the receipt does not show the phone twice under "Client". */
+      var phoneMatch=clientRaw.match(/(?:\+?\d[\d\s().-]{6,}\d)/);
+      var clientPhone=phoneMatch?clean(phoneMatch[0]):(clientLines[1]||'');
+
+      var clientName=clientRaw;
+      if(clientPhone){
+        clientName=clean(clientName.replace(clientPhone,''));
+      }
+
+      /* Remove phone/emoji artefacts sometimes injected by the table cell. */
+      clientName=clientName.replace(/[☎📞📱]+/g,'').trim();
+
+      if(!clientName){
+        clientName=clientLines[0]||(mcCurrentLang()==='en'?'Customer':'Client');
+      }
+
+      var reception=cell(cells,idxReception);
+      var destination=cell(cells,idxDestination);
+      var total=cell(cells,idxTotal)||'—';
+
+      var payment='';
+      var paymentStatus='';
+      var paymentMethod='';
+      if(idxPayment>=0&&cells[idxPayment]){
+        var paymentLines=linesOf(cells[idxPayment]);
+        var spans=cells[idxPayment].querySelectorAll('span');
+
+        paymentStatus=spans.length
+          ? clean(spans[0].textContent)
+          : (paymentLines[0]||'');
+
+        /* Important : <br> ne produit AUCUN saut de ligne dans
+           .textContent (comportement DOM standard), donc les deux
+           <span> du formateur de paiement ("En attente" puis "Sur
+           place") se retrouvaient collés en un seul texte concaténé
+           ("En attenteSur place") si on essayait de les séparer par
+           ligne. On lit directement le second span, comme pour le
+           premier. */
+        paymentMethod=spans.length>1?clean(spans[1].textContent):'';
+
+        payment=paymentStatus||paymentMethod||cell(cells,idxPayment);
+      }
+
+      var status=cell(cells,idxStatus);
+      var slot=splitSlot(cell(cells,idxSlot));
+
+      record.classList.add('mc-order-ticket-card');
+
+      /* Ensure a status dot exists and carries the proper color. */
+      var dot=record.querySelector(':scope > .mc-mobile-state-dot');
+      if(!dot&&status){
+        var stateColor='neutral';
+        var s=norm(status);
+        if(
+          s.indexOf('annul')!==-1||s.indexOf('cancel')!==-1||
+          s.indexOf('échou')!==-1||s.indexOf('failed')!==-1||
+          s.indexOf('probl')!==-1||s.indexOf('issue')!==-1
+        ) stateColor='red';
+        else if(
+          s.indexOf('confirm')!==-1||s.indexOf('livr')!==-1||
+          s.indexOf('delivered')!==-1||s.indexOf('payé')!==-1||
+          s.indexOf('paid')!==-1||s.indexOf('prête')!==-1||
+          s.indexOf('ready')!==-1
+        ) stateColor='green';
+        else if(
+          s.indexOf('nouv')!==-1||s.indexOf('new')!==-1||
+          s.indexOf('attente')!==-1||s.indexOf('pending')!==-1||
+          s.indexOf('préparation')!==-1||s.indexOf('progress')!==-1
+        ) stateColor='yellow';
+
+        dot=document.createElement('span');
+        dot.className='mc-mobile-state-dot mc-state-'+stateColor;
+        dot.setAttribute('data-tooltip',mcTranslateText(status));
+        dot.setAttribute('aria-label',mcTranslateText(status));
+        record.insertBefore(dot,record.firstChild);
+      }
+
+      var oldSurface=record.querySelector('.mc-order-ticket-surface');
+      if(oldSurface) oldSurface.remove();
+
+      var surface=document.createElement('div');
+      surface.className='mc-order-ticket-surface';
+      surface.setAttribute('role','button');
+      surface.setAttribute('tabindex','0');
+      surface.setAttribute('aria-expanded',record.classList.contains('mc-open')?'true':'false');
+
+      var receptionText=reception||destination||(mcCurrentLang()==='en'?'Order':'Commande');
+      var paymentText=payment||(mcCurrentLang()==='en'?'Pending payment':'Paiement en attente');
+
+      var receiptOrderId=(number.match(/\d+/)||[''])[0];
+      window.MC_ORDER_RECEIPT_DATA=window.MC_ORDER_RECEIPT_DATA||{};
+      if(receiptOrderId){
+        window.MC_ORDER_RECEIPT_DATA[String(receiptOrderId)]={
+          number:number,
+          clientName:clientName,
+          clientPhone:clientPhone,
+          reception:receptionText,
+          destination:destination,
+          total:total,
+          paymentStatus:paymentStatus||payment,
+          paymentMethod:paymentMethod,
+          status:status,
+          date:slot.date,
+          time:slot.time
+        };
+      }
+
+      surface.innerHTML=
+        '<div class="mc-order-ticket-top">'+
+          '<div class="mc-order-ticket-symbol">▤</div>'+
+          '<div class="mc-order-ticket-rule"></div>'+
+          '<div class="mc-order-ticket-copy">'+
+            '<div class="mc-order-ticket-kicker">Ticket</div>'+
+            '<div class="mc-order-ticket-number">'+mcEscape(number)+'</div>'+
+          '</div>'+
+          '<button type="button" class="mc-order-ticket-receipt" data-order-id="'+
+            mcEscape(receiptOrderId)+'" aria-label="'+
+            (mcCurrentLang()==='en'?'Open receipt':'Afficher le reçu')+'">'+
+            '<span aria-hidden="true">⇩</span>'+
+          '</button>'+
+        '</div>'+
+        '<div class="mc-order-client-block">'+
+          '<div class="mc-order-client-name">'+mcEscape(clientName)+'</div>'+
+          (clientPhone?'<div class="mc-order-client-phone">'+mcEscape(clientPhone)+'</div>':'')+
+        '</div>'+
+        '<div class="mc-order-ticket-badges">'+
+          '<span class="mc-order-ticket-badge mc-reception">🛍 '+mcEscape(receptionText)+'</span>'+
+          '<span class="mc-order-ticket-badge mc-payment">'+mcEscape(paymentText)+'</span>'+
+        '</div>'+
+        '<div class="mc-order-ticket-footer">'+
+          '<div class="mc-order-ticket-metric">'+
+            '<div class="mc-order-ticket-label">'+(mcCurrentLang()==='en'?'Total':'Total')+'</div>'+
+            '<div class="mc-order-ticket-total">'+mcEscape(total)+'</div>'+
+          '</div>'+
+          '<div class="mc-order-ticket-metric mc-order-ticket-slot">'+
+            '<div class="mc-order-ticket-label">'+(mcCurrentLang()==='en'?'Time slot':'Créneau')+'</div>'+
+            '<div class="mc-order-ticket-slot-lines">'+
+              '<div class="mc-order-ticket-date"><span class="mc-order-ticket-date-icon">▣</span><span>'+mcEscape(slot.date)+'</span></div>'+
+              '<div class="mc-order-ticket-time"><span class="mc-order-ticket-time-icon">◷</span><span>'+mcEscape(slot.time)+'</span></div>'+
+            '</div>'+
+          '</div>'+
+          '<button type="button" class="mc-order-ticket-more" aria-label="'+
+            (mcCurrentLang()==='en'?'More':'Plus')+'">⋮</button>'+
+        '</div>';
+
+      var genericSummary=record.querySelector('.mc-mobile-card-summary');
+      if(genericSummary) record.insertBefore(surface,genericSummary);
+      else record.insertBefore(surface,record.firstChild);
+
+      /* -------------------------------------------------------
+         No duplicated information when the user opens "⋮".
+         The premium ticket already shows:
+         ticket number, client, phone, reception, payment,
+         total, status (colored dot), date and time.
+         Therefore expanded details only keep extra fields such
+         as Destination + action buttons.
+      ------------------------------------------------------- */
+      var duplicateLabels = [
+        'n°','no.','no','numéro','numero','id',
+        'client','customer',
+        'réception','reception','method',
+        'total',
+        'paiement','payment',
+        'état','etat','statut','status',
+        'créneau','creneau','time slot'
+      ];
+
+      record.querySelectorAll('.mc-mobile-detail-row').forEach(function(detailRow){
+        var labelEl=detailRow.querySelector('.mc-mobile-detail-label');
+        if(!labelEl) return;
+        var label=norm(labelEl.textContent);
+        if(duplicateLabels.indexOf(label)!==-1){
+          detailRow.remove();
+        }
+      });
+
+      /* If no extra fields remain, opening still reveals the useful
+         action buttons without leaving a large empty detail area. */
+      var remainingGrid=record.querySelector('.mc-mobile-card-grid');
+      if(remainingGrid && !remainingGrid.querySelector('.mc-mobile-detail-row')){
+        remainingGrid.style.display='none';
+      }
+
+      var genericMain=record.querySelector('.mc-mobile-card-main');
+
+      function setOpen(open){
+        record.classList.toggle('mc-open',open);
+        if(genericMain) genericMain.setAttribute('aria-expanded',open?'true':'false');
+      }
+
+      function toggleOpen(){
+        setOpen(!record.classList.contains('mc-open'));
+      }
+
+      /* Receipt button: opens the elegant receipt modal sent in the reference.
+         It does NOT expand the card. */
+      var receiptBtn=surface.querySelector('.mc-order-ticket-receipt');
+      if(receiptBtn){
+        receiptBtn.addEventListener('click',function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          var orderId=receiptBtn.dataset.orderId;
+          if(orderId && typeof openOrderTicket==='function'){
+            openOrderTicket(orderId);
+          }
+        });
+      }
+
+      /* Only the 3-dots button expands/collapses extra details. */
+      var moreBtn=surface.querySelector('.mc-order-ticket-more');
+      if(moreBtn){
+        moreBtn.addEventListener('click',function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          toggleOpen();
+        });
+      }
+
+      filterData.push({
+        record:record,
+        reception:norm(reception),
+        payment:norm(payment),
+        status:norm(status),
+        receptionLabel:reception,
+        paymentLabel:payment,
+        statusLabel:status
+      });
+    });
+
+    /* ---------- QUICK FILTERS ---------- */
+    var old=cardsWrap.querySelector('.mc-order-filters');
+    if(old) old.remove();
+    var oldEmpty=cardsWrap.querySelector('.mc-order-no-results');
+    if(oldEmpty) oldEmpty.remove();
+
+    function uniqueLabels(key,labelKey){
+      var seen={};
+      var out=[];
+      filterData.forEach(function(item){
+        var k=item[key],label=item[labelKey];
+        if(k&&!seen[k]){
+          seen[k]=1;
+          out.push({value:k,label:label});
+        }
+      });
+      out.sort(function(a,b){return a.label.localeCompare(b.label,'fr');});
+      return out;
+    }
+
+    var receptions=uniqueLabels('reception','receptionLabel');
+    var payments=uniqueLabels('payment','paymentLabel');
+    var statuses=uniqueLabels('status','statusLabel');
+    var en=mcCurrentLang()==='en';
+
+    function options(items,allText){
+      return '<option value="">'+mcEscape(allText)+'</option>'+
+        items.map(function(item){
+          return '<option value="'+mcEscape(item.value)+'">'+mcEscape(item.label)+'</option>';
+        }).join('');
+    }
+
+    var filters=document.createElement('section');
+    filters.className='mc-order-filters';
+    filters.innerHTML=
+      '<div class="mc-order-filter-head">'+
+        '<div class="mc-order-filter-title">'+
+          '<span class="mc-order-filter-icon">⌘</span>'+
+          (en?'Quick filters':'Filtres rapides')+
+        '</div>'+
+        '<button type="button" class="mc-order-filter-reset">'+
+          (en?'Reset':'Réinitialiser')+
+        '</button>'+
+      '</div>'+
+      '<p class="mc-order-filter-copy">'+
+        (en
+          ?'Quickly find orders by method, payment and status.'
+          :'Repérez vite les commandes par état, paiement et réception.')+
+      '</p>'+
+      '<div class="mc-order-filter-grid">'+
+        '<label class="mc-order-filter-field">'+
+          '<span class="mc-order-filter-label">'+(en?'Method':'Réception')+'</span>'+
+          '<select class="mc-order-filter-select" data-order-filter="reception">'+
+            options(receptions,en?'All methods':'Toutes les méthodes')+
+          '</select>'+
+        '</label>'+
+        '<label class="mc-order-filter-field">'+
+          '<span class="mc-order-filter-label">'+(en?'Payment':'Paiement')+'</span>'+
+          '<select class="mc-order-filter-select" data-order-filter="payment">'+
+            options(payments,en?'All payments':'Tous les paiements')+
+          '</select>'+
+        '</label>'+
+        '<label class="mc-order-filter-field mc-order-filter-field-wide">'+
+          '<span class="mc-order-filter-label">'+(en?'Status':'État')+'</span>'+
+          '<select class="mc-order-filter-select" data-order-filter="status">'+
+            options(statuses,en?'All statuses':'Tous les états')+
+          '</select>'+
+        '</label>'+
+      '</div>'+
+      '<div class="mc-order-filter-result"></div>';
+
+    cardsWrap.insertBefore(filters,cardsWrap.firstChild);
+
+    var empty=document.createElement('div');
+    empty.className='mc-order-no-results';
+    empty.textContent=en?'No order matches these filters.':'Aucune commande ne correspond à ces filtres.';
+    empty.style.display='none';
+    cardsWrap.appendChild(empty);
+
+    var receptionSelect=filters.querySelector('[data-order-filter="reception"]');
+    var paymentSelect=filters.querySelector('[data-order-filter="payment"]');
+    var statusSelect=filters.querySelector('[data-order-filter="status"]');
+    var reset=filters.querySelector('.mc-order-filter-reset');
+    var result=filters.querySelector('.mc-order-filter-result');
+
+    function apply(){
+      var r=norm(receptionSelect.value);
+      var p=norm(paymentSelect.value);
+      var s=norm(statusSelect.value);
+      var visible=0;
+
+      filterData.forEach(function(item){
+        var show=
+          (!r||item.reception===r)&&
+          (!p||item.payment===p)&&
+          (!s||item.status===s);
+        item.record.style.display=show?'':'none';
+        if(show) visible++;
+      });
+
+      result.textContent=en
+        ? visible+(visible===1?' order shown':' orders shown')
+        : visible+(visible===1?' commande affichée':' commandes affichées');
+      empty.style.display=visible===0?'block':'none';
+    }
+
+    [receptionSelect,paymentSelect,statusSelect].forEach(function(select){
+      select.addEventListener('change',apply);
+    });
+
+    reset.addEventListener('click',function(){
+      receptionSelect.value='';
+      paymentSelect.value='';
+      statusSelect.value='';
+      apply();
+    });
+
+    apply();
+    mcApplyLanguage(filters);
   }
 
 
@@ -5288,7 +7533,19 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
     rows.forEach(function(row){
       var cells = Array.prototype.slice.call(row.children);
-      var actionCell = row.querySelector('td:last-child');
+      /* On ne suppose plus que la dernière cellule est celle des actions :
+         selon les droits activés sur cette liste (ici can_edit/can_create
+         désactivés), la dernière cellule réelle peut être "Personnalisation"
+         au lieu des icônes voir/modifier/supprimer — ce qui faisait
+         apparaître son contenu une seconde fois, à la place des actions.
+         On cherche à la place la cellule qui contient vraiment des liens
+         ou boutons d'action — avec un filtre large (n'importe quel lien
+         ou bouton), car SQLAdmin peut utiliser des URLs comme "/details/"
+         plutôt que "/view/", ce qu'un filtre trop strict manquait,
+         faisant disparaître les icônes voir/supprimer. */
+      var actionCell = Array.prototype.slice.call(cells).reverse().find(function(cell){
+        return !!cell.querySelector('a[href], button');
+      }) || null;
 
       var orderRaw = cellText(cells, idxOrder);
       var orderMatch = orderRaw.match(/(\d+)/);
@@ -5362,7 +7619,11 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         }
 
         var metaHtml = '<div class="mc-order-item-meta">';
-        metaHtml += '<span class="mc-order-item-qty">× ' + mcEscape(item.qty || '1') + '</span>';
+        /* La colonne "Quantité" côté admin préfixe déjà la valeur d'un
+           "×" (ex: "× 1") : on le retire avant d'ajouter le nôtre, sinon
+           le badge affichait "× ×1" au lieu de "×1". */
+        var qtyClean = (item.qty || '1').toString().replace(/^[×x]\s*/i, '').trim() || '1';
+        metaHtml += '<span class="mc-order-item-qty">× ' + mcEscape(qtyClean) + '</span>';
         if (item.price) {
           metaHtml += '<span class="mc-order-item-price">' + mcEscape(item.price) + '</span>';
         }
