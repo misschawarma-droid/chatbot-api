@@ -4698,6 +4698,271 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 }
 
 
+
+/* =========================================================
+   MESSAGES — FILTRE STATUT + DATE (DESKTOP UNIQUEMENT)
+   Bloc compact, aligné sur 2 lignes :
+     ligne 1 : les 3 boutons de statut
+     ligne 2 : dates rapides · résultat · réinitialiser
+   Le select SQLAdmin reste présent mais invisible.
+========================================================= */
+@media(min-width:992px){
+
+  .mc-col-desktop-filters[data-mc-key="contactmsg"]{
+    margin:16px 22px 14px!important;
+    padding:14px 16px!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto auto!important;
+    grid-template-areas:
+      "status status status"
+      "date   result reset"!important;
+    align-items:center!important;
+    gap:12px 14px!important;
+    border:1px solid rgba(31,107,45,.10)!important;
+    border-radius:18px!important;
+    background:
+      radial-gradient(circle at 98% 0,rgba(196,125,14,.08),transparent 190px),
+      linear-gradient(135deg,#fbfdf9 0%,#fffaf0 100%)!important;
+    box-shadow:0 8px 20px rgba(18,63,29,.05)!important;
+  }
+
+  /* ---------- LIGNE 1 : STATUT ---------- */
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] .mc-contact-desktop-status-field{
+    grid-area:status!important;
+    flex:none!important;
+    min-width:0!important;
+    display:grid!important;
+    gap:7px!important;
+  }
+
+  .mc-contact-desktop-status-field > span{
+    color:#6f7c73!important;
+    font-size:8.5px!important;
+    font-weight:900!important;
+    letter-spacing:.10em!important;
+    text-transform:uppercase!important;
+  }
+
+  /* Le select reste utilisé par le JavaScript, mais n'est plus visible. */
+  .mc-contact-desktop-status-field > select{
+    display:none!important;
+  }
+
+  .mc-contact-desktop-status-buttons{
+    width:100%;
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:9px;
+  }
+
+  .mc-contact-desktop-status-btn{
+    position:relative;
+    min-width:0;
+    min-height:44px;
+    padding:0 12px;
+    display:flex;
+    align-items:center;
+    gap:9px;
+    overflow:hidden;
+    border:1px solid rgba(31,107,45,.13);
+    border-radius:13px;
+    background:rgba(255,255,255,.92);
+    color:#174623;
+    font-family:Inter,Arial,sans-serif;
+    font-size:11.5px;
+    font-weight:850;
+    cursor:pointer;
+    box-shadow:0 4px 12px rgba(18,63,29,.04);
+    transition:
+      transform .16s ease,
+      border-color .16s ease,
+      background .16s ease,
+      box-shadow .16s ease;
+  }
+
+  .mc-contact-desktop-status-btn:hover{
+    transform:translateY(-1px);
+    border-color:rgba(31,107,45,.28);
+    background:#fffef9;
+    box-shadow:0 8px 18px rgba(18,63,29,.07);
+  }
+
+  .mc-contact-desktop-status-btn.mc-active{
+    border-color:#2b7837;
+    color:#fff;
+    background:linear-gradient(135deg,#1f6b2d,#378d42);
+    box-shadow:0 8px 20px rgba(31,107,45,.18);
+  }
+
+  .mc-contact-status-icon{
+    width:26px;
+    height:26px;
+    flex:0 0 26px;
+    display:grid;
+    place-items:center;
+    border-radius:9px;
+    background:#edf4eb;
+    color:#2a6f35;
+    font-size:13px;
+    font-weight:900;
+  }
+
+  .mc-contact-desktop-status-btn.mc-active .mc-contact-status-icon{
+    background:rgba(255,255,255,.16);
+    color:#fff;
+  }
+
+  .mc-contact-desktop-status-btn.mc-status-new .mc-contact-status-icon{
+    color:#c99208;
+    background:#fff5d7;
+  }
+
+  .mc-contact-desktop-status-btn.mc-status-new.mc-active .mc-contact-status-icon{
+    color:#fff;
+    background:rgba(255,255,255,.16);
+  }
+
+  .mc-contact-status-text{
+    min-width:0;
+    flex:1 1 auto;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    text-align:left;
+  }
+
+  .mc-contact-status-count{
+    min-width:24px;
+    height:22px;
+    padding:0 7px;
+    flex:0 0 auto;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    background:#edf4eb;
+    color:#246b31;
+    font-size:9.5px;
+    font-weight:950;
+  }
+
+  .mc-contact-desktop-status-btn.mc-active .mc-contact-status-count{
+    background:rgba(255,255,255,.20);
+    color:#fff;
+  }
+
+  /* ---------- LIGNE 2 : DATES RAPIDES ---------- */
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] .mc-date-quick-desktop-wrap{
+    grid-area:date!important;
+    flex:none!important;
+    width:auto!important;
+    min-width:0!important;
+    order:0!important;
+  }
+
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] .mc-date-quick-row{
+    gap:6px!important;
+  }
+
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] .mc-date-quick-label{
+    margin-right:4px!important;
+    font-size:8.5px!important;
+  }
+
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] .mc-date-quick-pill{
+    min-height:32px!important;
+    padding:0 12px!important;
+    gap:5px!important;
+    border-radius:999px!important;
+    font-size:9.5px!important;
+  }
+
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] .mc-date-quick-pill .mc-date-count{
+    min-width:17px!important;
+    height:17px!important;
+    font-size:7.5px!important;
+  }
+
+  /* ---------- LIGNE 2 : RÉSULTAT ---------- */
+  .mc-col-desktop-filters[data-mc-key="contactmsg"]
+  > div:not(.mc-contact-desktop-status-field):not(.mc-date-quick-desktop-wrap){
+    grid-area:result!important;
+    justify-self:end!important;
+    min-width:0!important;
+    padding:0!important;
+    color:#77827a!important;
+    font-size:9.5px!important;
+    font-weight:800!important;
+    white-space:nowrap!important;
+  }
+
+  /* ---------- LIGNE 2 : RÉINITIALISER ---------- */
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] > button{
+    grid-area:reset!important;
+    justify-self:end!important;
+    min-height:32px!important;
+    padding:0 14px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    border:1px solid rgba(196,125,14,.22)!important;
+    border-radius:999px!important;
+    background:#fff6e0!important;
+    color:#8c5d00!important;
+    font-size:9.5px!important;
+    font-weight:900!important;
+    white-space:nowrap!important;
+    cursor:pointer!important;
+    box-shadow:none!important;
+    transition:background .16s ease,border-color .16s ease,transform .16s ease!important;
+  }
+
+  .mc-col-desktop-filters[data-mc-key="contactmsg"] > button:hover{
+    background:#ffeec2!important;
+    border-color:rgba(196,125,14,.42)!important;
+    transform:translateY(-1px)!important;
+  }
+}
+
+/* Écrans desktop étroits : résultat + reset passent sous les dates */
+@media(min-width:992px) and (max-width:1279.98px){
+  .mc-col-desktop-filters[data-mc-key="contactmsg"]{
+    grid-template-columns:minmax(0,1fr) auto!important;
+    grid-template-areas:
+      "status status"
+      "date   date"
+      "result reset"!important;
+    gap:11px 12px!important;
+  }
+}
+
+/* Encore plus étroit : boutons de statut plus compacts */
+@media(min-width:992px) and (max-width:1119.98px){
+  .mc-contact-desktop-status-buttons{
+    gap:7px;
+  }
+
+  .mc-contact-desktop-status-btn{
+    min-height:42px;
+    padding:0 10px;
+    gap:7px;
+    font-size:10.5px;
+  }
+
+  .mc-contact-status-icon{
+    width:23px;
+    height:23px;
+    flex-basis:23px;
+    font-size:12px;
+  }
+
+  .mc-contact-status-count{
+    min-width:22px;
+    height:20px;
+    padding:0 6px;
+    font-size:9px;
+  }
+}
+
 /* =========================================================
    FILTRE PLATS PAR CATÉGORIE — DESKTOP
 ========================================================= */
@@ -6139,6 +6404,269 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   .mc-order-list-cards .mc-order-ticket-date,
   .mc-order-list-cards .mc-order-ticket-time{
     white-space:nowrap!important;
+  }
+}
+
+
+
+/* =========================================================
+   DROPDOWN PREMIUM — remplace la liste native des filtres desktop
+   Le <select> reste dans le DOM (masqué) : toute la logique
+   de filtrage existante continue de fonctionner à l'identique.
+========================================================= */
+.mc-fancy-hidden{
+  position:absolute!important;
+  width:1px!important;
+  height:1px!important;
+  padding:0!important;
+  margin:-1px!important;
+  border:0!important;
+  overflow:hidden!important;
+  clip:rect(0 0 0 0)!important;
+  white-space:nowrap!important;
+}
+
+.mc-fancy-select{
+  position:relative;
+  width:100%;
+  min-width:0;
+}
+
+.mc-fancy-trigger{
+  width:100%;
+  min-height:46px;
+  padding:0 14px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:1px solid rgba(31,107,45,.16);
+  border-radius:14px;
+  background:linear-gradient(180deg,#fff,#fffdf7);
+  color:#1e3b25;
+  font-family:Inter,Arial,sans-serif;
+  font-size:12px;
+  font-weight:800;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:0 5px 14px rgba(18,63,29,.045);
+  transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;
+}
+
+.mc-fancy-trigger:hover{
+  border-color:rgba(31,107,45,.30);
+  box-shadow:0 8px 18px rgba(18,63,29,.07);
+}
+
+.mc-fancy-select.mc-open .mc-fancy-trigger{
+  border-color:#2b7837;
+  box-shadow:0 0 0 4px rgba(31,107,45,.09);
+}
+
+/* Pastille d'icône (émoji de l'option, ex: ✨ 🎂) */
+.mc-fancy-icon{
+  width:27px;
+  height:27px;
+  flex:0 0 27px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:#edf4eb;
+  color:#2a6f35;
+  font-size:13px;
+  line-height:1;
+}
+
+.mc-fancy-select.mc-filled .mc-fancy-icon{
+  background:linear-gradient(135deg,#fff3cf,#ffe6a2);
+}
+
+.mc-fancy-value{
+  flex:1 1 auto;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.mc-fancy-caret{
+  flex:0 0 auto;
+  color:#6f8a76;
+  font-size:15px;
+  line-height:1;
+  transition:transform .22s cubic-bezier(.2,.8,.2,1);
+}
+
+.mc-fancy-select.mc-open .mc-fancy-caret{
+  color:#2b7837;
+  transform:rotate(180deg);
+}
+
+/* ---------- PANNEAU ---------- */
+.mc-fancy-panel{
+  position:absolute;
+  left:0;
+  right:0;
+  top:calc(100% + 8px);
+  z-index:1200;
+  max-height:296px;
+  padding:7px;
+  display:none;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  border:1px solid rgba(31,107,45,.14);
+  border-radius:17px;
+  background:
+    radial-gradient(circle at 100% 0,rgba(228,184,63,.13),transparent 150px),
+    linear-gradient(180deg,#fffefa,#fbf7ed);
+  box-shadow:
+    0 22px 48px rgba(18,63,29,.16),
+    inset 0 0 0 1px rgba(255,255,255,.7);
+  scrollbar-width:thin;
+  scrollbar-color:rgba(31,107,45,.34) transparent;
+}
+
+.mc-fancy-select.mc-open .mc-fancy-panel{
+  display:block;
+  animation:mcFancyIn .2s cubic-bezier(.2,.8,.2,1) both;
+}
+
+.mc-fancy-panel::-webkit-scrollbar{width:7px}
+.mc-fancy-panel::-webkit-scrollbar-track{background:transparent}
+.mc-fancy-panel::-webkit-scrollbar-thumb{
+  border-radius:999px;
+  background:rgba(31,107,45,.30);
+}
+
+@keyframes mcFancyIn{
+  from{opacity:0;transform:translateY(-7px) scale(.985)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+
+/* ---------- OPTIONS ---------- */
+.mc-fancy-option{
+  position:relative;
+  width:100%;
+  min-height:42px;
+  padding:0 11px 0 10px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border:0;
+  border-radius:12px;
+  background:transparent;
+  color:#243a29;
+  font-family:Inter,Arial,sans-serif;
+  font-size:11.5px;
+  font-weight:750;
+  text-align:left;
+  cursor:pointer;
+  transition:background .15s ease,color .15s ease,padding-left .15s ease;
+}
+
+.mc-fancy-option + .mc-fancy-option{
+  margin-top:2px;
+}
+
+.mc-fancy-option::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:9px;
+  bottom:9px;
+  width:3px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#2f843b,#d39a00);
+  opacity:0;
+  transition:opacity .15s ease;
+}
+
+.mc-fancy-option:hover,
+.mc-fancy-option.mc-cursor{
+  background:rgba(31,107,45,.07);
+  padding-left:14px;
+}
+
+.mc-fancy-option:hover::before,
+.mc-fancy-option.mc-cursor::before{
+  opacity:1;
+}
+
+.mc-fancy-option.mc-selected{
+  color:#fff;
+  background:linear-gradient(135deg,#1f6b2d,#378d42);
+  box-shadow:0 6px 14px rgba(31,107,45,.16);
+}
+
+.mc-fancy-option.mc-selected::before{opacity:0}
+
+.mc-fancy-option-icon{
+  width:24px;
+  height:24px;
+  flex:0 0 24px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:#edf4eb;
+  color:#2a6f35;
+  font-size:12px;
+  line-height:1;
+}
+
+.mc-fancy-option.mc-selected .mc-fancy-option-icon{
+  background:rgba(255,255,255,.17);
+  color:#fff;
+}
+
+.mc-fancy-option-text{
+  flex:1 1 auto;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.mc-fancy-option-check{
+  flex:0 0 auto;
+  color:#fff;
+  font-size:12px;
+  font-weight:900;
+  opacity:0;
+  transform:scale(.7);
+  transition:opacity .16s ease,transform .16s ease;
+}
+
+.mc-fancy-option.mc-selected .mc-fancy-option-check{
+  opacity:1;
+  transform:scale(1);
+}
+
+/* Séparateur discret sous l'option "Tous" */
+.mc-fancy-option.mc-fancy-all{
+  margin-bottom:5px;
+  padding-bottom:0;
+}
+
+.mc-fancy-option.mc-fancy-all::after{
+  content:"";
+  position:absolute;
+  left:9px;
+  right:9px;
+  bottom:-4px;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(31,107,45,.16),transparent);
+}
+
+/* Le dropdown custom est réservé au desktop */
+@media(max-width:991.98px){
+  .mc-fancy-select{display:none!important}
+  .mc-fancy-hidden{
+    position:static!important;
+    width:100%!important;
+    height:auto!important;
+    padding:initial!important;
+    margin:initial!important;
+    clip:auto!important;
+    overflow:visible!important;
   }
 }
 
@@ -8348,7 +8876,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       pillsHost.innerHTML=mcBuildDateQuickPills(config.modes,cache.selectedDate,counts());
       Array.prototype.slice.call(pillsHost.querySelectorAll('.mc-date-quick-pill')).forEach(function(btn){
         btn.addEventListener('click',function(){
-          cache.selectedDate=btn.dataset.mcDate||'';
+          /* Re-cliquer sur la pilule active la désélectionne et
+             revient à l'état initial (aucun filtre de date). */
+          var value=btn.dataset.mcDate||'';
+          cache.selectedDate=(cache.selectedDate===value)?'':value;
           apply();
         });
       });
@@ -8669,7 +9200,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         datePillsHost.querySelectorAll('.mc-date-quick-pill')
       ).forEach(function(btn){
         btn.addEventListener('click',function(){
-          cache.selectedDate=btn.dataset.mcDate||'';
+          /* Re-cliquer sur la pilule active la désélectionne et
+             revient à l'état initial (aucun filtre de date). */
+          var value=btn.dataset.mcDate||'';
+          cache.selectedDate=(cache.selectedDate===value)?'':value;
           apply();
         });
       });
@@ -9725,6 +10259,164 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
   /* =========================================================
+     DROPDOWN PREMIUM — moteur
+     Construit un menu personnalisé synchronisé avec le <select>
+     natif (qui reste la source de vérité pour le filtrage).
+  ========================================================= */
+  function mcFancySplitLabel(text){
+    var raw = (text || '').toString().trim();
+    var m = raw.match(/^([^\p{L}\p{N}]+)\s*(.+)$/u);
+    if (m && m[1].trim()) {
+      return {icon: m[1].trim(), label: m[2].trim()};
+    }
+    return {icon: '', label: raw};
+  }
+
+  function mcFancySelectRefresh(select){
+    var fancy = select.__mcFancy;
+    if (!fancy) return;
+
+    var options = Array.prototype.slice.call(select.options);
+    var selected = select.value;
+
+    fancy.panel.innerHTML = options.map(function(option, index){
+      var parts = mcFancySplitLabel(option.textContent);
+      var isAll = option.value === '';
+      var icon = parts.icon || (isAll ? '▤' : '•');
+
+      return '<button type="button" role="option" class="mc-fancy-option' +
+          (option.value === selected ? ' mc-selected' : '') +
+          (isAll ? ' mc-fancy-all' : '') +
+        '" data-value="' + mcEscape(option.value) + '" data-index="' + index + '" ' +
+        'aria-selected="' + (option.value === selected ? 'true' : 'false') + '">' +
+          '<span class="mc-fancy-option-icon">' + mcEscape(icon) + '</span>' +
+          '<span class="mc-fancy-option-text">' + mcEscape(parts.label) + '</span>' +
+          '<span class="mc-fancy-option-check">✓</span>' +
+        '</button>';
+    }).join('');
+
+    var current = options.filter(function(option){
+      return option.value === selected;
+    })[0] || options[0];
+
+    var currentParts = mcFancySplitLabel(current ? current.textContent : '');
+    fancy.icon.textContent = currentParts.icon || '▤';
+    fancy.value.textContent = currentParts.label || '—';
+    fancy.wrap.classList.toggle('mc-filled', !!selected);
+
+    Array.prototype.slice.call(
+      fancy.panel.querySelectorAll('.mc-fancy-option')
+    ).forEach(function(button){
+      button.addEventListener('click', function(){
+        select.value = button.dataset.value;
+        select.dispatchEvent(new Event('change', {bubbles:true}));
+        fancy.close();
+        fancy.trigger.focus();
+      });
+    });
+  }
+
+  function mcFancySelectInit(scope){
+    var host = scope || document;
+
+    Array.prototype.slice.call(
+      host.querySelectorAll('.mc-col-desktop-filters select')
+    ).forEach(function(select){
+      /* Les messages contact ont déjà des boutons de statut premium. */
+      if (select.closest('.mc-contact-desktop-status-field')) return;
+      if (select.dataset.mcFancy === '1') return;
+      select.dataset.mcFancy = '1';
+
+      var wrap = document.createElement('div');
+      wrap.className = 'mc-fancy-select';
+
+      var trigger = document.createElement('button');
+      trigger.type = 'button';
+      trigger.className = 'mc-fancy-trigger';
+      trigger.setAttribute('aria-haspopup', 'listbox');
+      trigger.setAttribute('aria-expanded', 'false');
+      trigger.innerHTML =
+        '<span class="mc-fancy-icon"></span>' +
+        '<span class="mc-fancy-value"></span>' +
+        '<span class="mc-fancy-caret">⌄</span>';
+
+      var panel = document.createElement('div');
+      panel.className = 'mc-fancy-panel';
+      panel.setAttribute('role', 'listbox');
+
+      wrap.appendChild(trigger);
+      wrap.appendChild(panel);
+
+      select.classList.add('mc-fancy-hidden');
+      select.insertAdjacentElement('afterend', wrap);
+
+      var fancy = {
+        wrap: wrap,
+        trigger: trigger,
+        panel: panel,
+        icon: trigger.querySelector('.mc-fancy-icon'),
+        value: trigger.querySelector('.mc-fancy-value'),
+        open: function(){
+          /* Un seul menu ouvert à la fois. */
+          document.querySelectorAll('.mc-fancy-select.mc-open').forEach(function(el){
+            if (el !== wrap) el.classList.remove('mc-open');
+          });
+          wrap.classList.add('mc-open');
+          trigger.setAttribute('aria-expanded', 'true');
+
+          var selectedOption = panel.querySelector('.mc-fancy-option.mc-selected');
+          if (selectedOption) {
+            panel.scrollTop = Math.max(0, selectedOption.offsetTop - 60);
+          }
+        },
+        close: function(){
+          wrap.classList.remove('mc-open');
+          trigger.setAttribute('aria-expanded', 'false');
+        }
+      };
+
+      select.__mcFancy = fancy;
+
+      trigger.addEventListener('click', function(event){
+        event.preventDefault();
+        event.stopPropagation();
+        if (wrap.classList.contains('mc-open')) fancy.close();
+        else fancy.open();
+      });
+
+      trigger.addEventListener('keydown', function(event){
+        if (event.key === 'ArrowDown' || event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          fancy.open();
+        }
+      });
+
+      /* Le <select> peut être modifié ailleurs (reset, recherche…). */
+      select.addEventListener('change', function(){
+        mcFancySelectRefresh(select);
+      });
+
+      mcFancySelectRefresh(select);
+    });
+  }
+
+  document.addEventListener('click', function(event){
+    if (event.target.closest('.mc-fancy-select')) return;
+    document.querySelectorAll('.mc-fancy-select.mc-open').forEach(function(el){
+      el.classList.remove('mc-open');
+      var trigger = el.querySelector('.mc-fancy-trigger');
+      if (trigger) trigger.setAttribute('aria-expanded', 'false');
+    });
+  });
+
+  document.addEventListener('keydown', function(event){
+    if (event.key !== 'Escape') return;
+    document.querySelectorAll('.mc-fancy-select.mc-open').forEach(function(el){
+      el.classList.remove('mc-open');
+    });
+  });
+
+  /* =========================================================
      FILTRE GÉNÉRIQUE PAR COLONNE(S) — DESKTOP
      Usine à filtres réutilisable pour les listes qui ont une ou
      plusieurs colonnes à choix limité (ex: Statut, Type). Même
@@ -9827,6 +10519,25 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         selects[f.key] = field.querySelector('select');
       });
 
+      /* Desktop Messages: keep the native select as the internal
+         filtering value, but expose a premium button group instead. */
+      var desktopStatusButtons = null;
+
+      if (
+        options.cacheKey === 'contactmsg' &&
+        selects.status &&
+        window.innerWidth >= 992
+      ){
+        var statusField = selects.status.closest('label');
+        if (statusField) {
+          statusField.classList.add('mc-contact-desktop-status-field');
+
+          desktopStatusButtons = document.createElement('div');
+          desktopStatusButtons.className = 'mc-contact-desktop-status-buttons';
+          statusField.appendChild(desktopStatusButtons);
+        }
+      }
+
       var selectedQuickDate = '';
 
       if(options.dateQuick && dateIndex !== -1){
@@ -9852,6 +10563,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
       var tableResponsive = table.closest('.table-responsive');
       tableResponsive.insertAdjacentElement('beforebegin', filterEl);
+      mcFancySelectInit(filterEl);
 
       var empty = document.createElement('div');
       empty.className = 'mc-col-desktop-empty';
@@ -9874,12 +10586,109 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           var values = cache.options[f.key] || [];
           var select = selects[f.key];
           var current = select.value;
+
           select.innerHTML =
             '<option value="">' + mcEscape(allLabel) + '</option>' +
             values.map(function(v){
               return '<option value="' + mcEscape(v) + '">' + mcEscape(v) + '</option>';
             }).join('');
+
           select.value = current;
+        });
+
+        /* Reconstruit le dropdown premium à partir des options fraîches. */
+        Object.keys(selects).forEach(function(key){
+          mcFancySelectRefresh(selects[key]);
+        });
+
+        /* Contact messages desktop: transform status options into buttons.
+           Counts are calculated on ALL loaded rows, not only the current page. */
+        if (desktopStatusButtons && selects.status) {
+          var statusValues = cache.options.status || [];
+          var counts = {};
+
+          cache.rows.forEach(function(row){
+            var value = clean((row.values || {}).status || '');
+            if (!value) return;
+            counts[value] = (counts[value] || 0) + 1;
+          });
+
+          function statusClass(value){
+            var n = norm(value);
+            if (!n) return 'mc-status-all';
+            if (
+              n === 'nouveau' ||
+              n === 'new' ||
+              n === 'nouvelle'
+            ) return 'mc-status-new';
+            if (
+              n === 'répondu' ||
+              n === 'repondu' ||
+              n === 'replied'
+            ) return 'mc-status-replied';
+            return 'mc-status-other';
+          }
+
+          function statusIcon(value){
+            var n = norm(value);
+            if (!n) return '▤';
+            if (n === 'nouveau' || n === 'new' || n === 'nouvelle') return '●';
+            if (n === 'répondu' || n === 'repondu' || n === 'replied') return '↩';
+            return '•';
+          }
+
+          function makeButton(value, label, count){
+            var btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className =
+              'mc-contact-desktop-status-btn ' + statusClass(value);
+            btn.dataset.value = value || '';
+
+            btn.innerHTML =
+              '<span class="mc-contact-status-icon">' +
+                mcEscape(statusIcon(value)) +
+              '</span>' +
+              '<span class="mc-contact-status-text">' +
+                mcEscape(label) +
+              '</span>' +
+              '<span class="mc-contact-status-count">' +
+                mcEscape(String(count)) +
+              '</span>';
+
+            btn.addEventListener('click', function(){
+              selects.status.value = btn.dataset.value || '';
+              apply();
+            });
+
+            return btn;
+          }
+
+          desktopStatusButtons.innerHTML = '';
+          desktopStatusButtons.appendChild(
+            makeButton('', allLabel, cache.rows.length)
+          );
+
+          statusValues.forEach(function(value){
+            desktopStatusButtons.appendChild(
+              makeButton(value, value, counts[value] || 0)
+            );
+          });
+
+          syncDesktopStatusButtons();
+        }
+      }
+
+      function syncDesktopStatusButtons(){
+        if (!desktopStatusButtons || !selects.status) return;
+        var current = norm(selects.status.value || '');
+
+        Array.prototype.slice.call(
+          desktopStatusButtons.querySelectorAll('.mc-contact-desktop-status-btn')
+        ).forEach(function(btn){
+          btn.classList.toggle(
+            'mc-active',
+            norm(btn.dataset.value || '') === current
+          );
         });
       }
 
@@ -9900,7 +10709,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           quickDateWrap.querySelectorAll('.mc-date-quick-pill')
         ).forEach(function(btn){
           btn.addEventListener('click',function(){
-            selectedQuickDate=btn.dataset.mcDate||'';
+            /* Re-cliquer sur la pilule active la désélectionne et
+               revient à l'état initial (aucun filtre de date). */
+            var value=btn.dataset.mcDate||'';
+            selectedQuickDate=(selectedQuickDate===value)?'':value;
             apply();
           });
         });
@@ -9938,6 +10750,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           restoreOriginal();
           result.textContent = mcCurrentLang() === 'en' ? 'All results' : 'Tous les résultats';
           renderQuickDates();
+          syncDesktopStatusButtons();
           return;
         }
 
@@ -9960,6 +10773,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         result.textContent = resultLabel(filtered.length);
         empty.style.display = filtered.length === 0 ? 'block' : 'none';
         renderQuickDates();
+        syncDesktopStatusButtons();
       }
 
       function computeOptions(rows){
@@ -10037,6 +10851,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         var liveFooter = card.querySelector('.card-footer');
         if (liveFooter) liveFooter.style.display = originalFooterDisplay;
         result.textContent = mcCurrentLang() === 'en' ? 'All results' : 'Tous les résultats';
+        syncDesktopStatusButtons();
       });
 
       loadAll();
