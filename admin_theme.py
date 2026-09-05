@@ -5781,6 +5781,54 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   touch-action:auto!important;
 }
 
+
+
+/* =========================================================
+   COMMANDES — IPHONE / TÉLÉPHONE
+   Une seule commande par ligne pour éviter les cartes écrasées.
+   Les autres listes conservent leur organisation actuelle.
+========================================================= */
+@media(max-width:575.98px){
+
+  .card.mc-mobile-card-mode .mc-mobile-cards.mc-order-list-cards{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    gap:12px!important;
+    padding:12px 10px 18px!important;
+    align-items:start!important;
+  }
+
+  .card.mc-mobile-card-mode
+  .mc-mobile-cards.mc-order-list-cards
+  > .mc-order-ticket-card{
+    grid-column:1!important;
+    width:100%!important;
+    max-width:none!important;
+    min-width:0!important;
+  }
+
+  .mc-order-list-cards .mc-order-ticket-surface{
+    width:100%!important;
+    min-height:255px!important;
+    padding:14px!important;
+  }
+
+  .mc-order-list-cards .mc-order-ticket-footer{
+    grid-template-columns:minmax(80px,.8fr) minmax(130px,1.2fr) 34px!important;
+    gap:10px!important;
+  }
+
+  .mc-order-list-cards .mc-order-ticket-label{
+    white-space:nowrap!important;
+    word-break:normal!important;
+  }
+
+  .mc-order-list-cards .mc-order-ticket-date,
+  .mc-order-list-cards .mc-order-ticket-time{
+    white-space:nowrap!important;
+  }
+}
+
 </style>
 
 <script id="miss-chawarma-admin-script">
@@ -7055,6 +7103,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     var path=window.location.pathname.replace(/\/+$/,'');
     if(path!=='/admin/order/list') return;
     if(!card||!cardsWrap) return;
+
+    /* Classe dédiée à la liste des commandes : sur téléphone,
+       une commande doit occuper toute la ligne. */
+    cardsWrap.classList.add('mc-order-list-cards');
 
     var table=card.querySelector('.table-responsive table');
     if(!table) return;
