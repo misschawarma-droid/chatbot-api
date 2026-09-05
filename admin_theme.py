@@ -754,103 +754,164 @@ ORDER_TICKET_MODAL_HTML = """
     var wanted=String(orderId||'').replace(/\D/g,'');
     if(!wanted) return [];
 
+    /* Cache: reopening the same receipt is immediate. */
+    window.MC_ORDER_ITEM_EXTRAS_CACHE =
+      window.MC_ORDER_ITEM_EXTRAS_CACHE || {};
+
+    if(
+      Object.prototype.hasOwnProperty.call(
+        window.MC_ORDER_ITEM_EXTRAS_CACHE,
+        wanted
+      )
+    ){
+      return window.MC_ORDER_ITEM_EXTRAS_CACHE[wanted];
+    }
+
     function clean(v){
       return (v||'').toString().replace(/\s+/g,' ').trim();
     }
+
     function norm(v){
       return clean(v).toLowerCase();
     }
 
-    var collected=[];
-    var seenKeys={};
+    function extractFromHtml(html){
+      var parsed=new DOMParser().parseFromString(html,'text/html');
+      var table=parsed.querySelector('.table-responsive table, table');
 
-    /* Same-origin admin page: authenticated browser session is reused.
-       We scan pages until the requested order is found and pagination ends. */
-    for(var page=1;page<=20;page++){
-      var url='/admin/order-item/list?pageSize=100&page='+page;
+      if(!table){
+        return {items:[],rowCount:0};
+      }
 
+      var headers=Array.prototype.slice.call(
+        table.querySelectorAll('thead th')
+      ).map(function(th){
+        return norm(th.textContent);
+      });
+
+      function colIndex(names){
+        for(var i=0;i<headers.length;i++){
+          if(names.indexOf(headers[i])!==-1) return i;
+        }
+        return -1;
+      }
+
+      var idxOrder=colIndex(['commande','order']);
+      var idxDish=colIndex(['plat','dish']);
+      var idxQty=colIndex(['quantité','quantity']);
+      var idxPrice=colIndex(['prix unitaire','unit price']);
+      var idxRemoved=colIndex(['sans','removed','without']);
+      var idxChoices=colIndex(['personnalisation','customization']);
+
+      if(idxOrder===-1 || idxDish===-1){
+        return {items:[],rowCount:0};
+      }
+
+      var rows=Array.prototype.slice.call(
+        table.querySelectorAll('tbody tr')
+      );
+
+      var items=[];
+      var seen={};
+
+      rows.forEach(function(row){
+        var cells=Array.prototype.slice.call(row.children);
+
+        function cellText(idx){
+          if(idx<0 || !cells[idx]) return '';
+          var value=clean(cells[idx].textContent);
+          return (value==='—' || value==='-') ? '' : value;
+        }
+
+        var rawOrder=cellText(idxOrder);
+        var matches=rawOrder.match(/\d+/g) || [];
+
+        /* Exact order id only, so "2" does not accidentally match "20". */
+        var belongs=matches.some(function(v){
+          return String(parseInt(v,10))===String(parseInt(wanted,10));
+        });
+
+        if(!belongs) return;
+
+        var item={
+          dish:cellText(idxDish),
+          qty:cellText(idxQty)||'1',
+          price:cellText(idxPrice),
+          removed:cellText(idxRemoved),
+          customization:cellText(idxChoices)
+        };
+
+        var key=
+          norm(item.dish)+'|'+
+          norm(item.qty)+'|'+
+          norm(item.price)+'|'+
+          norm(item.removed)+'|'+
+          norm(item.customization);
+
+        if(!seen[key]){
+          seen[key]=1;
+          items.push(item);
+        }
+      });
+
+      return {
+        items:items,
+        rowCount:rows.length
+      };
+    }
+
+    async function loadUrl(url){
       try{
         var response=await fetch(url,{
           credentials:'same-origin',
           headers:{'X-Requested-With':'XMLHttpRequest'}
         });
 
-        if(!response.ok) break;
-
-        var html=await response.text();
-        var parsed=new DOMParser().parseFromString(html,'text/html');
-        var table=parsed.querySelector('.table-responsive table, table');
-        if(!table) break;
-
-        var headers=Array.prototype.slice.call(
-          table.querySelectorAll('thead th')
-        ).map(function(th){return norm(th.textContent);});
-
-        function colIndex(names){
-          for(var i=0;i<headers.length;i++){
-            if(names.indexOf(headers[i])!==-1) return i;
-          }
-          return -1;
+        if(!response.ok){
+          return {items:[],rowCount:0};
         }
 
-        var idxOrder=colIndex(['commande','order']);
-        var idxDish=colIndex(['plat','dish']);
-        var idxQty=colIndex(['quantité','quantity']);
-        var idxPrice=colIndex(['prix unitaire','unit price']);
-        var idxRemoved=colIndex(['sans','removed','without']);
-        var idxChoices=colIndex(['personnalisation','customization']);
-
-        if(idxOrder===-1||idxDish===-1) break;
-
-        var rows=Array.prototype.slice.call(table.querySelectorAll('tbody tr'));
-        if(!rows.length) break;
-
-        var foundOnPage=0;
-
-        rows.forEach(function(row){
-          var cells=Array.prototype.slice.call(row.children);
-
-          function cellText(idx){
-            if(idx<0||!cells[idx]) return '';
-            var value=clean(cells[idx].textContent);
-            return (value==='—'||value==='-')?'':value;
-          }
-
-          var rawOrder=cellText(idxOrder);
-          var orderMatch=rawOrder.match(/(\d+)/);
-          var rowOrder=orderMatch?orderMatch[1]:'';
-
-          if(rowOrder!==wanted) return;
-
-          foundOnPage++;
-
-          var item={
-            dish:cellText(idxDish),
-            qty:cellText(idxQty)||'1',
-            price:cellText(idxPrice),
-            removed:cellText(idxRemoved),
-            customization:cellText(idxChoices)
-          };
-
-          var key=norm(item.dish)+'|'+norm(item.qty)+'|'+norm(item.removed)+'|'+norm(item.customization);
-          if(!seenKeys[key]){
-            seenKeys[key]=1;
-            collected.push(item);
-          }
-        });
-
-        /* With 100/page, fewer than 100 rows means there is no next page.
-           If we already found the order, no need to continue after that page. */
-        if(foundOnPage>0 || rows.length<100) break;
-
+        return extractFromHtml(await response.text());
       }catch(err){
+        return {items:[],rowCount:0};
+      }
+    }
+
+    /* FAST PATH:
+       Ask SQLAdmin to search the order id first.
+       On most installations this finds the order in a single request. */
+    var fastUrl=
+      '/admin/order-item/list?pageSize=100&page=1&search='+
+      encodeURIComponent(wanted);
+
+    var fastResult=await loadUrl(fastUrl);
+
+    if(fastResult.items.length){
+      window.MC_ORDER_ITEM_EXTRAS_CACHE[wanted]=fastResult.items;
+      return fastResult.items;
+    }
+
+    /* SAFE FALLBACK:
+       If this SQLAdmin search does not search the "Commande" column,
+       keep the reliable paginated scan. */
+    for(var page=1;page<=20;page++){
+      var result=await loadUrl(
+        '/admin/order-item/list?pageSize=100&page='+page
+      );
+
+      if(result.items.length){
+        window.MC_ORDER_ITEM_EXTRAS_CACHE[wanted]=result.items;
+        return result.items;
+      }
+
+      if(result.rowCount<100){
         break;
       }
     }
 
-    return collected;
+    window.MC_ORDER_ITEM_EXTRAS_CACHE[wanted]=[];
+    return [];
   }
-
 
   async function mcUpgradeOrderTicketFrame(orderId){
     var iframe = document.getElementById('order-ticket-iframe');
@@ -2230,18 +2291,33 @@ MISS_CHAWARMA_ADMIN_SCRIPT = r'''
   transition:.2s ease;
 }
 
+.mc-day-close{
+  position:relative;
+  z-index:6;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+
 .mc-day-close:hover{
   color:white;
   background:var(--mc-green);
   transform:rotate(8deg);
 }
 
+.mc-day-dialog-header{
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+
 .mc-day-dialog-body{
   flex:1 1 auto !important;
   min-height:0 !important;
-  overflow-y:scroll !important;
-  overflow-x:hidden;
-  overscroll-behavior:contain;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  overscroll-behavior-y:contain !important;
+  -webkit-overflow-scrolling:touch !important;
+  touch-action:pan-y !important;
   padding:16px 20px 20px;
   scrollbar-width:thin;
   scrollbar-color:rgba(31,107,45,.48) transparent;
@@ -2720,8 +2796,13 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
   .mc-day-dialog{
     width:100%!important;
+    height:calc(100vh - 16px)!important;
+    height:calc(100dvh - 16px)!important;
     max-height:calc(100vh - 16px)!important;
+    max-height:calc(100dvh - 16px)!important;
+    min-height:0!important;
     border-radius:18px!important;
+    overflow:hidden!important;
   }
 
   .mc-day-dialog-header{
@@ -6297,7 +6378,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     '<section class="mc-stats-grid"><article class="mc-stat-card"><div class="mc-stat-icon">🛍</div><div class="mc-stat-value" data-stat="orders">—</div><div class="mc-stat-label">Commandes enregistrées</div></article><article class="mc-stat-card"><div class="mc-stat-icon">🍽</div><div class="mc-stat-value" data-stat="tables">—</div><div class="mc-stat-label">Réservations de tables</div></article><article class="mc-stat-card"><div class="mc-stat-icon">🥂</div><div class="mc-stat-value" data-stat="events">—</div><div class="mc-stat-label">Événements privés</div></article><article class="mc-stat-card"><div class="mc-stat-icon">✉</div><div class="mc-stat-value" data-stat="messages">—</div><div class="mc-stat-label">Messages non lus</div></article></section>'+
     '<section class="mc-calendar-panel"><div class="mc-calendar-header"><div><div class="mc-calendar-title">Calendrier des réservations</div><div class="mc-calendar-subtitle">Cliquez sur une journée pour afficher ses réservations de tables et ses événements.</div><div class="mc-calendar-legend"><span class="mc-calendar-legend-item mc-table"><span class="mc-calendar-legend-dot"></span>Tables</span><span class="mc-calendar-legend-item mc-event"><span class="mc-calendar-legend-dot"></span>Événements</span></div></div><div class="mc-calendar-controls"><button class="mc-calendar-nav" id="mc-calendar-prev" type="button" aria-label="Mois précédent">‹</button><div class="mc-calendar-month" id="mc-calendar-month"></div><button class="mc-calendar-nav" id="mc-calendar-next" type="button" aria-label="Mois suivant">›</button></div></div><div class="mc-calendar-weekdays"><div class="mc-calendar-weekday">Lun</div><div class="mc-calendar-weekday">Mar</div><div class="mc-calendar-weekday">Mer</div><div class="mc-calendar-weekday">Jeu</div><div class="mc-calendar-weekday">Ven</div><div class="mc-calendar-weekday">Sam</div><div class="mc-calendar-weekday">Dim</div></div><div class="mc-calendar-grid" id="mc-calendar-grid"><div class="mc-calendar-loading">Chargement du calendrier…</div></div><div class="mc-calendar-footer"><span>Cliquez sur un jour contenant un badge vert.</span><span class="mc-calendar-total">Tables : <strong id="mc-calendar-table-total">0</strong>&nbsp;&nbsp;·&nbsp;&nbsp;Événements : <strong id="mc-calendar-event-total">0</strong></span></div></section>'+
     '<section class="mc-dashboard-bottom"><div class="mc-panel"><div class="mc-panel-title">Accès rapides</div><div class="mc-panel-copy">Les actions les plus utilisées par votre équipe.</div><div class="mc-quick-grid"><a class="mc-quick-link" href="/admin/order/list"><span>🛍</span><span>Gérer les commandes</span></a><a class="mc-quick-link" href="/admin/dish/list"><span>🍴</span><span>Modifier les plats</span></a><a class="mc-quick-link" href="/admin/table-reservation/list"><span>🪑</span><span>Voir les réservations</span></a><a class="mc-quick-link" href="/admin/contact-message/list"><span>✉</span><span>Lire les messages</span></a></div></div><div class="mc-panel"><div class="mc-panel-title">Aujourd’hui</div><div class="mc-panel-copy">Une belle journée commence avec une équipe bien organisée.</div><div class="mc-clock" id="mc-dashboard-clock">--:--</div><div class="mc-date" id="mc-dashboard-date"></div></div></section>'+
-    '<div class="mc-day-modal" id="mc-day-modal" aria-hidden="true"><div class="mc-day-dialog" role="dialog" aria-modal="true"><div class="mc-day-dialog-header"><div><div class="mc-day-dialog-eyebrow">Réservations de la journée</div><div class="mc-day-dialog-title" id="mc-day-dialog-title"></div></div><button class="mc-day-close" id="mc-day-close" type="button" aria-label="Fermer">×</button></div><div class="mc-day-dialog-body" id="mc-day-dialog-body"></div></div></div></main>';
+    '<div class="mc-day-modal" id="mc-day-modal" aria-hidden="true"><div class="mc-day-dialog" role="dialog" aria-modal="true"><div class="mc-day-dialog-header"><div><div class="mc-day-dialog-eyebrow">Réservations de la journée</div><div class="mc-day-dialog-title" id="mc-day-dialog-title"></div></div><button class="mc-day-close" id="mc-day-close" type="button" aria-label="Fermer" onclick="mcCloseDayModal()">×</button></div><div class="mc-day-dialog-body" id="mc-day-dialog-body"></div></div></div></main>';
   }
 
   var mcCalendarCursor = new Date();
@@ -6327,10 +6408,18 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       title.textContent = mcFormatDayTitle(dateKey);
 
       body.innerHTML = '<div class="mc-day-empty">Chargement des réservations…</div>';
+      body.scrollTop = 0;
       modal.classList.add("mc-open");
       modal.setAttribute("aria-hidden", "false");
-      document.body.dataset.mcPreviousOverflow = document.body.style.overflow || "";
+      document.body.dataset.mcPreviousOverflow =
+          document.body.style.overflow || "";
+
+      document.documentElement.dataset.mcPreviousOverflow =
+          document.documentElement.style.overflow || "";
+
       document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+
       mcApplyLanguage(body);
 
       fetch("/admin-calendar/day?date=" + encodeURIComponent(dateKey), {
@@ -6467,10 +6556,18 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   function mcCloseDayModal() {
       var modal = document.getElementById("mc-day-modal");
       if (!modal) return;
+
       modal.classList.remove("mc-open");
       modal.setAttribute("aria-hidden", "true");
-      document.body.style.overflow = document.body.dataset.mcPreviousOverflow || "";
+
+      document.body.style.overflow =
+          document.body.dataset.mcPreviousOverflow || "";
+
+      document.documentElement.style.overflow =
+          document.documentElement.dataset.mcPreviousOverflow || "";
+
       delete document.body.dataset.mcPreviousOverflow;
+      delete document.documentElement.dataset.mcPreviousOverflow;
   }
 
   function mcRenderCalendar() {
