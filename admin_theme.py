@@ -6276,16 +6276,79 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       }
     });
 
-    var path=location.pathname.replace(/\/+$/,'')||'/';
-    function isActive(item){
-      if(item.label==='Tableau de bord') return path==='/admin';
-      if(!item.href || item.href==='#') return false;
-      var clean=item.href.split('?')[0].replace(/\/+$/,'');
-      return clean && path.indexOf(clean.replace(/\/list$/,''))===0;
+    function mcNormalizeAdminPath(value){
+      var raw=(value||'').toString();
+      try{
+        raw=new URL(raw,window.location.origin).pathname;
+      }catch(err){
+        raw=raw.split('?')[0].split('#')[0];
+      }
+      raw=raw.replace(/\/+$/,'');
+      return raw||'/';
     }
 
+    function mcSidebarSectionFromPath(value){
+      var path=mcNormalizeAdminPath(value);
+
+      if(path==='/admin') return 'dashboard';
+
+      /* IMPORTANT:
+         order-item must be checked BEFORE order,
+         otherwise /admin/order-item/... would also match "order". */
+      if(
+        /^\/admin\/order-item(?:\/|$)/.test(path) ||
+        /^\/admin\/order_item(?:\/|$)/.test(path)
+      ) return 'order-item';
+
+      if(/^\/admin\/order(?:\/|$)/.test(path)) return 'order';
+
+      if(
+        /^\/admin\/table-reservation(?:\/|$)/.test(path) ||
+        /^\/admin\/table_reservation(?:\/|$)/.test(path)
+      ) return 'table-reservation';
+
+      if(
+        /^\/admin\/event-reservation(?:\/|$)/.test(path) ||
+        /^\/admin\/event_reservation(?:\/|$)/.test(path)
+      ) return 'event-reservation';
+
+      if(
+        /^\/admin\/contact-message(?:\/|$)/.test(path) ||
+        /^\/admin\/contact_message(?:\/|$)/.test(path)
+      ) return 'contact-message';
+
+      if(/^\/admin\/category(?:\/|$)/.test(path)) return 'category';
+      if(/^\/admin\/dish(?:\/|$)/.test(path)) return 'dish';
+
+      return '';
+    }
+
+    function mcSidebarSectionFromItem(item){
+      if(item.label==='Tableau de bord') return 'dashboard';
+
+      var hrefSection=mcSidebarSectionFromPath(item.href);
+      if(hrefSection) return hrefSection;
+
+      var label=(item.label||'').toLowerCase();
+      if(label.indexOf('articles command')!==-1) return 'order-item';
+      if(label.indexOf('commande')!==-1) return 'order';
+      if(label.indexOf('réservation')!==-1) return 'table-reservation';
+      if(label.indexOf('événement')!==-1) return 'event-reservation';
+      if(label.indexOf('message')!==-1) return 'contact-message';
+      if(label.indexOf('catégorie')!==-1) return 'category';
+      if(label.indexOf('plat')!==-1) return 'dish';
+
+      return '';
+    }
+
+    var currentSidebarSection=mcSidebarSectionFromPath(window.location.pathname);
+
     var menuHtml=items.map(function(item){
-      return '<a class="mc-sidebar-link'+(isActive(item)?' mc-active':'')+'" href="'+item.href+'">'+
+      var itemSection=mcSidebarSectionFromItem(item);
+      var active=itemSection && itemSection===currentSidebarSection;
+
+      return '<a class="mc-sidebar-link'+(active?' mc-active':'')+'" '+
+        'data-mc-sidebar-section="'+itemSection+'" href="'+item.href+'">'+
         '<span class="mc-sidebar-icon">'+item.icon+'</span>'+
         '<span>'+item.label+'</span>'+
       '</a>';
@@ -6308,7 +6371,58 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       '</div>';
 
     nav.dataset.mcSidebarBuilt='1';
+    mcUpdateSidebarActiveLink();
   }
+
+  /* =========================================================
+     SIDEBAR — PAGE ACTIVE PERSISTANTE
+     Garde la bonne section sélectionnée sur list/view/edit/create
+     et après retour navigateur / restauration de page.
+  ========================================================= */
+  function mcUpdateSidebarActiveLink(){
+    var links=document.querySelectorAll('.mc-sidebar-link');
+    if(!links.length) return;
+
+    var path=(window.location.pathname||'').replace(/\/+$/,'')||'/';
+    var section='';
+
+    if(path==='/admin'){
+      section='dashboard';
+    }else if(/^\/admin\/order-item(?:\/|$)/.test(path) || /^\/admin\/order_item(?:\/|$)/.test(path)){
+      section='order-item';
+    }else if(/^\/admin\/order(?:\/|$)/.test(path)){
+      section='order';
+    }else if(/^\/admin\/table-reservation(?:\/|$)/.test(path) || /^\/admin\/table_reservation(?:\/|$)/.test(path)){
+      section='table-reservation';
+    }else if(/^\/admin\/event-reservation(?:\/|$)/.test(path) || /^\/admin\/event_reservation(?:\/|$)/.test(path)){
+      section='event-reservation';
+    }else if(/^\/admin\/contact-message(?:\/|$)/.test(path) || /^\/admin\/contact_message(?:\/|$)/.test(path)){
+      section='contact-message';
+    }else if(/^\/admin\/category(?:\/|$)/.test(path)){
+      section='category';
+    }else if(/^\/admin\/dish(?:\/|$)/.test(path)){
+      section='dish';
+    }
+
+    links.forEach(function(link){
+      var active=(link.dataset.mcSidebarSection||'')===section;
+      link.classList.toggle('mc-active',active);
+
+      if(active){
+        link.setAttribute('aria-current','page');
+      }else{
+        link.removeAttribute('aria-current');
+      }
+    });
+  }
+
+  window.addEventListener('pageshow',function(){
+    mcUpdateSidebarActiveLink();
+  });
+
+  window.addEventListener('popstate',function(){
+    mcUpdateSidebarActiveLink();
+  });
 
   /* =========================================================
      TOPBAR
@@ -9477,6 +9591,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
   function init(){
     mcBuildCustomSidebar();
+    mcUpdateSidebarActiveLink();
     createTopbar();
     initMobileNav();
     mcHideTableReservationSlots();
