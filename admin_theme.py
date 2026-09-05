@@ -4224,6 +4224,238 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 }
 
 
+
+/* =========================================================
+   FILTRES RAPIDES PAR DATE — TOUTES TAILLES
+   Tables / Événements / Messages
+========================================================= */
+.mc-date-quick-row{
+  width:100%;
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:7px;
+}
+
+.mc-date-quick-label{
+  margin-right:2px;
+  color:#77827a;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.mc-date-quick-pill{
+  min-height:34px;
+  padding:0 13px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  border:1px solid rgba(31,107,45,.14);
+  border-radius:999px;
+  background:#fff;
+  color:#314a36;
+  font-size:10px;
+  font-weight:800;
+  white-space:nowrap;
+  cursor:pointer;
+  transition:background .15s ease,color .15s ease,border-color .15s ease,transform .15s ease;
+}
+
+.mc-date-quick-pill:hover{
+  border-color:rgba(31,107,45,.30);
+  background:#f4f9f2;
+  transform:translateY(-1px);
+}
+
+.mc-date-quick-pill.mc-active{
+  border-color:var(--mc-green);
+  background:linear-gradient(135deg,var(--mc-green),var(--mc-green-2));
+  color:#fff;
+  box-shadow:0 6px 14px rgba(31,107,45,.14);
+}
+
+.mc-date-quick-pill .mc-date-count{
+  min-width:19px;
+  height:19px;
+  padding:0 5px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:rgba(31,107,45,.08);
+  color:var(--mc-green);
+  font-size:8px;
+  font-weight:900;
+}
+
+.mc-date-quick-pill.mc-active .mc-date-count{
+  background:rgba(255,255,255,.18);
+  color:#fff;
+}
+
+.mc-mobile-quickdate-filters{
+  grid-column:1/-1!important;
+  margin:0 0 2px;
+  padding:11px;
+  display:grid;
+  gap:9px;
+  border:1px solid rgba(31,107,45,.10);
+  border-radius:15px;
+  background:linear-gradient(135deg,#f8fbf6,#fff9ed);
+}
+
+.mc-mobile-quickdate-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.mc-mobile-quickdate-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  color:var(--mc-dark);
+  font-size:11px;
+  font-weight:850;
+}
+
+.mc-mobile-quickdate-title::before{
+  content:"◷";
+  width:25px;
+  height:25px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:#edf4eb;
+  color:var(--mc-green);
+  font-size:14px;
+}
+
+.mc-mobile-quickdate-reset{
+  flex:0 0 auto;
+  min-height:32px;
+  padding:0 11px;
+  border:1px solid rgba(196,125,14,.28);
+  border-radius:11px;
+  background:#fff9eb;
+  color:#8a5a00;
+  font-size:8.5px;
+  font-weight:900;
+  cursor:pointer;
+  transition:.15s ease;
+}
+
+.mc-mobile-quickdate-reset:hover{
+  background:#fff1c8;
+  border-color:rgba(196,125,14,.48);
+  transform:translateY(-1px);
+}
+
+.mc-mobile-quickdate-result{
+  color:#738078;
+  font-size:8.5px;
+  font-weight:700;
+}
+
+@media(max-width:575.98px){
+  /* Téléphone : aucun bouton ne déborde ni ne se coupe.
+     Les filtres passent automatiquement en grille 2 colonnes. */
+  .mc-mobile-quickdate-filters{
+    width:100%!important;
+    min-width:0!important;
+    padding:10px!important;
+    overflow:hidden!important;
+  }
+
+  .mc-mobile-quickdate-head{
+    min-width:0!important;
+    gap:7px!important;
+  }
+
+  .mc-mobile-quickdate-title{
+    min-width:0!important;
+    font-size:10.5px!important;
+    white-space:normal!important;
+  }
+
+  .mc-mobile-quickdate-reset{
+    min-height:30px!important;
+    padding:0 8px!important;
+    font-size:7.8px!important;
+    border-radius:9px!important;
+  }
+
+  .mc-date-quick-row{
+    width:100%!important;
+    min-width:0!important;
+    display:grid!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    overflow:visible!important;
+    padding:0!important;
+  }
+
+  .mc-date-quick-label{
+    display:none!important;
+  }
+
+  .mc-date-quick-pill{
+    width:100%!important;
+    min-width:0!important;
+    min-height:34px!important;
+    padding:0 8px!important;
+    display:flex!important;
+    justify-content:center!important;
+    gap:5px!important;
+    overflow:hidden!important;
+    border-radius:11px!important;
+    font-size:8.8px!important;
+    line-height:1.1!important;
+    white-space:nowrap!important;
+    text-overflow:ellipsis!important;
+  }
+
+  .mc-date-quick-pill .mc-date-count{
+    flex:0 0 auto!important;
+    min-width:18px!important;
+    height:18px!important;
+    padding:0 4px!important;
+    font-size:7.5px!important;
+  }
+
+  .mc-mobile-quickdate-result{
+    font-size:8.5px!important;
+    line-height:1.3!important;
+  }
+}
+
+@media(max-width:380px){
+  .mc-mobile-quickdate-filters{
+    padding:9px!important;
+  }
+
+  .mc-date-quick-row{
+    gap:6px!important;
+  }
+
+  .mc-date-quick-pill{
+    min-height:32px!important;
+    padding:0 6px!important;
+    font-size:8.2px!important;
+  }
+
+  .mc-date-quick-pill .mc-date-count{
+    min-width:17px!important;
+    height:17px!important;
+    font-size:7px!important;
+  }
+}
+
+
 /* =========================================================
    FILTRES ÉVÉNEMENTS — MOBILE
    Type d'événement + statut, générés depuis les données visibles.
@@ -7299,6 +7531,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       updateSelectionUI();
       mcInitEventMobileFilters(card, cardsWrap);
       mcInitDishMobileFilters(card, cardsWrap);
+      mcInitUniversalMobileDateFilters(card, cardsWrap);
       mcInitContactMessageMobileFilters(card, cardsWrap);
       mcInitOrderMobileExperience(card, cardsWrap);
       mcGroupOrderItemCards(card, cardsWrap);
@@ -7932,6 +8165,314 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 
 
+
+  /* =========================================================
+     OUTILS FILTRE DATE — rapides et sans boucle de pagination
+  ========================================================= */
+  function mcParseAdminDate(value){
+    var raw=(value||'').toString().replace(/\s+/g,' ').trim();
+    if(!raw) return null;
+
+    var m=raw.match(/(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})/);
+    if(m){
+      var d1=new Date(Number(m[1]),Number(m[2])-1,Number(m[3]));
+      if(!isNaN(d1.getTime())) return d1;
+    }
+
+    m=raw.match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})/);
+    if(m){
+      var d2=new Date(Number(m[3]),Number(m[2])-1,Number(m[1]));
+      if(!isNaN(d2.getTime())) return d2;
+    }
+
+    return null;
+  }
+
+  function mcDateOnly(date){
+    if(!date) return null;
+    return new Date(date.getFullYear(),date.getMonth(),date.getDate());
+  }
+
+  function mcDateMatchesQuick(value,mode){
+    if(!mode) return true;
+
+    var date=mcDateOnly(mcParseAdminDate(value));
+    if(!date) return false;
+
+    var today=mcDateOnly(new Date());
+    var tomorrow=new Date(today);
+    tomorrow.setDate(tomorrow.getDate()+1);
+
+    if(mode==='today') return date.getTime()===today.getTime();
+    if(mode==='tomorrow') return date.getTime()===tomorrow.getTime();
+
+    if(mode==='week'){
+      var end=new Date(today);
+      end.setDate(end.getDate()+6);
+      return date>=today && date<=end;
+    }
+
+    if(mode==='upcoming') return date>=today;
+
+    return true;
+  }
+
+  function mcQuickDateLabel(mode){
+    var en=mcCurrentLang()==='en';
+    var labels={
+      all:en?'All':'Tous',
+      today:en?'Today':"Aujourd’hui",
+      tomorrow:en?'Tomorrow':'Demain',
+      week:en?'This week':'Cette semaine',
+      upcoming:en?'Upcoming':'À venir'
+    };
+    return labels[mode]||mode;
+  }
+
+  function mcBuildDateQuickPills(modes,selected,counts){
+    return '<div class="mc-date-quick-row">'+
+      '<span class="mc-date-quick-label">'+(mcCurrentLang()==='en'?'Date':'Date')+'</span>'+
+      modes.map(function(mode){
+        var value=mode==='all'?'':mode;
+        var active=(selected||'')===value;
+        var count=(counts&&Object.prototype.hasOwnProperty.call(counts,mode))?counts[mode]:null;
+        return '<button type="button" class="mc-date-quick-pill'+(active?' mc-active':'')+
+          '" data-mc-date="'+mcEscape(value)+'">'+
+          mcEscape(mcQuickDateLabel(mode))+
+          (count!==null?'<span class="mc-date-count">'+count+'</span>':'')+
+        '</button>';
+      }).join('')+
+    '</div>';
+  }
+
+  /* Table reservations + contact messages.
+     One request with a large pageSize, then filtering is instant in memory. */
+  function mcInitUniversalMobileDateFilters(card,cardsWrap){
+    if(window.innerWidth>991.98) return;
+    if(!card||!cardsWrap) return;
+    if(window.__mcMobileQuickDateBuilding) return;
+
+    var path=window.location.pathname.replace(/\/+$/,'');
+    var config=null;
+
+    if(path==='/admin/table-reservation/list'){
+      config={
+        key:'tableres',
+        title:mcCurrentLang()==='en'?'Quick dates':'Dates rapides',
+        dateMatches:['date','créneau','creneau','reservation date','booking date'],
+        modes:['today','tomorrow','week','upcoming']
+      };
+    }else if(path==='/admin/contact-message/list'){
+      config={
+        key:'contactmsgdate',
+        title:mcCurrentLang()==='en'?'Quick dates':'Dates rapides',
+        dateMatches:['reçu le','recu le','received','date','créé le','cree le','created at'],
+        modes:['today','week']
+      };
+    }else{
+      return;
+    }
+
+    var table=card.querySelector('.table-responsive table');
+    if(!table) return;
+    var tbody=table.querySelector('tbody');
+    if(!tbody) return;
+
+    function clean(v){return (v||'').toString().replace(/\s+/g,' ').trim();}
+    function norm(v){return clean(v).toLowerCase();}
+
+    function columnIndex(sourceTable,matches){
+      var headers=Array.prototype.slice.call(sourceTable.querySelectorAll('thead th'));
+      for(var i=0;i<headers.length;i++){
+        var label=norm(headers[i].textContent);
+        for(var j=0;j<matches.length;j++){
+          var wanted=norm(matches[j]);
+          if(label===wanted||label.indexOf(wanted)!==-1) return i;
+        }
+      }
+      return -1;
+    }
+
+    function extractRows(sourceTable){
+      var idxDate=columnIndex(sourceTable,config.dateMatches);
+      return Array.prototype.slice.call(sourceTable.querySelectorAll('tbody tr')).map(function(row){
+        var cells=Array.prototype.slice.call(row.children);
+        return {
+          html:row.outerHTML,
+          date:idxDate>=0&&cells[idxDate]?clean(cells[idxDate].textContent):''
+        };
+      });
+    }
+
+    var store='__mcMobileQuickDateCache_'+config.key;
+    var cache=window[store]||{
+      ready:false,loading:false,rows:[],selectedDate:'',cardsBuilt:false
+    };
+    window[store]=cache;
+
+    var old=cardsWrap.querySelector('.mc-mobile-quickdate-filters[data-mc-key="'+config.key+'"]');
+    if(old) old.remove();
+
+    var filters=document.createElement('section');
+    filters.className='mc-mobile-quickdate-filters';
+    filters.setAttribute('data-mc-key',config.key);
+    filters.innerHTML=
+      '<div class="mc-mobile-quickdate-head">'+
+        '<div class="mc-mobile-quickdate-title">'+mcEscape(config.title)+'</div>'+
+        '<button type="button" class="mc-mobile-quickdate-reset">'+
+          (mcCurrentLang()==='en'?'Reset':'Réinitialiser')+
+        '</button>'+
+      '</div>'+
+      '<div class="mc-mobile-quickdate-pills"></div>'+
+      '<div class="mc-mobile-quickdate-result">'+
+        (mcCurrentLang()==='en'?'Loading…':'Chargement…')+
+      '</div>';
+
+    cardsWrap.insertBefore(filters,cardsWrap.firstChild);
+
+    var pillsHost=filters.querySelector('.mc-mobile-quickdate-pills');
+    var result=filters.querySelector('.mc-mobile-quickdate-result');
+    var quickReset=filters.querySelector('.mc-mobile-quickdate-reset');
+
+    function counts(){
+      var out={all:cache.rows.length,today:0,tomorrow:0,week:0,upcoming:0};
+      cache.rows.forEach(function(r){
+        ['today','tomorrow','week','upcoming'].forEach(function(mode){
+          if(mcDateMatchesQuick(r.date,mode)) out[mode]++;
+        });
+      });
+      return out;
+    }
+
+    function renderPills(){
+      pillsHost.innerHTML=mcBuildDateQuickPills(config.modes,cache.selectedDate,counts());
+      Array.prototype.slice.call(pillsHost.querySelectorAll('.mc-date-quick-pill')).forEach(function(btn){
+        btn.addEventListener('click',function(){
+          cache.selectedDate=btn.dataset.mcDate||'';
+          apply();
+        });
+      });
+    }
+
+    function getRecords(){
+      return Array.prototype.slice.call(
+        card.querySelectorAll('.mc-mobile-cards .mc-mobile-record-card')
+      );
+    }
+
+    function tagRecords(){
+      var records=getRecords();
+      records.forEach(function(record,index){
+        record.dataset.mcQuickDate=(cache.rows[index]&&cache.rows[index].date)||'';
+      });
+      return records;
+    }
+
+    function rebuildAllCards(){
+      if(cache.cardsBuilt) return;
+
+      if(filters.parentNode) filters.parentNode.removeChild(filters);
+
+      tbody.innerHTML=cache.rows.map(function(r){return r.html;}).join('');
+
+      var oldWrap=card.querySelector('.mc-mobile-cards');
+      if(oldWrap) oldWrap.remove();
+      card.classList.remove('mc-mobile-card-mode');
+
+      window.__mcMobileQuickDateBuilding=true;
+      try{
+        mcInitMobileTableCards(document);
+      }finally{
+        window.__mcMobileQuickDateBuilding=false;
+      }
+
+      var rebuilt=card.querySelector('.mc-mobile-cards');
+      if(rebuilt){
+        cardsWrap=rebuilt;
+        rebuilt.insertBefore(filters,rebuilt.firstChild);
+      }
+
+      cache.cardsBuilt=true;
+      var footer=card.querySelector('.card-footer');
+      if(footer) footer.style.display='none';
+      tagRecords();
+    }
+
+    function apply(){
+      if(!cache.ready) return;
+      rebuildAllCards();
+
+      var records=tagRecords();
+      var visible=0;
+
+      records.forEach(function(record){
+        var show=mcDateMatchesQuick(record.dataset.mcQuickDate||'',cache.selectedDate);
+        record.classList.toggle('mc-quickdate-hidden',!show);
+        record.style.display=show?'':'none';
+        if(show) visible++;
+      });
+
+      renderPills();
+      result.textContent=mcCurrentLang()==='en'
+        ? visible+(visible===1?' result':' results')
+        : visible+(visible===1?' résultat':' résultats');
+    }
+
+    function loadAll(){
+      if(cache.ready){renderPills();apply();return;}
+      if(cache.loading) return;
+      cache.loading=true;
+
+      var url=new URL(window.location.href);
+      url.searchParams.delete('search');
+      url.searchParams.delete('page_size');
+      url.searchParams.set('pageSize','1000');
+      url.searchParams.set('page','1');
+
+      fetch(url.toString(),{
+        credentials:'same-origin',
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+      })
+      .then(function(r){
+        if(!r.ok) throw new Error('quick date fetch failed');
+        return r.text();
+      })
+      .then(function(htmlText){
+        var doc=new DOMParser().parseFromString(htmlText,'text/html');
+        var sourceTable=doc.querySelector('.table-responsive table');
+        if(!sourceTable) throw new Error('table not found');
+        cache.rows=extractRows(sourceTable);
+        cache.ready=true;
+        cache.loading=false;
+        renderPills();
+        apply();
+      })
+      .catch(function(err){
+        console.error('Miss Chawarma quick date filter ('+config.key+'):',err);
+        cache.rows=extractRows(table);
+        cache.ready=true;
+        cache.loading=false;
+        cache.cardsBuilt=true;
+        renderPills();
+        tagRecords();
+        apply();
+      });
+    }
+
+    if(quickReset && !quickReset.dataset.mcBound){
+      quickReset.dataset.mcBound='1';
+      quickReset.addEventListener('click',function(){
+        cache.selectedDate='';
+        apply();
+      });
+    }
+
+    loadAll();
+    mcApplyLanguage(filters);
+  }
+
+
+
   /* =========================================================
      FILTRES ÉVÉNEMENTS — MOBILE
      Construit les options à partir des lignes SQLAdmin présentes.
@@ -7941,168 +8482,420 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     if (path !== '/admin/event-reservation/list') return;
     if (!card || !cardsWrap) return;
 
-    var old = cardsWrap.querySelector('.mc-event-filters');
-    if (old) old.remove();
+    /* Prevent recursive calls while the full event card set is being rebuilt. */
+    if (window.__mcEventFilterBuildingCards) return;
 
-    var records = Array.prototype.slice.call(
-      cardsWrap.querySelectorAll('.mc-mobile-record-card')
-    );
-    if (!records.length) return;
+    var table = card.querySelector('.table-responsive table');
+    if (!table) return;
 
-    function norm(value){
-      return (value || '')
-        .toString()
-        .trim()
-        .replace(/\s+/g,' ')
-        .toLowerCase();
+    var tbody = table.querySelector('tbody');
+    if (!tbody) return;
+
+    function clean(value){
+      return (value || '').toString().replace(/\s+/g,' ').trim();
     }
 
-    var types = [];
-    var statuses = [];
+    function norm(value){
+      return clean(value).toLowerCase();
+    }
 
-    records.forEach(function(record){
-      var details = Array.prototype.slice.call(
-        record.querySelectorAll('.mc-mobile-detail-row')
-      );
+    function getColumnIndex(sourceTable, matches){
+      var headers = Array.prototype.slice.call(sourceTable.querySelectorAll('thead th'));
 
-      var eventType = '';
-      var status = '';
+      for (var i = 0; i < headers.length; i++) {
+        var label = norm(headers[i].textContent);
 
-      details.forEach(function(row){
-        var labelEl = row.querySelector('.mc-mobile-detail-label');
-        var valueEl = row.querySelector('.mc-mobile-detail-value');
-        if (!labelEl || !valueEl) return;
-
-        var label = norm(labelEl.textContent);
-        var value = (valueEl.textContent || '').replace(/\s+/g,' ').trim();
-
-        if (
-          !eventType &&
-          (
-            label.indexOf('événement') !== -1 ||
-            label.indexOf('event') !== -1 ||
-            label.indexOf('type') !== -1
-          )
-        ) {
-          eventType = value;
+        for (var j = 0; j < matches.length; j++) {
+          if (label === matches[j] || label.indexOf(matches[j]) !== -1) {
+            return i;
+          }
         }
-
-        if (
-          !status &&
-          (
-            label.indexOf('statut') !== -1 ||
-            label.indexOf('status') !== -1 ||
-            label.indexOf('état') !== -1
-          )
-        ) {
-          status = value;
-        }
-      });
-
-      /* Fallback: sur cette liste, le titre de la carte est le type d'événement. */
-      if (!eventType) {
-        var title = record.querySelector('.mc-mobile-card-title');
-        eventType = title ? (title.textContent || '').replace(/\s+/g,' ').trim() : '';
       }
+      return -1;
+    }
 
-      record.dataset.mcEventType = norm(eventType);
-      record.dataset.mcEventStatus = norm(status);
+    function extractRows(sourceTable){
+      var typeIndex = getColumnIndex(sourceTable, [
+        'événement','evenement','event','type'
+      ]);
 
-      if (eventType && types.indexOf(eventType) === -1) types.push(eventType);
-      if (status && statuses.indexOf(status) === -1) statuses.push(status);
-    });
+      var statusIndex = getColumnIndex(sourceTable, [
+        'statut','status','état','etat'
+      ]);
 
-    types.sort(function(a,b){ return a.localeCompare(b, 'fr'); });
-    statuses.sort(function(a,b){ return a.localeCompare(b, 'fr'); });
+      var dateIndex = getColumnIndex(sourceTable, [
+        'date','créneau','creneau','event date','date événement','date evenement'
+      ]);
 
-    var filters = document.createElement('section');
-    filters.className = 'mc-event-filters';
+      return Array.prototype.slice.call(
+        sourceTable.querySelectorAll('tbody tr')
+      ).map(function(row){
+        var cells = Array.prototype.slice.call(row.children);
 
-    var typeOptions =
-      '<option value="">Tous les types</option>' +
-      types.map(function(value){
-        return '<option value="'+mcEscape(norm(value))+'">'+mcEscape(value)+'</option>';
-      }).join('');
+        return {
+          html: row.outerHTML,
+          type: typeIndex >= 0 && cells[typeIndex] ? clean(cells[typeIndex].textContent) : '',
+          status: statusIndex >= 0 && cells[statusIndex] ? clean(cells[statusIndex].textContent) : '',
+          date: dateIndex >= 0 && cells[dateIndex] ? clean(cells[dateIndex].textContent) : ''
+        };
+      });
+    }
 
-    var statusOptions =
-      '<option value="">Tous les statuts</option>' +
-      statuses.map(function(value){
-        return '<option value="'+mcEscape(norm(value))+'">'+mcEscape(value)+'</option>';
-      }).join('');
+    function dedupeRows(rows){
+      var seen = {};
+      return rows.filter(function(item){
+        var tmp = document.createElement('tbody');
+        tmp.innerHTML = item.html;
+        var row = tmp.firstElementChild;
 
-    filters.innerHTML =
-      '<div class="mc-event-filter-head">' +
-        '<div class="mc-event-filter-title">Filtrer les événements</div>' +
-        '<button type="button" class="mc-event-filter-reset">Réinitialiser</button>' +
-      '</div>' +
-      '<div class="mc-event-filter-grid">' +
-        '<label class="mc-event-filter-field">' +
-          '<span class="mc-event-filter-label">Type</span>' +
-          '<select class="mc-event-filter-select" data-event-filter="type">' +
-            typeOptions +
-          '</select>' +
-        '</label>' +
-        '<label class="mc-event-filter-field">' +
-          '<span class="mc-event-filter-label">Statut</span>' +
-          '<select class="mc-event-filter-select" data-event-filter="status">' +
-            statusOptions +
-          '</select>' +
-        '</label>' +
-      '</div>' +
-      '<div class="mc-event-filter-result"></div>';
+        var link = row ? row.querySelector(
+          'a[href*="/view/"],a[href*="/edit/"],a[href*="/delete/"],a[href*="pks="]'
+        ) : null;
 
-    var selectBar = cardsWrap.querySelector('.mc-mobile-selectbar');
-    if (selectBar) {
-      selectBar.insertAdjacentElement('afterend', filters);
-    } else {
-      cardsWrap.insertBefore(filters, cardsWrap.firstChild);
+        var key = '';
+        if (link) {
+          var href = link.getAttribute('href') || '';
+          var m =
+            href.match(/\/(?:view|edit|delete)\/([^/?#]+)/i) ||
+            href.match(/[?&]pks=([^&#]+)/i);
+          if (m) key = 'pk:' + decodeURIComponent(m[1]);
+        }
+
+        if (!key) key = 'row:' + item.html;
+        if (seen[key]) return false;
+
+        seen[key] = 1;
+        return true;
+      });
+    }
+
+    var cache = window.__mcEventFilterCache || {
+      ready:false,
+      loading:false,
+      rows:[],
+      types:[],
+      statuses:[],
+      selectedType:'',
+      selectedStatus:'',
+      selectedDate:'',
+      cardsBuilt:false
+    };
+    window.__mcEventFilterCache = cache;
+
+    /* Reuse existing filter UI if already built. */
+    var filters = cardsWrap.querySelector('.mc-event-filters');
+
+    if (!filters) {
+      filters = document.createElement('section');
+      filters.className = 'mc-event-filters';
+
+      filters.innerHTML =
+        '<div class="mc-event-filter-head">' +
+          '<div class="mc-event-filter-title">Filtrer les événements</div>' +
+          '<button type="button" class="mc-event-filter-reset">Réinitialiser</button>' +
+        '</div>' +
+        '<div class="mc-event-filter-grid">' +
+          '<label class="mc-event-filter-field">' +
+            '<span class="mc-event-filter-label">Type</span>' +
+            '<select class="mc-event-filter-select" data-event-filter="type">' +
+              '<option value="">Chargement…</option>' +
+            '</select>' +
+          '</label>' +
+          '<label class="mc-event-filter-field">' +
+            '<span class="mc-event-filter-label">Statut</span>' +
+            '<select class="mc-event-filter-select" data-event-filter="status">' +
+              '<option value="">Chargement…</option>' +
+            '</select>' +
+          '</label>' +
+        '</div>' +
+        '<div class="mc-event-date-pills"></div>' +
+        '<div class="mc-event-filter-result">Chargement…</div>';
+
+      var selectBar = cardsWrap.querySelector('.mc-mobile-selectbar');
+      if (selectBar) {
+        selectBar.insertAdjacentElement('afterend', filters);
+      } else {
+        cardsWrap.insertBefore(filters, cardsWrap.firstChild);
+      }
     }
 
     var typeSelect = filters.querySelector('[data-event-filter="type"]');
     var statusSelect = filters.querySelector('[data-event-filter="status"]');
     var reset = filters.querySelector('.mc-event-filter-reset');
     var result = filters.querySelector('.mc-event-filter-result');
+    var datePillsHost = filters.querySelector('.mc-event-date-pills');
 
-    var empty = document.createElement('div');
-    empty.className = 'mc-event-no-results';
-    empty.textContent = 'Aucun événement ne correspond à ces filtres.';
-    empty.style.display = 'none';
-    cardsWrap.appendChild(empty);
+    var empty = cardsWrap.querySelector('.mc-event-no-results');
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.className = 'mc-event-no-results';
+      empty.textContent = 'Aucun événement ne correspond à ces filtres.';
+      empty.style.display = 'none';
+      cardsWrap.appendChild(empty);
+    }
+
+    function renderOptions(){
+      typeSelect.innerHTML =
+        '<option value="">Tous les types</option>' +
+        cache.types.map(function(value){
+          return '<option value="'+mcEscape(norm(value))+'">'+mcEscape(value)+'</option>';
+        }).join('');
+
+      statusSelect.innerHTML =
+        '<option value="">Tous les statuts</option>' +
+        cache.statuses.map(function(value){
+          return '<option value="'+mcEscape(norm(value))+'">'+mcEscape(value)+'</option>';
+        }).join('');
+
+      typeSelect.value = cache.selectedType || '';
+      statusSelect.value = cache.selectedStatus || '';
+    }
+
+    function renderDatePills(){
+      if(!datePillsHost) return;
+
+      var modes=['today','tomorrow','week','upcoming'];
+      var counts={all:cache.rows.length,today:0,tomorrow:0,week:0,upcoming:0};
+
+      cache.rows.forEach(function(item){
+        ['today','tomorrow','week','upcoming'].forEach(function(mode){
+          if(mcDateMatchesQuick(item.date,mode)) counts[mode]++;
+        });
+      });
+
+      datePillsHost.innerHTML=mcBuildDateQuickPills(modes,cache.selectedDate,counts);
+
+      Array.prototype.slice.call(
+        datePillsHost.querySelectorAll('.mc-date-quick-pill')
+      ).forEach(function(btn){
+        btn.addEventListener('click',function(){
+          cache.selectedDate=btn.dataset.mcDate||'';
+          apply();
+        });
+      });
+    }
+
+    function getCards(){
+      return Array.prototype.slice.call(
+        card.querySelectorAll('.mc-mobile-cards .mc-mobile-record-card')
+      );
+    }
+
+    function tagCards(){
+      var records = getCards();
+
+      records.forEach(function(record, index){
+        var rowData = cache.rows[index] || {};
+        record.dataset.mcEventType = norm(rowData.type || '');
+        record.dataset.mcEventStatus = norm(rowData.status || '');
+        record.dataset.mcEventDate = rowData.date || '';
+      });
+
+      return records;
+    }
+
+    function buildAllCardsOnce(){
+      if (cache.cardsBuilt) return;
+
+      /* IMPORTANT:
+         Le filtre est DANS .mc-mobile-cards.
+         Quand on reconstruit toutes les cartes, l'ancien wrapper est supprimé.
+         On détache donc le filtre + le message vide AVANT la suppression,
+         puis on les remet dans le nouveau wrapper. Ainsi ils ne disparaissent
+         plus après le premier chargement. */
+      if (filters && filters.parentNode) {
+        filters.parentNode.removeChild(filters);
+      }
+
+      if (empty && empty.parentNode) {
+        empty.parentNode.removeChild(empty);
+      }
+
+      tbody.innerHTML = cache.rows.map(function(item){
+        return item.html;
+      }).join('');
+
+      var oldCards = card.querySelector('.mc-mobile-cards');
+      if (oldCards) oldCards.remove();
+
+      card.classList.remove('mc-mobile-card-mode');
+
+      /* CRITICAL: generic builder calls mcInitEventMobileFilters again.
+         Guard that recursive call. */
+      window.__mcEventFilterBuildingCards = true;
+      try{
+        mcInitMobileTableCards(document);
+      }finally{
+        window.__mcEventFilterBuildingCards = false;
+      }
+
+      /* Récupère le NOUVEAU wrapper créé par mcInitMobileTableCards. */
+      var rebuiltWrap = card.querySelector('.mc-mobile-cards');
+
+      if (rebuiltWrap) {
+        cardsWrap = rebuiltWrap;
+
+        var rebuiltSelectBar = rebuiltWrap.querySelector('.mc-mobile-selectbar');
+
+        if (rebuiltSelectBar) {
+          rebuiltSelectBar.insertAdjacentElement('afterend', filters);
+        } else {
+          rebuiltWrap.insertBefore(filters, rebuiltWrap.firstChild);
+        }
+
+        rebuiltWrap.appendChild(empty);
+      }
+
+      cache.cardsBuilt = true;
+
+      var footer = card.querySelector('.card-footer');
+      if (footer) footer.style.display = 'none';
+
+      tagCards();
+    }
 
     function apply(){
-      var wantedType = norm(typeSelect.value);
-      var wantedStatus = norm(statusSelect.value);
+      cache.selectedType = norm(typeSelect.value);
+      cache.selectedStatus = norm(statusSelect.value);
+
+      if (!cache.ready) return;
+
+      buildAllCardsOnce();
+
+      var records = tagCards();
       var visible = 0;
 
       records.forEach(function(record){
         var matchType =
-          !wantedType || record.dataset.mcEventType === wantedType;
-        var matchStatus =
-          !wantedStatus || record.dataset.mcEventStatus === wantedStatus;
+          !cache.selectedType ||
+          record.dataset.mcEventType === cache.selectedType;
 
-        var show = matchType && matchStatus;
-        record.classList.toggle('mc-event-filter-hidden', !show);
-        if (show) visible += 1;
+        var matchStatus =
+          !cache.selectedStatus ||
+          record.dataset.mcEventStatus === cache.selectedStatus;
+
+        var matchDate = mcDateMatchesQuick(
+          record.dataset.mcEventDate || '',
+          cache.selectedDate
+        );
+
+        var show = matchType && matchStatus && matchDate;
+        record.style.display = show ? '' : 'none';
+
+        if (show) visible++;
       });
 
       result.textContent =
-        visible + (visible > 1 ? ' événements affichés' : ' événement affiché');
+        visible +
+        (visible > 1 ? ' événements affichés' : ' événement affiché');
+
       empty.style.display = visible === 0 ? 'block' : 'none';
     }
 
-    typeSelect.addEventListener('change', apply);
-    statusSelect.addEventListener('change', apply);
+    function loadAllRows(){
+      if (cache.ready) {
+        renderOptions();
+        renderDatePills();
+        apply();
+        return;
+      }
 
-    reset.addEventListener('click', function(){
-      typeSelect.value = '';
-      statusSelect.value = '';
-      apply();
-    });
+      if (cache.loading) return;
+      cache.loading = true;
 
-    apply();
-    mcApplyLanguage(filters);
+      /* One request only. No pagination loop. */
+      var url = new URL(window.location.href);
+      url.searchParams.delete('search');
+      url.searchParams.delete('page_size');
+      url.searchParams.set('pageSize','500');
+      url.searchParams.set('page','1');
+
+      fetch(url.toString(),{
+        credentials:'same-origin',
+        headers:{'X-Requested-With':'XMLHttpRequest'}
+      })
+      .then(function(response){
+        if (!response.ok) throw new Error('events fetch failed');
+        return response.text();
+      })
+      .then(function(htmlText){
+        var doc = new DOMParser().parseFromString(htmlText,'text/html');
+        var sourceTable = doc.querySelector('.table-responsive table');
+
+        if (!sourceTable) throw new Error('events table not found');
+
+        cache.rows = dedupeRows(extractRows(sourceTable));
+
+        var typeMap = {};
+        var statusMap = {};
+
+        cache.rows.forEach(function(item){
+          if (item.type) typeMap[item.type] = 1;
+          if (item.status) statusMap[item.status] = 1;
+        });
+
+        cache.types = Object.keys(typeMap).sort(function(a,b){
+          return a.localeCompare(b,'fr',{sensitivity:'base'});
+        });
+
+        cache.statuses = Object.keys(statusMap).sort(function(a,b){
+          return a.localeCompare(b,'fr',{sensitivity:'base'});
+        });
+
+        cache.ready = true;
+        cache.loading = false;
+
+        renderOptions();
+        renderDatePills();
+        apply();
+      })
+      .catch(function(error){
+        console.error('Miss Chawarma event filter:',error);
+
+        /* Fast fallback: current visible page remains usable. */
+        cache.rows = extractRows(table);
+
+        var t = {};
+        var s = {};
+
+        cache.rows.forEach(function(item){
+          if (item.type) t[item.type] = 1;
+          if (item.status) s[item.status] = 1;
+        });
+
+        cache.types = Object.keys(t);
+        cache.statuses = Object.keys(s);
+        cache.ready = true;
+        cache.loading = false;
+        cache.cardsBuilt = true;
+
+        renderOptions();
+        renderDatePills();
+        tagCards();
+        apply();
+      });
+    }
+
+    /* Bind only once. */
+    if (!filters.dataset.mcEventBound) {
+      filters.dataset.mcEventBound = '1';
+
+      typeSelect.addEventListener('change', apply);
+      statusSelect.addEventListener('change', apply);
+
+      reset.addEventListener('click', function(){
+        cache.selectedType = '';
+        cache.selectedStatus = '';
+        cache.selectedDate = '';
+        typeSelect.value = '';
+        statusSelect.value = '';
+        renderDatePills();
+        apply();
+      });
+    }
+
+    loadAllRows();
   }
-
 
   /* =========================================================
      FILTRE MESSAGES CONTACT PAR STATUT — MOBILE ET TABLETTE
@@ -8968,7 +9761,11 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       function headerIndex(matches){
         var headers = Array.prototype.slice.call(table.querySelectorAll('thead th'));
         for (var i = 0; i < headers.length; i++) {
-          if (matches.indexOf(norm(headers[i].textContent)) !== -1) return i;
+          var label=norm(headers[i].textContent);
+          for(var j=0;j<matches.length;j++){
+            var wanted=norm(matches[j]);
+            if(label===wanted || label.indexOf(wanted)!==-1) return i;
+          }
         }
         return -1;
       }
@@ -8977,7 +9774,11 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         return {key: f.key, label: f.label, index: headerIndex(f.headerMatches)};
       }).filter(function(f){ return f.index !== -1; });
 
-      if (!fields.length) return;
+      var dateIndex = options.dateQuick
+        ? headerIndex(options.dateHeaderMatches || ['date','créneau','creneau','reçu le','recu le','received'])
+        : -1;
+
+      if (!fields.length && dateIndex === -1) return;
 
       function extractRows(sourceTable){
         return Array.prototype.slice.call(sourceTable.querySelectorAll('tbody tr')).map(function(row){
@@ -8986,6 +9787,9 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           fields.forEach(function(f){
             values[f.key] = cells[f.index] ? clean(cells[f.index].textContent) : '';
           });
+          values.__date = dateIndex >= 0 && cells[dateIndex]
+            ? clean(cells[dateIndex].textContent)
+            : '';
           return {html: row.outerHTML, values: values};
         });
       }
@@ -9022,6 +9826,15 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         filterEl.appendChild(field);
         selects[f.key] = field.querySelector('select');
       });
+
+      var selectedQuickDate = '';
+
+      if(options.dateQuick && dateIndex !== -1){
+        var quickDateWrap=document.createElement('div');
+        quickDateWrap.className='mc-date-quick-desktop-wrap';
+        quickDateWrap.style.cssText='flex:1 1 100%;width:100%;order:20;';
+        filterEl.appendChild(quickDateWrap);
+      }
 
       var result = document.createElement('div');
       result.style.cssText =
@@ -9070,6 +9883,29 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         });
       }
 
+      function renderQuickDates(){
+        if(!quickDateWrap) return;
+        var modes=options.dateModes || ['today','tomorrow','week','upcoming'];
+        var counts={all:cache.rows.length,today:0,tomorrow:0,week:0,upcoming:0};
+
+        cache.rows.forEach(function(row){
+          ['today','tomorrow','week','upcoming'].forEach(function(mode){
+            if(mcDateMatchesQuick(row.values.__date,mode)) counts[mode]++;
+          });
+        });
+
+        quickDateWrap.innerHTML=mcBuildDateQuickPills(modes,selectedQuickDate,counts);
+
+        Array.prototype.slice.call(
+          quickDateWrap.querySelectorAll('.mc-date-quick-pill')
+        ).forEach(function(btn){
+          btn.addEventListener('click',function(){
+            selectedQuickDate=btn.dataset.mcDate||'';
+            apply();
+          });
+        });
+      }
+
       function showRows(rows){
         tbody.innerHTML = rows.map(function(r){ return r.html; }).join('');
         mcApplyLanguage(tbody);
@@ -9096,19 +9932,24 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           if (v) anyWanted = true;
         });
 
+        if(selectedQuickDate) anyWanted=true;
+
         if (!anyWanted) {
           restoreOriginal();
           result.textContent = mcCurrentLang() === 'en' ? 'All results' : 'Tous les résultats';
+          renderQuickDates();
           return;
         }
 
         if (!cache.ready) return;
 
         var filtered = cache.rows.filter(function(r){
-          return fields.every(function(f){
+          var columnsMatch=fields.every(function(f){
             if (!wanted[f.key]) return true;
             return norm(r.values[f.key]) === wanted[f.key];
           });
+          var dateMatch=mcDateMatchesQuick(r.values.__date,selectedQuickDate);
+          return columnsMatch && dateMatch;
         });
 
         showRows(filtered);
@@ -9118,6 +9959,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
         result.textContent = resultLabel(filtered.length);
         empty.style.display = filtered.length === 0 ? 'block' : 'none';
+        renderQuickDates();
       }
 
       function computeOptions(rows){
@@ -9139,7 +9981,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       }
 
       function loadAll(){
-        if (cache.ready) { renderOptions(); return; }
+        if (cache.ready) { renderOptions(); renderQuickDates(); return; }
         if (cache.loading) return;
         cache.loading = true;
 
@@ -9169,6 +10011,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           cache.loading = false;
 
           renderOptions();
+          renderQuickDates();
           result.textContent = mcCurrentLang() === 'en' ? 'All results' : 'Tous les résultats';
         })
         .catch(function(error){
@@ -9178,6 +10021,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
           cache.options = computeOptions(cache.rows);
           cache.ready = true;
           renderOptions();
+          renderQuickDates();
         });
       }
 
@@ -9187,7 +10031,9 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
 
       reset.addEventListener('click', function(){
         Object.keys(selects).forEach(function(key){ selects[key].value = ''; });
+        selectedQuickDate='';
         restoreOriginal();
+        renderQuickDates();
         var liveFooter = card.querySelector('.card-footer');
         if (liveFooter) liveFooter.style.display = originalFooterDisplay;
         result.textContent = mcCurrentLang() === 'en' ? 'All results' : 'Tous les résultats';
@@ -9203,7 +10049,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     cacheKey: 'tableres',
     fields: [
       {key:'status', label:'Statut', headerMatches:['statut','status']}
-    ]
+    ],
+    dateQuick:true,
+    dateHeaderMatches:['date','créneau','creneau','reservation date','booking date'],
+    dateModes:['today','tomorrow','week','upcoming']
   });
 
   var mcInitEventReservationDesktopFilters = mcCreateDesktopColumnFilter({
@@ -9212,7 +10061,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     fields: [
       {key:'type', label:'Type', headerMatches:['événement','event']},
       {key:'status', label:'Statut', headerMatches:['statut','status']}
-    ]
+    ],
+    dateQuick:true,
+    dateHeaderMatches:['date','créneau','creneau','event date','date événement','date evenement'],
+    dateModes:['today','tomorrow','week','upcoming']
   });
 
   var mcInitContactMessageDesktopFilters = mcCreateDesktopColumnFilter({
@@ -9220,7 +10072,10 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     cacheKey: 'contactmsg',
     fields: [
       {key:'status', label:'Statut', headerMatches:['statut','status']}
-    ]
+    ],
+    dateQuick:true,
+    dateHeaderMatches:['reçu le','recu le','received','date','créé le','cree le','created at'],
+    dateModes:['today','week']
   });
 
   /* =========================================================
