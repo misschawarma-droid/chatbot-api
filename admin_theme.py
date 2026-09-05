@@ -883,20 +883,11 @@ ORDER_TICKET_MODAL_HTML = """
       };
     });
 
-    /* Filet de sécurité : si la récupération fiable échoue entièrement
-       (coupure réseau, session expirée...), on retombe sur l'ancienne
-       méthode plutôt que de n'afficher aucun article. */
-    if(!items.length){
-      items = mcReceiptExtractItems(doc);
-    }
-
-    var oldText = (doc.body.innerText || doc.body.textContent || '').replace(/\s+/g,' ').trim();
-
-    /* Fallbacks from the original ticket page if a value was not
-       available in the admin order row. */
+    /* L'iframe ne charge plus jamais le ticket simple d'origine (voir
+       openOrderTicket ci-dessous) : plus de filet de sécurité basé sur
+       son contenu à lire, ce n'est plus nécessaire ni possible. */
     if(!data.number){
-      var noMatch = oldText.match(/(?:Commande|Ticket)\s*#\s*(\d+)/i);
-      data.number = noMatch ? '#'+noMatch[1] : '#'+orderId;
+      data.number = '#'+orderId;
     }
 
     var paymentDisplay = [data.paymentStatus, data.paymentMethod]
@@ -1542,13 +1533,26 @@ ORDER_TICKET_MODAL_HTML = """
 
     if(modal) modal.scrollTop=0;
 
+    /* On ne charge plus jamais le ticket simple (/order-ticket/{id})
+       dans l'iframe avant de le remplacer : cet aller-retour causait
+       une vraie course entre plusieurs "load" (doc.write() redéclenche
+       l'événement), qui faisait parfois apparaître les deux versions
+       tour à tour. À la place, l'iframe navigue vers une page vide et
+       le joli reçu est construit directement dessus.
+
+       Important : même une page vide ("about:blank") a besoin d'un
+       instant pour finir sa propre navigation. Écrire dedans trop tôt
+       (avant que ce chargement soit terminé) fait que la page vide
+       "gagne la course" et efface ce qu'on vient d'écrire, laissant
+       la fenêtre totalement blanche. On attend donc ce chargement une
+       fois, puis on désarme immédiatement le gestionnaire pour ne pas
+       relancer la construction si doc.write() déclenche lui-même un
+       nouveau "load". */
     iframe.onload = function(){
-      /* Load current ticket data first, then rebuild it with
-         the premium design and resize the iframe to its full content. */
+      iframe.onload = null;
+
       setTimeout(function(){
         Promise.resolve(mcUpgradeOrderTicketFrame(String(orderId))).then(function(){
-          /* doc.write() can finish one frame later. Resize several times
-             to handle fonts/images + personalization blocks. */
           requestAnimationFrame(function(){
             mcResizeReceiptFrame();
             setTimeout(mcResizeReceiptFrame,80);
@@ -1561,10 +1565,12 @@ ORDER_TICKET_MODAL_HTML = """
 
     iframe.style.height='100%';
     iframe.style.minHeight='100%';
-    iframe.src='/order-ticket/'+orderId;
+    iframe.src='about:blank';
+
     document.getElementById('order-ticket-overlay').classList.add('open');
     document.documentElement.style.overflow='hidden';
   }
+
 
   function closeOrderTicket(){
     var iframe = document.getElementById('order-ticket-iframe');
@@ -5193,6 +5199,15 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     box-shadow:0 14px 30px rgba(18,63,29,.10)!important;
   }
 
+  /* Ce design (icône, gros numéro de ticket, badges, total, date/heure)
+     a besoin de bien plus qu'une demi-largeur de téléphone : contrairement
+     aux autres cartes (Plats...), il prend toujours toute la largeur de
+     la grille plutôt que la moitié, sinon "TICKET" et les infos du bas
+     se retrouvent écrasés/coupés. */
+  .mc-mobile-record-card.mc-order-ticket-card{
+    grid-column:1 / -1!important;
+  }
+
   /* hide generic summary but preserve generic detail block/actions */
   .mc-order-ticket-card > .mc-mobile-card-summary{
     display:none!important;
@@ -5271,6 +5286,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     font-weight:950!important;
     letter-spacing:.16em!important;
     text-transform:uppercase!important;
+    white-space:nowrap!important;
   }
 
   .mc-order-ticket-number{
