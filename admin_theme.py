@@ -6670,6 +6670,319 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   }
 }
 
+
+
+/* =========================================================
+   MENU "ACTIONS" — DESKTOP
+   Même langage visuel que le dropdown premium des filtres :
+   déclencheur arrondi, panneau ivoire, options avec pastille.
+   Le bouton reste inactif tant qu'aucune ligne n'est cochée.
+========================================================= */
+@media(min-width:992px){
+
+  .mc-actions-dropdown > .btn,
+  .mc-actions-dropdown > button,
+  .mc-actions-dropdown > a{
+    min-height:44px!important;
+    padding:0 15px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:9px!important;
+    border:1px solid rgba(31,107,45,.16)!important;
+    border-radius:14px!important;
+    background:linear-gradient(180deg,#fff,#fffdf7)!important;
+    color:#1e3b25!important;
+    font-size:12px!important;
+    font-weight:850!important;
+    box-shadow:0 5px 14px rgba(18,63,29,.045)!important;
+    transition:border-color .18s ease,box-shadow .18s ease,
+      background .18s ease,opacity .18s ease!important;
+  }
+
+  .mc-actions-dropdown > .btn:hover{
+    border-color:rgba(31,107,45,.30)!important;
+    box-shadow:0 8px 18px rgba(18,63,29,.07)!important;
+  }
+
+  /* Aucune ligne cochée : le menu ne peut rien faire, on le grise. */
+  .mc-actions-dropdown.mc-empty > .btn,
+  .mc-actions-dropdown.mc-empty > button,
+  .mc-actions-dropdown.mc-empty > a{
+    opacity:.5!important;
+    cursor:not-allowed!important;
+    box-shadow:none!important;
+  }
+
+  /* Sélection active : vert plein, comme les autres états actifs. */
+  .mc-actions-dropdown.mc-ready > .btn,
+  .mc-actions-dropdown.mc-ready > button,
+  .mc-actions-dropdown.mc-ready > a{
+    border-color:#2b7837!important;
+    color:#fff!important;
+    background:linear-gradient(135deg,#1f6b2d,#378d42)!important;
+    box-shadow:0 8px 20px rgba(31,107,45,.18)!important;
+  }
+
+  .mc-actions-count{
+    min-width:22px;
+    height:20px;
+    padding:0 6px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:999px;
+    background:#edf4eb;
+    color:#246b31;
+    font-size:9.5px;
+    font-weight:950;
+    line-height:1;
+  }
+
+  .mc-actions-dropdown.mc-ready .mc-actions-count{
+    background:rgba(255,255,255,.20);
+    color:#fff;
+  }
+
+  .mc-actions-dropdown.mc-empty .mc-actions-count{
+    display:none;
+  }
+
+  /* ---------- PANNEAU ---------- */
+  .mc-actions-dropdown .dropdown-menu{
+    min-width:250px!important;
+    margin-top:8px!important;
+    padding:7px!important;
+    border:1px solid rgba(31,107,45,.14)!important;
+    border-radius:17px!important;
+    background:
+      radial-gradient(circle at 100% 0,rgba(228,184,63,.13),transparent 150px),
+      linear-gradient(180deg,#fffefa,#fbf7ed)!important;
+    box-shadow:
+      0 22px 48px rgba(18,63,29,.16),
+      inset 0 0 0 1px rgba(255,255,255,.7)!important;
+  }
+
+  .mc-actions-dropdown .dropdown-menu > a,
+  .mc-actions-dropdown .dropdown-menu > button,
+  .mc-actions-dropdown .dropdown-menu .dropdown-item{
+    position:relative;
+    width:100%;
+    min-height:42px;
+    padding:0 11px 0 10px!important;
+    display:flex!important;
+    align-items:center;
+    gap:10px;
+    border:0!important;
+    border-radius:12px!important;
+    background:transparent!important;
+    color:#243a29!important;
+    font-family:Inter,Arial,sans-serif!important;
+    font-size:11.5px!important;
+    font-weight:750!important;
+    text-align:left;
+    white-space:normal;
+    transition:background .15s ease,padding-left .15s ease!important;
+  }
+
+  .mc-actions-dropdown .dropdown-menu > a + a,
+  .mc-actions-dropdown .dropdown-menu .dropdown-item + .dropdown-item{
+    margin-top:2px;
+  }
+
+  .mc-actions-dropdown .dropdown-menu > a::before,
+  .mc-actions-dropdown .dropdown-menu .dropdown-item::before{
+    content:"";
+    position:absolute;
+    left:0;
+    top:9px;
+    bottom:9px;
+    width:3px;
+    border-radius:999px;
+    background:linear-gradient(180deg,#2f843b,#d39a00);
+    opacity:0;
+    transition:opacity .15s ease;
+  }
+
+  .mc-actions-dropdown .dropdown-menu > a:hover,
+  .mc-actions-dropdown .dropdown-menu .dropdown-item:hover{
+    background:rgba(31,107,45,.07)!important;
+    color:#174623!important;
+    padding-left:14px!important;
+  }
+
+  .mc-actions-dropdown .dropdown-menu > a:hover::before,
+  .mc-actions-dropdown .dropdown-menu .dropdown-item:hover::before{
+    opacity:1;
+  }
+
+  /* L'action destructrice reste identifiable au premier coup d'œil. */
+  .mc-actions-dropdown .dropdown-menu .mc-action-danger{
+    color:#c63f35!important;
+  }
+
+  .mc-actions-dropdown .dropdown-menu .mc-action-danger:hover{
+    background:rgba(198,63,53,.08)!important;
+    color:#a83127!important;
+  }
+
+  .mc-actions-dropdown .dropdown-menu .mc-action-danger::before{
+    background:linear-gradient(180deg,#d9564a,#a83127)!important;
+  }
+}
+
+/* =========================================================
+   BARRE D'ACTIONS — MOBILE ET TABLETTE
+   Les entrées du menu "Actions" deviennent de vrais boutons
+   côte à côte, fixés en bas de l'écran, visibles seulement
+   quand au moins une ligne est sélectionnée.
+========================================================= */
+.mc-action-bar{
+  display:none;
+}
+
+@media(max-width:991.98px){
+
+  /* La sélection redevient nécessaire : cases à cocher et barre
+     "Tout sélectionner" réaffichées (elles étaient masquées). */
+  .mc-mobile-selectbar{
+    display:flex!important;
+  }
+
+  .mc-mobile-card-select-wrap{
+    display:grid!important;
+  }
+
+  .mc-action-bar{
+    position:fixed!important;
+    left:0;
+    right:0;
+    bottom:0;
+    z-index:2100;
+    display:none;
+    padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+    border-top:1px solid rgba(31,107,45,.12);
+    background:
+      radial-gradient(circle at 100% 0,rgba(228,184,63,.14),transparent 190px),
+      linear-gradient(180deg,rgba(255,254,250,.97),rgba(250,246,236,.98));
+    box-shadow:0 -12px 34px rgba(18,63,29,.16);
+    backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);
+  }
+
+  .mc-action-bar.mc-open{
+    display:block;
+    animation:mcActionBarIn .22s cubic-bezier(.2,.8,.2,1) both;
+  }
+
+  @keyframes mcActionBarIn{
+    from{opacity:0;transform:translateY(14px)}
+    to{opacity:1;transform:translateY(0)}
+  }
+
+  .mc-action-bar-head{
+    margin-bottom:8px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+  }
+
+  .mc-action-bar-count{
+    min-height:24px;
+    padding:0 10px;
+    display:inline-flex;
+    align-items:center;
+    border-radius:999px;
+    background:#edf4eb;
+    color:#246b31;
+    font-size:9.5px;
+    font-weight:950;
+    white-space:nowrap;
+  }
+
+  .mc-action-bar-clear{
+    min-height:26px;
+    padding:0 10px;
+    border:1px solid rgba(196,125,14,.22);
+    border-radius:999px;
+    background:#fff6e0;
+    color:#8c5d00;
+    font-size:9px;
+    font-weight:900;
+    cursor:pointer;
+  }
+
+  .mc-action-bar-buttons{
+    display:grid;
+    grid-auto-flow:column;
+    grid-auto-columns:minmax(0,1fr);
+    gap:8px;
+  }
+
+  .mc-action-btn{
+    min-width:0;
+    min-height:46px;
+    padding:0 10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+    overflow:hidden;
+    border:1px solid rgba(31,107,45,.14);
+    border-radius:14px;
+    background:linear-gradient(135deg,#1f6b2d,#378d42);
+    color:#fff;
+    font-family:Inter,Arial,sans-serif;
+    font-size:10.5px;
+    font-weight:900;
+    line-height:1.15;
+    text-align:center;
+    cursor:pointer;
+    box-shadow:0 7px 16px rgba(31,107,45,.16);
+    transition:transform .16s ease,box-shadow .16s ease;
+  }
+
+  .mc-action-btn:active{
+    transform:scale(.97);
+  }
+
+  .mc-action-btn-text{
+    min-width:0;
+    overflow:hidden;
+    display:-webkit-box;
+    -webkit-box-orient:vertical;
+    -webkit-line-clamp:2;
+  }
+
+  .mc-action-btn.mc-action-danger{
+    border-color:rgba(198,63,53,.22);
+    background:linear-gradient(135deg,#c63f35,#a83127);
+    box-shadow:0 7px 16px rgba(198,63,53,.18);
+  }
+
+  /* Le contenu ne doit jamais finir caché derrière la barre. */
+  body.mc-action-bar-open .page-body{
+    padding-bottom:130px!important;
+  }
+}
+
+@media(max-width:429.98px){
+  .mc-action-bar{
+    padding:9px 9px calc(9px + env(safe-area-inset-bottom));
+  }
+
+  .mc-action-bar-buttons{
+    gap:6px;
+  }
+
+  .mc-action-btn{
+    min-height:44px;
+    padding:0 7px;
+    font-size:9.5px;
+    border-radius:12px;
+  }
+}
+
 </style>
 
 <script id="miss-chawarma-admin-script">
@@ -7671,6 +7984,8 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       Array.prototype.slice.call(body.querySelectorAll('button,a')).forEach(function(btn){
         var text = (btn.textContent || '').trim().toLowerCase();
         if (text === 'actions' || text === 'action') {
+          /* Le menu natif reste dans le DOM (la barre d'actions mobile
+             déclenche ses entrées), mais on le masque visuellement. */
           var group = btn.closest('.dropdown') || btn.closest('.btn-group') || btn;
           group.style.display = 'none';
           group.setAttribute('data-mc-actions-hidden', '1');
@@ -10417,6 +10732,184 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
   });
 
   /* =========================================================
+     MENU "ACTIONS" — DESKTOP PREMIUM + BARRE MOBILE
+     On ne réimplémente RIEN de la logique SQLAdmin : les boutons
+     mobiles déclenchent le clic sur la vraie entrée du menu natif,
+     qui agit sur les lignes cochées comme d'habitude.
+  ========================================================= */
+  function mcInitBulkActions(){
+    if (!/^\/admin\/[^/]+\/list\/?$/.test(window.location.pathname)) return;
+
+    var card = document.querySelector('.card');
+    if (!card) return;
+
+    /* Retrouve le bouton "Actions" natif, quelle que soit sa balise. */
+    var toggle = null;
+    Array.prototype.slice.call(
+      card.querySelectorAll('.card-body button, .card-body a')
+    ).forEach(function(el){
+      if (toggle) return;
+      var text = (el.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
+      if (text === 'actions' || text === 'action') toggle = el;
+    });
+
+    if (!toggle) return;
+
+    var group = toggle.closest('.dropdown') || toggle.parentElement;
+    if (!group) return;
+
+    var menu = group.querySelector('.dropdown-menu');
+    if (!menu) return;
+
+    group.classList.add('mc-actions-dropdown');
+
+    var items = Array.prototype.slice.call(
+      menu.querySelectorAll('a,button')
+    ).filter(function(el){
+      return (el.textContent || '').trim().length > 0;
+    });
+
+    function isDanger(el){
+      var t = (el.textContent || '').toLowerCase();
+      return t.indexOf('supprim') !== -1 || t.indexOf('delete') !== -1;
+    }
+
+    items.forEach(function(el){
+      if (isDanger(el)) el.classList.add('mc-action-danger');
+    });
+
+    /* Compteur intégré au bouton desktop. */
+    var count = toggle.querySelector('.mc-actions-count');
+    if (!count) {
+      count = document.createElement('span');
+      count.className = 'mc-actions-count';
+      toggle.appendChild(count);
+    }
+
+    function originals(){
+      return Array.prototype.slice.call(
+        card.querySelectorAll('.table-responsive tbody input[type="checkbox"]')
+      ).filter(function(cb){ return !cb.disabled; });
+    }
+
+    /* ---------- BARRE MOBILE ---------- */
+    var bar = document.getElementById('mcActionBar');
+    if (bar) bar.remove();
+
+    bar = document.createElement('div');
+    bar.className = 'mc-action-bar';
+    bar.id = 'mcActionBar';
+
+    var en = mcCurrentLang() === 'en';
+
+    bar.innerHTML =
+      '<div class="mc-action-bar-head">' +
+        '<span class="mc-action-bar-count"></span>' +
+        '<button type="button" class="mc-action-bar-clear">' +
+          (en ? 'Clear' : 'Tout décocher') +
+        '</button>' +
+      '</div>' +
+      '<div class="mc-action-bar-buttons"></div>';
+
+    var buttonsHost = bar.querySelector('.mc-action-bar-buttons');
+    var barCount = bar.querySelector('.mc-action-bar-count');
+    var barClear = bar.querySelector('.mc-action-bar-clear');
+
+    items.forEach(function(item){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'mc-action-btn' + (isDanger(item) ? ' mc-action-danger' : '');
+      btn.innerHTML =
+        '<span class="mc-action-btn-text">' +
+          mcEscape((item.textContent || '').replace(/\s+/g,' ').trim()) +
+        '</span>';
+
+      btn.addEventListener('click', function(event){
+        event.preventDefault();
+        /* On délègue à la vraie entrée du menu SQLAdmin. */
+        item.click();
+      });
+
+      buttonsHost.appendChild(btn);
+    });
+
+    document.body.appendChild(bar);
+    mcApplyLanguage(bar);
+
+    barClear.addEventListener('click', function(){
+      originals().forEach(function(cb){
+        if (!cb.checked) return;
+        cb.checked = false;
+        cb.dispatchEvent(new Event('change', {bubbles:true}));
+      });
+
+      /* Décoche aussi les cases visibles des cartes mobiles. */
+      Array.prototype.slice.call(
+        card.querySelectorAll('.mc-mobile-select,.mc-mobile-select-all')
+      ).forEach(function(cb){
+        cb.checked = false;
+        cb.indeterminate = false;
+      });
+
+      Array.prototype.slice.call(
+        card.querySelectorAll('.mc-mobile-record-card.mc-selected')
+      ).forEach(function(el){
+        el.classList.remove('mc-selected');
+      });
+
+      mcRefreshBulkActions();
+    });
+
+    mcRefreshBulkActions();
+  }
+
+  function mcRefreshBulkActions(){
+    var card = document.querySelector('.card');
+    var group = card ? card.querySelector('.mc-actions-dropdown') : null;
+    var bar = document.getElementById('mcActionBar');
+
+    if (!card) return;
+
+    var checked = Array.prototype.slice.call(
+      card.querySelectorAll('.table-responsive tbody input[type="checkbox"]')
+    ).filter(function(cb){ return !cb.disabled && cb.checked; }).length;
+
+    var en = mcCurrentLang() === 'en';
+
+    if (group) {
+      group.classList.toggle('mc-ready', checked > 0);
+      group.classList.toggle('mc-empty', checked === 0);
+
+      var count = group.querySelector('.mc-actions-count');
+      if (count) count.textContent = String(checked);
+    }
+
+    if (bar) {
+      var open = checked > 0 && window.innerWidth <= 991.98;
+      bar.classList.toggle('mc-open', open);
+      document.body.classList.toggle('mc-action-bar-open', open);
+
+      var barCount = bar.querySelector('.mc-action-bar-count');
+      if (barCount) {
+        barCount.textContent = en
+          ? checked + (checked > 1 ? ' selected' : ' selected')
+          : checked + (checked > 1 ? ' sélectionnés' : ' sélectionné');
+      }
+    }
+  }
+
+  /* Une seule écoute déléguée suffit pour toutes les cases. */
+  document.addEventListener('change', function(event){
+    var target = event.target;
+    if (!target || target.type !== 'checkbox') return;
+    setTimeout(mcRefreshBulkActions, 0);
+  });
+
+  window.addEventListener('resize', function(){
+    mcRefreshBulkActions();
+  });
+
+  /* =========================================================
      FILTRE GÉNÉRIQUE PAR COLONNE(S) — DESKTOP
      Usine à filtres réutilisable pour les listes qui ont une ou
      plusieurs colonnes à choix limité (ex: Statut, Type). Même
@@ -11005,6 +11498,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
       mcInitTableReservationDesktopFilters();
       mcInitEventReservationDesktopFilters();
       mcInitContactMessageDesktopFilters();
+      mcInitBulkActions();
 
       if (hadFocus) {
         searchInput.focus();
@@ -11273,6 +11767,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
     mcInitTableReservationDesktopFilters();
     mcInitEventReservationDesktopFilters();
     mcInitContactMessageDesktopFilters();
+    mcInitBulkActions();
     window.addEventListener('resize', function(){
       if (window.innerWidth <= 991.98) {
         document.querySelectorAll(
@@ -11297,6 +11792,7 @@ html.mc-nav-open,html.mc-nav-open body,html.mc-nav-open .page,html.mc-nav-open .
         mcInitEventReservationDesktopFilters();
         mcInitContactMessageDesktopFilters();
       }
+      mcInitBulkActions();
     });
     // Traduit aussi les pages de liste SQLAdmin natives (Plats, Commandes, etc.)
     // qui ne passent pas par renderDashboard.
