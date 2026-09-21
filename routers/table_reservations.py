@@ -27,6 +27,7 @@ from schemas import (
 )
 
 from notifications import send_admin_sms, send_email, ADMIN_DASHBOARD_URL, SMTP_EMAIL
+from urllib.parse import quote
 
 router = APIRouter(prefix="/table-reservations", tags=["table-reservations"])
 
@@ -196,9 +197,10 @@ def _email_client(
             f"🔖 Référence : <strong>#{reference}</strong></p>"
         )
         footer = (
-            "<p>Pour modifier ou annuler, utilisez votre référence et cette adresse email "
-            f"sur <a href=\"{SITE_URL}\">{SITE_URL.replace('https://', '')}</a>, "
-            f"ou appelez-nous au {RESTAURANT_PHONE}.</p>"
+                        f"<p><a href=\"{SITE_URL}/book-a-table?ref={reference}&email={quote(to)}\">"
+            "Modifier ou annuler ma réservation</a><br>"
+            f"Ou appelez-nous au {RESTAURANT_PHONE}.</p>"
+           
             if action != "cancelled"
             else f"<p>Au plaisir de vous accueillir une prochaine fois. Une question ? Appelez-nous au {RESTAURANT_PHONE}.</p>"
         )
