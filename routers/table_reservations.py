@@ -1,8 +1,11 @@
 # routers/table_reservations.py — Réservations de table
 #
 # Disponibilité + création + modification + annulation, avec vérification
-# du chevauchement horaire. Les notifications à Ali (SMS + email) partent
-# en tâche de fond (BackgroundTasks) pour ne pas ralentir la réponse.
+# du chevauchement horaire. Les notifications (Ali + client) partent en
+# tâche de fond (BackgroundTasks) pour ne pas ralentir la réponse.
+#
+# Confirmation AUTOMATIQUE : une réservation est "confirmée" dès sa création,
+# et le client reçoit immédiatement un email de confirmation.
 #
 # Modification/annulation : le client s'identifie avec sa référence (id)
 # + son email — pas de compte, pas de mot de passe, volontairement simple.
@@ -26,6 +29,13 @@ from schemas import (
 from notifications import send_admin_sms, send_email, ADMIN_DASHBOARD_URL, SMTP_EMAIL
 
 router = APIRouter(prefix="/table-reservations", tags=["table-reservations"])
+
+# Statut appliqué automatiquement — doit correspondre EXACTEMENT à la valeur
+# utilisée par le dashboard admin (vérifier l'accent : "confirmée").
+STATUT_CONFIRME = "confirmée"
+
+SITE_URL = "https://misschawarma.fr"
+RESTAURANT_PHONE = "+33 1 42 52 60 48"
 
 # ---------------------------------------------------------------- horaires --
 OUVERTURE_MIN = 11 * 60 + 30
@@ -125,6 +135,86 @@ def purger_expirees(db: Session):
     pass
 
 
+# ------------------------------------------------------- emails client --
+
+def _format_date(date_str: str, lang: str) -> str:
+    """2026-09-21 -> 21/09/2026 (FR) ou 09/21/2026 (EN)."""
+    try:
+        d = DT.strptime(date_str, "%Y-%m-%d")
+        return d.strftime("%m/%d/%Y") if lang == "en" else d.strftime("%d/%m/%Y")
+    except ValueError:
+        return date_str
+
+
+def _email_client(
+    *, to: str, lang: str, action: str,
+    reference: int, first_name: str, date: str, time: str, guests: int,
+):
+    """Envoie au client un email de confirmation / modification / annulation.
+    action ∈ {"created", "modified", "cancelled"}."""
+    if not to:
+        return
+
+    lang = "en" if lang == "en" else "fr"
+    date_txt = _format_date(date, lang)
+
+    if lang == "en":
+        titres = {
+            "created": ("✅ Your table is confirmed — Miss Chawarma", "Your reservation is confirmed!"),
+            "modified": ("✏️ Your reservation has been updated — Miss Chawarma", "Your reservation has been updated."),
+            "cancelled": ("❌ Your reservation has been cancelled — Miss Chawarma", "Your reservation has been cancelled."),
+        }
+        subject, headline = titres[action]
+        details = (
+            f"<p>📅 {date_txt} at {time}<br>"
+            f"👥 {guests} guest(s)<br>"
+            f"🔖 Reference: <strong>#{reference}</strong></p>"
+        )
+        footer = (
+            "<p>To modify or cancel, use your reference number and this email address "
+            f"on <a href=\"{SITE_URL}\">{SITE_URL.replace('https://', '')}</a>, "
+            f"or call us at {RESTAURANT_PHONE}.</p>"
+            if action != "cancelled"
+            else f"<p>We hope to welcome you another time. Questions? Call us at {RESTAURANT_PHONE}.</p>"
+        )
+        body = (
+            f"<p>Hello {first_name},</p>"
+            f"<p><strong>{headline}</strong></p>"
+            f"{details}{footer}"
+            f"<p>See you soon,<br>Miss Chawarma · 75011 Paris</p>"
+        )
+    else:
+        titres = {
+            "created": ("✅ Votre table est confirmée — Miss Chawarma", "Votre réservation est confirmée !"),
+            "modified": ("✏️ Votre réservation a été modifiée — Miss Chawarma", "Votre réservation a bien été modifiée."),
+            "cancelled": ("❌ Votre réservation est annulée — Miss Chawarma", "Votre réservation a bien été annulée."),
+        }
+        subject, headline = titres[action]
+        details = (
+            f"<p>📅 {date_txt} à {time}<br>"
+            f"👥 {guests} personne(s)<br>"
+            f"🔖 Référence : <strong>#{reference}</strong></p>"
+        )
+        footer = (
+            "<p>Pour modifier ou annuler, utilisez votre référence et cette adresse email "
+            f"sur <a href=\"{SITE_URL}\">{SITE_URL.replace('https://', '')}</a>, "
+            f"ou appelez-nous au {RESTAURANT_PHONE}.</p>"
+            if action != "cancelled"
+            else f"<p>Au plaisir de vous accueillir une prochaine fois. Une question ? Appelez-nous au {RESTAURANT_PHONE}.</p>"
+        )
+        body = (
+            f"<p>Bonjour {first_name},</p>"
+            f"<p><strong>{headline}</strong></p>"
+            f"{details}{footer}"
+            f"<p>À très vite,<br>Miss Chawarma · 75011 Paris</p>"
+        )
+
+    try:
+        send_email(to, subject, body, html=True)
+    except Exception as e:  # un échec d'email ne doit jamais casser la réservation
+        print(f"[table_reservations] Email client non envoyé ({action}) : {e}")
+
+
 # --------------------------------------------------------------- endpoints --
 
 @router.get("/availability", response_model=TableAvailabilityOut)
@@ -161,7 +251,7 @@ def creer_reservation(
         email=d.email, phone=d.phone,
         date=d.date, time=d.time, guests=d.guests,
         note=d.note or "", language=d.language or "fr",
-        status="nouvelle",
+        status=STATUT_CONFIRME,  # ⟵ confirmation automatique
         table_ids=json.dumps(d.table_ids),
     )
     db.add(reservation)
@@ -184,28 +274,36 @@ def creer_reservation(
         ).scalars().all()
         raise HTTPException(status_code=409, detail={"table_ids": prises})
 
+    db.refresh(reservation)
+    reservation_id = reservation.id
+
     def _notify_new():
-        # SMS interne uniquement vers ALI_PHONE_NUMBER.
-        # Court + sans emoji/URL pour rester sur un seul segment Twilio.
+        # 1) Ali : SMS + email interne
         send_admin_sms(
-        f"Miss Chawarma 😊\n\n"
-        f"Nouvelle réservation de table - "
-        f"de {d.first_name} {d.last_name}  à {d.date} {d.time} de {d.guests} pers. "
-        f"Dashboard: {ADMIN_DASHBOARD_URL}"
-       )
+            f"Miss Chawarma: Nouvelle reservation confirmee - "
+            f"{d.first_name} {d.last_name} le {d.date} {d.time}, {d.guests} pers. "
+            f"Dashboard: {ADMIN_DASHBOARD_URL}"
+        )
         email_body = (
-            f"<p>Nouvelle réservation reçue :</p>"
-            f"<p>👤 {d.first_name} {d.last_name}<br>"
+            f"<p>Nouvelle réservation (confirmée automatiquement) :</p>"
+            f"<p>🔖 #{reservation_id}<br>"
+            f"👤 {d.first_name} {d.last_name}<br>"
             f"📞 {d.phone}<br>📧 {d.email}<br>"
             f"📅 {d.date} à {d.time}<br>👥 {d.guests} personne(s)</p>"
             f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
         )
         send_email(SMTP_EMAIL, "🔔 Nouvelle réservation de table : Miss Chawarma", email_body, html=True)
 
+        # 2) Client : confirmation immédiate
+        _email_client(
+            to=d.email, lang=d.language or "fr", action="created",
+            reference=reservation_id, first_name=d.first_name,
+            date=d.date, time=d.time, guests=d.guests,
+        )
+
     background_tasks.add_task(_notify_new)
 
-    db.refresh(reservation)
-    return {"id": reservation.id, "table_ids": d.table_ids, "status": reservation.status}
+    return {"id": reservation_id, "table_ids": d.table_ids, "status": reservation.status}
 
 
 def _trouver_reservation_active(db: Session, reference: int, email: str) -> TableReservation:
@@ -226,13 +324,14 @@ def retrouver_reservation(d: TableReservationLookupIn, db: Session = Depends(get
         "id": reservation.id,
         "first_name": reservation.first_name,
         "last_name": reservation.last_name,
-        "phone": reservation.phone,   # ⟵ AJOUT
+        "phone": reservation.phone,
         "date": reservation.date,
         "time": reservation.time,
         "guests": reservation.guests,
         "table_ids": json.loads(reservation.table_ids or "[]"),
         "status": reservation.status,
     }
+
 
 @router.post("/modify", response_model=TableReservationOut)
 def modifier_reservation(
@@ -298,7 +397,7 @@ def modifier_reservation(
     reservation.time = d.time
     reservation.guests = d.guests
     reservation.table_ids = json.dumps(nouvelles_tables)
-    reservation.status = "nouvelle"
+    reservation.status = STATUT_CONFIRME  # ⟵ reste confirmée après modification
 
     try:
         db.commit()
@@ -306,25 +405,43 @@ def modifier_reservation(
         db.rollback()
         raise HTTPException(status_code=409, detail="Ce créneau vient d'être pris, réessayez.")
 
+    db.refresh(reservation)
+
+    # Copie des valeurs pour la tâche de fond (la session sera fermée)
+    info = {
+        "id": reservation.id,
+        "first_name": reservation.first_name,
+        "last_name": reservation.last_name,
+        "email": reservation.email,
+        "language": reservation.language or "fr",
+    }
+
     def _notify_modif():
         send_admin_sms(
-            f"Miss Chawarma: Réservation modifiée - "
-            f"de {reservation.first_name} {reservation.last_name} à {d.date} {d.time} de {d.guests} pers. "
+            f"Miss Chawarma: Reservation modifiee - "
+            f"{info['first_name']} {info['last_name']} le {d.date} {d.time}, {d.guests} pers. "
             f"Dashboard: {ADMIN_DASHBOARD_URL}"
         )
         email_body = (
             f"<p>Une réservation a été modifiée par le client :</p>"
-            f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
+            f"<p>🔖 #{info['id']}<br>"
+            f"👤 {info['first_name']} {info['last_name']}<br>"
             f"📅 Nouveau créneau : {d.date} à {d.time}<br>"
             f"👥 {d.guests} personne(s)</p>"
             f"<p><a href=\"{ADMIN_DASHBOARD_URL}\">Ouvrir le dashboard</a></p>"
         )
         send_email(SMTP_EMAIL, "✏️ Réservation modifiée — Miss Chawarma", email_body, html=True)
 
+        _email_client(
+            to=info["email"], lang=info["language"], action="modified",
+            reference=info["id"], first_name=info["first_name"],
+            date=d.date, time=d.time, guests=d.guests,
+        )
+
     background_tasks.add_task(_notify_modif)
 
-    db.refresh(reservation)
     return {"id": reservation.id, "table_ids": nouvelles_tables, "status": reservation.status}
+
 
 @router.post("/cancel", response_model=TableReservationOut)
 def annuler_reservation(
@@ -338,28 +455,44 @@ def annuler_reservation(
         db.delete(slot)
     reservation.status = "annulée"
     db.commit()
+    db.refresh(reservation)
+
+    info = {
+        "id": reservation.id,
+        "first_name": reservation.first_name,
+        "last_name": reservation.last_name,
+        "email": reservation.email,
+        "language": reservation.language or "fr",
+        "date": reservation.date,
+        "time": reservation.time,
+        "guests": reservation.guests,
+    }
 
     def _notify_annulation():
         send_admin_sms(
-            f"Miss Chawarma: Réservation annulée - "
-            f"de {reservation.first_name} {reservation.last_name} à {reservation.date} {reservation.time} "
+            f"Miss Chawarma: Reservation annulee - "
+            f"{info['first_name']} {info['last_name']} le {info['date']} {info['time']} "
             f"Dashboard: {ADMIN_DASHBOARD_URL}"
         )
         email_body = (
             f"<p>Une réservation a été annulée par le client :</p>"
-            f"<p>👤 {reservation.first_name} {reservation.last_name}<br>"
-            f"📅 {reservation.date} à {reservation.time}<br>"
-            f"👥 {reservation.guests} personne(s)</p>"
+            f"<p>🔖 #{info['id']}<br>"
+            f"👤 {info['first_name']} {info['last_name']}<br>"
+            f"📅 {info['date']} à {info['time']}<br>"
+            f"👥 {info['guests']} personne(s)</p>"
         )
         send_email(SMTP_EMAIL, "❌ Réservation annulée : Miss Chawarma", email_body, html=True)
 
+        _email_client(
+            to=info["email"], lang=info["language"], action="cancelled",
+            reference=info["id"], first_name=info["first_name"],
+            date=info["date"], time=info["time"], guests=info["guests"],
+        )
+
     background_tasks.add_task(_notify_annulation)
 
-    db.refresh(reservation)
     return {
-        "id": reservation.id,
+        "id": info["id"],
         "table_ids": json.loads(reservation.table_ids or "[]"),
         "status": reservation.status,
     }
-
-   
