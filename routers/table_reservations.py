@@ -172,9 +172,9 @@ def _email_client(
             f"🔖 Reference: <strong>#{reference}</strong></p>"
         )
         footer = (
-            "<p>To modify or cancel, use your reference number and this email address "
-            f"on <a href=\"{SITE_URL}\">{SITE_URL.replace('https://', '')}</a>, "
-            f"or call us at {RESTAURANT_PHONE}.</p>"
+            f"<p><a href=\"{SITE_URL}/book-a-table?ref={reference}&email={quote(to)}\">"
+            "Modify or cancel my reservation</a><br>"
+            f"Or call us at {RESTAURANT_PHONE}.</p>"
             if action != "cancelled"
             else f"<p>We hope to welcome you another time. Questions? Call us at {RESTAURANT_PHONE}.</p>"
         )
