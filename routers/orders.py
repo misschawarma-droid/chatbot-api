@@ -27,6 +27,32 @@ logger = logging.getLogger("orders")
 
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
 
+# ─── Tarification par palier pour les beignets ────────────────────────────────
+# Doit rester STRICTEMENT identique à context/CartContext.tsx côté frontend,
+# sinon le montant affiché au client et le montant débité divergent.
+# 2,50€/pièce · 6 pièces = 12€ · 12 pièces = 21,90€
+# Les paliers s'appliquent partiellement : 7 beignets = 12€ + 2,50€ = 14,50€.
+BEIGNET_CATEGORY_FR = "Beignets"
+BEIGNET_UNIT_PRICE = 2.5
+BEIGNET_SIX_PRICE = 12.0
+BEIGNET_DOZEN_PRICE = 21.9
+
+
+def calc_beignets_tier_total(qty: int) -> float:
+    """Prix minimal pour `qty` beignets en appliquant les paliers dégressifs."""
+    if qty <= 0:
+        return 0.0
+
+    dozens, remainder = divmod(qty, 12)
+    sixes, remainder = divmod(remainder, 6)
+
+    return round(
+        dozens * BEIGNET_DOZEN_PRICE
+        + sixes * BEIGNET_SIX_PRICE
+        + remainder * BEIGNET_UNIT_PRICE,
+        2,
+    )
+
 
 @router.post("/delivery-check", response_model=DeliveryCheckOut)
 def delivery_check(payload: DeliveryCheckIn):
@@ -48,6 +74,8 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="payment_method invalide")
 
     subtotal = 0.0
+    beignets_count = 0
+    beignets_flat_total = 0.0
     order_items = []
     for item in payload.items:
         dish = db.query(Dish).filter(Dish.id == item.dish_id, Dish.is_available).first()
@@ -60,6 +88,13 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
 
         qty = max(1, min(item.quantity, 50))  # bornes de sécurité
         subtotal += dish.price * qty
+
+        # Les beignets sont cumulés à part : leur prix final dépend de la
+        # quantité TOTALE commandée, toutes variétés confondues.
+        if dish.category and dish.category.name_fr == BEIGNET_CATEGORY_FR:
+            beignets_count += qty
+            beignets_flat_total += dish.price * qty
+
         order_items.append(
             OrderItem(
                 dish_id=dish.id,
@@ -72,7 +107,13 @@ def create_order(payload: OrderIn, db: Session = Depends(get_db)):
                 ) if item.selected_choices else None,
             )
         )
-    subtotal = round(subtotal, 2)
+
+    # Remise automatique liée aux paliers beignets (jamais négative, au cas où
+    # le prix unitaire en base ne serait pas exactement 2,50€).
+    beignets_discount = round(
+        max(0.0, beignets_flat_total - calc_beignets_tier_total(beignets_count)), 2
+    )
+    subtotal = round(subtotal - beignets_discount, 2)
 
     delivery_fee = 0.0
     if payload.order_type == "livraison":
